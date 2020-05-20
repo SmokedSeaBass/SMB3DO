@@ -1,2 +1,0 @@
-D:\Users\Sebik\Documents\Code\Visual Studio\smb3do\Debug\smb3do.exe
-D:\Users\Sebik\Documents\Code\Visual Studio\smb3do\Debug\smb3do.pdb
