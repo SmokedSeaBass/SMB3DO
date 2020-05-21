@@ -9,7 +9,9 @@ This project is written in C++ and uses SDL2.  Currently, there is no executable
 ---
 ### Upcoming Features (v0.1.0):
 * [x] Hello world!
-* [x] Basic controller input
+* [x] Basic keyboard input
+* [x] Switch to hardware accelerated rendering
+* [ ] Resolution management
 * [ ] Tileset rendering
 * [ ] Tile collision
 * [ ] SMB3-accurate player physics
@@ -19,6 +21,7 @@ This project is written in C++ and uses SDL2.  Currently, there is no executable
 * Create my own SMB3 'sequel'
 * User-friendly level/map/game editor
 * Support for NES, All-Stars, and custom assets
+* Controller support
 
 ### Dependencies and Utilities
 * [Simple Directmedia Layer 2.0](https://www.libsdl.org/)
