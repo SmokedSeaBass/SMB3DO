@@ -11,7 +11,7 @@ This project is written in C++ and uses SDL2.  Currently, there is no executable
 * [x] Hello world!
 * [x] Basic keyboard input
 * [x] Switch to hardware accelerated rendering
-* [ ] Resolution management
+* [x] Resolution management
 * [ ] Tileset rendering
 * [ ] Tile collision
 * [ ] SMB3-accurate player physics
