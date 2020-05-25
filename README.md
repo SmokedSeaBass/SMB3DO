@@ -4,20 +4,23 @@ A Super Mario Bros. 3 Fangame
 ---
 A personal project that aims to re-imagine the classic Nintendo NES game Super Mario Bros. 3.  This project arose out of my dissatisfaction of Super Mario Maker and Super Mario Maker 2's shortcomings and limitations, particularly in the SMB3 style.  While ROM hacking is always an option, SMB3's compression makes it a particarly tricky task to mod without destroying the ROM (last time I checked).  Plus, creating my own rendition would allow me to add new features and tweak anything to my liking.  And so here we are, SMB3 remade for the modern era.
 
-This project is written in C++ and uses SDL2.  Currently, there is no executable build.
+This project is written in C++14 and uses SDL2.  Currently, there is no executable build.
 
 ---
 ### Upcoming Features (v0.1.0):
 * [x] Hello world!
 * [x] Basic keyboard input
 * [x] Switch to hardware accelerated rendering
-* [x] Resolution management
+* [x] Basic resolution management
+* [x] Basic fullscreen support
+* [ ] Sprite/image blitting
 * [ ] Tileset rendering
 * [ ] Tile collision
 * [ ] SMB3-accurate player physics
+* [ ] Basic camera
 
 ### Long-term Planned Features:
-* Recreate all of the original SMB3 game
+* Implement all features of the original SMB3 game
 * Create my own SMB3 'sequel'
 * User-friendly level/map/game editor
 * Support for NES, All-Stars, and custom assets
