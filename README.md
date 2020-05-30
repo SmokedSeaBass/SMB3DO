@@ -13,9 +13,9 @@ This project is written in C++14 and uses SDL2.  Currently, there is no executab
 * [x] Switch to hardware accelerated rendering
 * [x] Basic resolution management
 * [x] Basic fullscreen support
-* [ ] Sprite/image blitting
-* [ ] Tileset rendering
-* [ ] Tile collision
+* [x] Simpled sprite/image blitting
+* [x] Tileset rendering
+* [ ] Tile-based collision
 * [ ] SMB3-accurate player physics
 * [ ] Basic camera
 
@@ -24,7 +24,10 @@ This project is written in C++14 and uses SDL2.  Currently, there is no executab
 * Create my own SMB3 'sequel'
 * User-friendly level/map/game editor
 * Support for NES, All-Stars, and custom assets
+* "Retro" or "1:1" pixel aspect ratios
+* "4:3" or "16:9" gameplay options
 * Controller support
+[Detailed development roadmap](https://docs.google.com/spreadsheets/d/1Y0XjZVZ6z5f_Yi8HuqKNcNB47MKjdfytgAIx97y7Uow/edit?usp=sharing)
 
 ### Dependencies and Utilities
 * [Simple Directmedia Layer 2.0](https://www.libsdl.org/)
