@@ -27,6 +27,7 @@ This project is written in C++14 and uses SDL2.  Currently, there is no executab
 * "Retro" or "1:1" pixel aspect ratios
 * "4:3" or "16:9" gameplay options
 * Controller support
+
 [Detailed development roadmap](https://docs.google.com/spreadsheets/d/1Y0XjZVZ6z5f_Yi8HuqKNcNB47MKjdfytgAIx97y7Uow/edit?usp=sharing)
 
 ### Dependencies and Utilities
