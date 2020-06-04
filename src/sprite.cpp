@@ -2,9 +2,11 @@
 
 Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) {
 	source_rect_ = { source_x, source_y, source_w, source_h };
+	origin_x_ = 0.0;
+	origin_y_ = 0.0;
 	SDL_Surface* sprite_surface = SDL_LoadBMP(file_path.c_str());
-	width_ = sprite_surface->w;
-	height_ = sprite_surface->h;
+	texture_width_ = sprite_surface->w;
+	texture_height_ = sprite_surface->h;
 	// Alternative class construction and structure
 	// Would create and store a new, smaller surface that is a copy of desired section of the source image ("sub-image").
 	// PROS:
@@ -38,7 +40,16 @@ Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, in
 		color_key_ = 0x00000000;
 	}
 	texture_ = graphics.CreateTextureFromSurface(sprite_surface);
-	SDL_FreeSurface(sprite_surface);  // perhaps store surface too if we later want to adjust the texture?
+	SDL_FreeSurface(sprite_surface);  // Perhaps store surface too if we later want to adjust the texture?
+}
+
+Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int source_y, int source_w, int source_h) {
+	source_rect_ = { source_x, source_y, source_w, source_h };
+	origin_x_ = 0.0;
+	origin_y_ = 0.0;
+	texture_ = texture;
+	SDL_QueryTexture(texture_, nullptr, nullptr, &texture_width_, &texture_height_);
+	color_key_ = 0x00000000;
 }
 
 Sprite::~Sprite() {
@@ -63,12 +74,58 @@ void Sprite::SetRect(int rect_x, int rect_y, int rect_w, int rect_h) {
 	source_rect_.h = rect_h;
 }
 
+void Sprite::SetOrigin(int x, int y) {
+	origin_x_ = x;
+	origin_y_ = y;
+}
+
+void Sprite::SetOrigin(Sprite::ORIGIN_ORIENTATION origin_orientation) {
+	// TODO: Make ORIGIN_ORIENTATION bitwise, for optimized calculations
+	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_LEFT ||
+		origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_MIDDLE ||
+		origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_RIGHT) {
+		origin_y_ = 0.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_LEFT) origin_x_ = 0.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_MIDDLE) origin_x_ = source_rect_.w / 2.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_RIGHT) origin_x_ = source_rect_.w;
+		return;
+	}
+	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_LEFT ||
+		origin_orientation == Sprite::ORIGIN_ORIENTATION::CENTER ||
+		origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_RIGHT) {
+		origin_y_ = source_rect_.h / 2.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_LEFT) origin_x_ = 0.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::CENTER) origin_x_ = source_rect_.w / 2.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_RIGHT) origin_x_ = source_rect_.w;
+		return;
+	}
+	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_LEFT ||
+		origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE ||
+		origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_RIGHT) {
+		origin_y_ = source_rect_.h;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_LEFT) origin_x_ = 0.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE) origin_x_ = source_rect_.w / 2.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_RIGHT) origin_x_ = source_rect_.w;
+		return;
+	}
+}
+
 int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y) {
-	SDL_Rect dest_rect = { pos_x, pos_y, source_rect_.w, source_rect_.h };
+	SDL_Rect dest_rect = {
+		static_cast<int>(round(pos_x - origin_x_)),
+		static_cast<int>(round(pos_y - origin_y_)),
+		source_rect_.w,
+		source_rect_.h
+	};
 	return graphics.BlitTexture(texture_, &source_rect_, &dest_rect);
 }
 
 int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect) {
-	SDL_Rect dest_rect = { pos_x, pos_y, alt_source_rect.w, alt_source_rect.h };
+	SDL_Rect dest_rect = {
+		static_cast<int>(round(pos_x - origin_x_)),
+		static_cast<int>(round(pos_y - origin_y_)),
+		alt_source_rect.w,
+		alt_source_rect.h
+	};
 	return graphics.BlitTexture(texture_, &alt_source_rect, &dest_rect);
 }
