@@ -1,7 +1,5 @@
 #include "graphics.h"
 
-#include <stdio.h>
-#include "SDL.h"
 #include "constants.h"
 
 Graphics::Graphics() {
@@ -51,7 +49,7 @@ int Graphics::Initialize() {
 		return -1;
 	}
 
-	SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);  // Allow for alpha transparency
+	//SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);  // Allow for colored rect alpha transparency
 
 	// This should be the last rendering operation done SCALED; the coordinates and rect are real-sized.  Ideally, this would use canvas coordinates.
 	if (SDL_RenderSetViewport(renderer_main_, &screen_rect_) < 0) {
@@ -109,6 +107,31 @@ int Graphics::WindowToggleFullscreen() {
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
+	return SDL_CreateTextureFromSurface(renderer_main_, surface);
+}
+
+SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path) {
+	SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
+	return SDL_CreateTextureFromSurface(renderer_main_, surface);
+}
+
+SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path, Uint32 color_key) {
+	SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
+	SDL_SetColorKey(surface, SDL_TRUE, color_key);
+	return SDL_CreateTextureFromSurface(renderer_main_, surface);
+}
+
+SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y) {
+	SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
+	Uint32 color_key = 0x00000000;
+	if (alpha_x >= 0 && alpha_y >= 0) {
+		Uint8 r = 0x00, g = 0x00, b = 0x00;
+		Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);  // Get RGB values of first pixel
+		SDL_GetRGB(alpha_pixel, surface->format, &r, &g, &b);
+		color_key = SDL_MapRGB(surface->format, r, g, b);
+		SDL_SetColorKey(surface, SDL_TRUE, color_key);
+	}
+	SDL_SetColorKey(surface, SDL_TRUE, color_key);
 	return SDL_CreateTextureFromSurface(renderer_main_, surface);
 }
 

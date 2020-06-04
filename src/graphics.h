@@ -1,11 +1,15 @@
 #pragma once
-#include <SDL.h>
 
-/**
- *  \file graphics.h
- *
- *  \brief Handles rendering of objects, window/resolution changes and properties, and framerate
- */
+#if defined(_WIN32)
+	#include <SDL.h>
+#elif __linux__
+	#include <SDL2/SDL.h>
+#endif
+#include <string>
+
+/// <summary>
+/// Handles rendering of objects, window/resolution changes and properties, and framerate.
+/// </summary>
 class Graphics {
 public:
 	Graphics();
@@ -16,6 +20,9 @@ public:
 	int WindowToggleFullscreen();
 
 	SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
+	SDL_Texture* CreateTextureFromImage(const std::string& file_path);
+	SDL_Texture* CreateTextureFromImage(const std::string& file_path, Uint32 color_key);
+	SDL_Texture* CreateTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y);
 	Uint32 GetSurfacePixel(SDL_Surface* surface, int x, int y);
 	int BlitColoredRect(SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int BlitTexture(SDL_Texture* texture, SDL_Rect* source_rect, SDL_Rect* dest_rect);
