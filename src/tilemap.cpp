@@ -1,14 +1,14 @@
 #include "tilemap.h"
 
-#include <stdio.h>
 #include <stdexcept>
+#include <cstring>
 #include "constants.h"
 
 Tilemap::Tilemap(Tile* map[], unsigned int width, unsigned int height) {
 	width_ = width;
 	height_ = height;
 	map_ = new Tile*[width_ * height_];
-	memcpy(map_, map, sizeof(Tile*) * (width_ * height_));
+	std::memcpy(map_, map, sizeof(Tile*) * (width_ * height_));
 }
 
 Tilemap::~Tilemap() {
