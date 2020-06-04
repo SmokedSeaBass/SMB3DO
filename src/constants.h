@@ -42,3 +42,8 @@ const SDL_Color SDL_COLOR_WHITE = { 0xFF, 0xFF, 0xFF, 0xFF };
 const SDL_Color SDL_COLOR_RED = { 0xFF, 0x00, 0x00, 0xFF };
 const SDL_Color SDL_COLOR_GREEN = { 0x00, 0xFF, 0x00, 0xFF };
 const SDL_Color SDL_COLOR_BLUE = { 0x00, 0x00, 0xFF, 0xFF };
+
+/* Some math help */
+template <typename T> int sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}
