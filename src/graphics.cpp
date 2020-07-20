@@ -1,18 +1,13 @@
 #include "graphics.h"
 
+#include <stdexcept>
 #include "constants.h"
+#include "error.h"
 
 Graphics::Graphics() {
 	is_fullscreen_ = false;
-	renderer_main_ = NULL;
-	window_main_ = NULL;
-	screen_rect_ = {
-		/* TODO: Use canvas coordinates */
-		(WINDOW_WIDTH - static_cast<int>(round(WINDOW_WIDTH_NES * SCREEN_SCALE_X))) / 2,
-		(WINDOW_HEIGHT - static_cast<int>(round(WINDOW_HEIGHT_NES * SCREEN_SCALE_Y))) / 2,
-		static_cast<int>(round(WINDOW_WIDTH_NES * SCREEN_SCALE_X)),
-		static_cast<int>(round(WINDOW_HEIGHT_NES * SCREEN_SCALE_Y)) 
-	};
+	renderer_main_ = nullptr;
+	window_main_ = nullptr;
 }
 
 Graphics::~Graphics() {
@@ -22,7 +17,8 @@ Graphics::~Graphics() {
 
 int Graphics::Initialize() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		printf("ERROR: SDL could not initialize: %s\n", SDL_GetError());
+		std::string msg = " SDL could not initialize: " + std::string(SDL_GetError()) + "\n";
+		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
 
@@ -33,36 +29,41 @@ int Graphics::Initialize() {
 		SDL_WINDOW_SHOWN
 	);
 	if (window_main_ == nullptr) {
-		printf("ERROR: Main window could not be created: %s\n", SDL_GetError());
+		std::string msg = "Main window could not be created: " + std::string(SDL_GetError());
+		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
 
-	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer_main_ == nullptr) {
-		printf("ERROR: Main renderer could not be created: %s\n", SDL_GetError());
+		std::string msg = "Main renderer could not be created: " + std::string(SDL_GetError());
+		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
 	
 	// Pixel uspcale, no softening or antialias
 	if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest") == SDL_FALSE) {
-		printf("ERROR: Render scale quality hint could not be set: %s\n", SDL_GetError());
+		std::string msg = "Render scale quality hint could not be set: " + std::string(SDL_GetError());
+		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
 
 	//SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);  // Allow for colored rect alpha transparency
 
 	// This should be the last rendering operation done SCALED; the coordinates and rect are real-sized.  Ideally, this would use canvas coordinates.
-	if (SDL_RenderSetViewport(renderer_main_, &screen_rect_) < 0) {
-		printf("ERROR: Main viewport could not be created: %s\n", SDL_GetError());
+	if (SDL_RenderSetViewport(renderer_main_, &ViewportRects::screen_main_rect) < 0) {
+		std::string msg = "Main viewport could not be created: " + std::string(SDL_GetError());
+		Error::PrintError(std::runtime_error(msg));
 		return -1;  
 	} 
 
-	if (META_DEBUG) printf("Window Absolute Dimensions: %d x %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
-	if (META_DEBUG) printf("Viewport Absolute Dimensions: %d x %d\n", screen_rect_.w, screen_rect_.h);
+	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(WINDOW_WIDTH) + " x " + std::to_string(WINDOW_HEIGHT));
+	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(ViewportRects::screen_main_rect.w * SCREEN_SCALE_X) + " x " + std::to_string(ViewportRects::screen_main_rect.h * SCREEN_SCALE_Y));
 
 	// All drawing should be scaled from a 256x224 canvas
-	if (SDL_RenderSetScale(renderer_main_, SCREEN_SCALE_X, SCREEN_SCALE_Y) < 0) {
-		printf("ERROR: Main renderer scaling could not be set: %s\n", SDL_GetError());
+	if (SDL_RenderSetScale(renderer_main_, static_cast<float>(SCREEN_SCALE_X), static_cast<float>(SCREEN_SCALE_Y)) < 0) {
+		std::string msg = "Main renderer scaling could not be set: " + std::string(SDL_GetError());
+		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
 
@@ -77,33 +78,27 @@ int Graphics::WindowToggleFullscreen() {
 	is_fullscreen_ = !is_fullscreen_;
 	if (is_fullscreen_) {
 		if (SDL_SetWindowFullscreen(window_main_, SDL_WINDOW_FULLSCREEN) < 0) {
-			printf("ERROR: Could not switch to fullscreen mode: %s\n", SDL_GetError());
+			std::string msg = "Could not switch to fullscreen mode: " + std::string(SDL_GetError());
+			Error::PrintError(std::runtime_error(msg));
 			return -1;
 		}
 	} else {
 		if (SDL_SetWindowFullscreen(window_main_, 0) < 0) {
-			printf("ERROR: Could not switch to windowed mode: %s\n", SDL_GetError());
+			std::string msg = "Could not switch to windowed mode: " + std::string(SDL_GetError());
+			Error::PrintError(std::runtime_error(msg));
 			return -1;
 		}
 	}
-
-	// Currently, this is to properly set the viewport coordinates after scaling has
-	// already been done, since switching to/from fullscreen losses the viewport's properties.
-	// TODO: Ideally, we would switch viewport coordinates to unscaled coordinates to prevent this "hack".
-	if (SDL_RenderSetScale(renderer_main_, 1, 1) < 0) {
-		printf("ERROR: Main renderer scaling could not be set: %s\n", SDL_GetError());
-		return -1;
-	}
-	if (SDL_RenderSetViewport(renderer_main_, &screen_rect_) < 0) {
-		printf("ERROR: Main viewport could not be created: %s\n", SDL_GetError());
-		return -1;
-	}
-	if (SDL_RenderSetScale(renderer_main_, SCREEN_SCALE_X, SCREEN_SCALE_Y) < 0) {
-		printf("ERROR: Main renderer scaling could not be set: %s\n", SDL_GetError());
-		return -1;
-	}
-
 	return 0;
+}
+
+void Graphics::WindowSetTitle(std::string& subtitle) {
+	std::string title = "SMB3DO - v" META_VERSION;
+	SDL_SetWindowTitle(window_main_, (title + " | " + subtitle).c_str());
+}
+
+int Graphics::SetViewport(SDL_Rect& rect) {
+	return SDL_RenderSetViewport(renderer_main_, &rect);
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
@@ -135,7 +130,7 @@ SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path, int 
 	return SDL_CreateTextureFromSurface(renderer_main_, surface);
 }
 
-// Taken from StackOverflow: https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface
+// From StackOverflow: https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface
 Uint32 Graphics::GetSurfacePixel(SDL_Surface* surface, int x, int y) {
 	SDL_LockSurface(surface);
 	int bpp = surface->format->BytesPerPixel;
@@ -182,3 +177,10 @@ int Graphics::FlipRenderer() {
 	SDL_RenderPresent(renderer_main_);
 	return 0;
 }
+
+SDL_Rect Graphics::ViewportRects::screen_main_rect = {
+	(static_cast<int>(round(WINDOW_WIDTH / SCREEN_SCALE_X)) - WINDOW_WIDTH_NES) / 2,
+	(static_cast<int>(round(WINDOW_HEIGHT / SCREEN_SCALE_Y)) - WINDOW_HEIGHT_NES) / 2,
+	WINDOW_WIDTH_NES,
+	WINDOW_HEIGHT_NES
+};
