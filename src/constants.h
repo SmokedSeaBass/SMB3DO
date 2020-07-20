@@ -5,8 +5,12 @@
 */
 
 #pragma once
+#if defined(_WIN32)
+	#include <SDL.h>
+#elif __linux__
+	#include <SDL2/SDL.h>
+#endif
 #include <math.h>
-#include <string>
 
 /* Console ANSI color codes */
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -22,8 +26,10 @@ const bool META_DEBUG = true;
 #define META_VERSION "0.1.0"
 
 /* Render window attributes */
-const short WINDOW_WIDTH = 1920;  // \ Actual output resolution
-const short WINDOW_HEIGHT = 1080;  // / Should be 4:3 or 16:9 resolutions
+const short WINDOW_WIDTH = 1280;  // \ Actual output resolution
+const short WINDOW_HEIGHT = 720;  // / Should be 4:3 or 16:9 resolutions
+const double FPS_LIMIT = 60;  // Set to -1 to uncap
+const double DELTA_TIME = 60.0 / FPS_LIMIT;
 
 /* NES screen dimensions */
 const short WINDOW_WIDTH_NES = 256;	  // \ Original NES's typical output resolution.
