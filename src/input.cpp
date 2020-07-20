@@ -12,7 +12,7 @@ Input::Input(Mode mode) {
 		Button::P1_START,
 		Button::P1_SELECT
 	};
-	for (int i = 0; i < button_vector_.size(); i++) {
+	for (int i = 0; i < static_cast<int>(button_vector_.size()); i++) {
 		input_map_[button_vector_[i]] = false;
 		input_map_prev_[button_vector_[i]] = false;
 	}
