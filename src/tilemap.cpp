@@ -1,7 +1,6 @@
 #include "tilemap.h"
 
 #include <stdexcept>
-#include <cstring>
 #include "constants.h"
 
 Tilemap::Tilemap(Tile* map[], unsigned int width, unsigned int height) {
