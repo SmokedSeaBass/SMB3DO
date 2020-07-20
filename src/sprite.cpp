@@ -1,10 +1,18 @@
 #include "sprite.h"
 
+#include <stdexcept>
+#include "error.h"
+
 Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) {
 	source_rect_ = { source_x, source_y, source_w, source_h };
 	origin_x_ = 0.0;
 	origin_y_ = 0.0;
 	SDL_Surface* sprite_surface = SDL_LoadBMP(file_path.c_str());
+	if (sprite_surface == NULL) {
+		std::string error_msg = "Could not find file '" + file_path + "'";
+		Error::PrintError(error_msg);
+		throw std::runtime_error(error_msg);
+	}
 	texture_width_ = sprite_surface->w;
 	texture_height_ = sprite_surface->h;
 	// Alternative class construction and structure
