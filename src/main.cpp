@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <string>
 #include "game.h"
+#include "error.h"
 
 /*
   Super Mario Bros. 3-Do
@@ -20,7 +22,7 @@ int main(int argc, char* args[]) {
 
 	printf("Starting main game loop...\n");
 	if (smb3do.Run() < 0) {
-		printf("ERROR: Game was terminated early\n");
+		Error::PrintWarning(std::string("Game was terminated early"));
 		return -1;
 	}
 
