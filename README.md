@@ -13,21 +13,22 @@ This project is written in C++14 and uses SDL2.  Currently, there is no executab
 * [x] Switch to hardware accelerated rendering
 * [x] Basic resolution management
 * [x] Basic fullscreen support
-* [x] Simpled sprite/image blitting
+* [x] Simple sprite/image blitting
 * [x] Tileset rendering
 * [ ] Tile-based collision
 * [x] Basic SMB3-accurate player physics (running and jumping)
 * [ ] Basic camera
+* [x] Basic variable refresh rate support
 
 ### Long-term Planned Features:
 * Implement all features of the original SMB3 game
 * Create my own SMB3 'sequel'
 * User-friendly level/map/game editor
 * Support for NES, All-Stars, and custom assets
-* "Retro" or "1:1" pixel aspect ratios
-* "4:3" or "16:9" gameplay options
-* Controller support
+* "Retro" and "Modern" video options
+* Controller/keyboard support
 * Linux and Windows support
+* Variable refresh rate (e.g. 120 Hz) support
 
 [Detailed development roadmap](https://docs.google.com/spreadsheets/d/1Y0XjZVZ6z5f_Yi8HuqKNcNB47MKjdfytgAIx97y7Uow/edit?usp=sharing)
 
@@ -38,3 +39,5 @@ This project is written in C++14 and uses SDL2.  Currently, there is no executab
 ### Credits
 * SmokedSeaBass - Programmer/Designer
 * Nintendo - Creator of Super Mario Bros. 3
+* Jdaster64 - SMB3 physics breakdown
+* Southbird - SMB3 disassembly
