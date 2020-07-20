@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(_WIN32)
+#if defined(_WIN32 )
 	#include <SDL.h>
 #elif __linux__
 	#include <SDL2/SDL.h>
@@ -12,12 +12,18 @@
 /// </summary>
 class Graphics {
 public:
+	struct ViewportRects {
+		static SDL_Rect screen_main_rect;
+	};
+
 	Graphics();
 	~Graphics();
 
 	int Initialize();
 
 	int WindowToggleFullscreen();
+	void WindowSetTitle(std::string& subtitle);
+	int SetViewport(SDL_Rect& rect);
 
 	SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
 	SDL_Texture* CreateTextureFromImage(const std::string& file_path);
@@ -32,5 +38,4 @@ private:
 	bool is_fullscreen_;
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
-	SDL_Rect screen_rect_;
 };
