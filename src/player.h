@@ -50,7 +50,7 @@ private:
 	double speed_grounded_;
 	double aerial_speed_cap_;
 	/// <summary>
-	/// The status mario has for physics and collision calculations.
+	/// The status mario has for physics and collision calculations.  This is NOT powerup status.
 	/// 0 = default
 	/// 1 = on ground (can jump)
 	/// 2 = skidding (input is in opposite direction of motion)
@@ -71,5 +71,4 @@ private:
 		INTANG = 32,
 		FIXED = 64
 	};
-	
 };
