@@ -23,13 +23,13 @@ int Game::Run() {
 	SDL_Event event;
 	const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
 	
-	// Testing code
+	// Test creation code
 	// Mario
-	Sprite mario_spr = Sprite(graphics, "content/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, BLOCKSIZE_NES, BLOCKSIZE_NES);
+	Sprite mario_spr = Sprite(graphics, "assets/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, static_cast<int>(round(BLOCKSIZE_NES)), static_cast<int>(round(BLOCKSIZE_NES)));
 	mario_spr.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
 	Player mario = Player(&mario_spr, 32.0, 32.0);
 	// Tileset
-	Sprite tileset_debug = Sprite(graphics, "content/tilesets/debug.bmp");
+	Sprite tileset_debug = Sprite(graphics, "assets/tilesets/debug.bmp");
 	Tile air = Tile(0x00, &tileset_debug, { 0, 0, 16, 16 }, "air");
 	Tile wood = Tile(0x01, &tileset_debug, { 0, 16, 16, 16 }, "wood");
 	Tile* background_tiles[30] = {
@@ -51,6 +51,7 @@ int Game::Run() {
 		while (SDL_PollEvent(&event) != 0) {
 			if (event.type == SDL_QUIT) quitGame = true;
 			if (event.type == SDL_KEYDOWN) {
+				if (event.key.keysym.scancode == SDL_SCANCODE_END) return -1;		// Force crash
 				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quitGame = true;
 				if (event.key.keysym.scancode == SDL_SCANCODE_F11) graphics.WindowToggleFullscreen();
 			}
@@ -77,7 +78,7 @@ int Game::Run() {
 		const double tick_duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_end - tick_start).count();
 		double tick_wait = 0;
 		if (FPS_LIMIT > 0) tick_wait = 1000.0 / FPS_LIMIT - tick_duration;
-		if (tick_wait >= 0) SDL_Delay((Uint32)tick_wait);
+		if (tick_wait > 0) SDL_Delay((Uint32)tick_wait);
 		// Add to window's title
 		char buff[48];
 		snprintf(buff, sizeof(buff), "%.0f/%.2f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration + tick_wait), 1000.0 / tick_duration, tick_duration + tick_wait, tick_duration);
