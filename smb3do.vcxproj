@@ -65,27 +65,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Users\Sebik\Documents\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Users\Sebik\Documents\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Users\Sebik\Documents\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Users\Sebik\Documents\Code\libraries\SDL2-devel-2.0.12-VC\SDL2-2.0.12\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -147,6 +147,7 @@
     <ClInclude Include="src\game.h" />
     <ClInclude Include="src\graphics.h" />
     <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\level.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\sprite.h" />
     <ClInclude Include="src\tile.h" />
