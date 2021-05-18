@@ -22,25 +22,25 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 /* Debugging */
-const bool META_DEBUG = true;
-#define META_VERSION "0.1.0"
+constexpr bool META_DEBUG = true;
+constexpr char* META_VERSION = "0.1.0";
 
 /* Render window attributes */
-const short WINDOW_WIDTH = 1280;  // \ Actual output resolution
-const short WINDOW_HEIGHT = 720;  // / Should be 4:3 or 16:9 resolutions
+const double WINDOW_WIDTH = 1280;  // \ Actual output resolution
+const double WINDOW_HEIGHT = 720;  // / Should be 4:3 or 16:9 resolutions
 const double FPS_LIMIT = 60;  // Set to -1 to uncap
 const double DELTA_TIME = 60.0 / FPS_LIMIT;
 
 /* NES screen dimensions */
-const short WINDOW_WIDTH_NES = 256;	  // \ Original NES's typical output resolution.
-const short WINDOW_HEIGHT_NES = 224;  // / Note its 8:7 aspect ratio.
-const short BLOCKSIZE_NES = 16;
+const double WINDOW_WIDTH_NES = 256;	// \ Original NES's typical output resolution.
+const double WINDOW_HEIGHT_NES = 224;	// / Note its 8:7 aspect ratio.
+const double BLOCKSIZE_NES = 16;		// In NES pixels
 
-/* Scaling for the NES to fit output window, but stretched to 4:3 */
+/* Scaling for the NES to fit output window, but stretched to 4:3 to emulate CRT stretching*/
 // TODO: Fix for output resolutions smaller than 4:3 by conditionally adapting horizontal size first instead of vertical
-// TODO: Make screen scaling realtime to window change; will probably require moving to a .cpp files
-const double SCREEN_SCALE_X = floor(WINDOW_HEIGHT / (WINDOW_HEIGHT_NES * 6.0 / 7.0));  // We first find the integer upscale such that the screen takes the most space vertically
-const double SCREEN_SCALE_Y = SCREEN_SCALE_X * 6.0 / 7.0;  // The Y-axis is further scaled to make the screen 4:3
+// TODO: Make screen scaling realtime to window change; will probably require moving to a .cpp file
+const double SCREEN_SCALE_X = floor(WINDOW_HEIGHT / (WINDOW_HEIGHT_NES * 7.0 / 8.0));  // We first find the integer upscale such that the NES screen takes the most space vertically
+const double SCREEN_SCALE_Y = SCREEN_SCALE_X * 7.0 / 8.0;  // The Y-axis is distorted to make the screen 4:3
 
 /* SDL_Color constants */
 const SDL_Color SDL_COLOR_BLACK = { 0x00, 0x00, 0x00, 0xFF };
