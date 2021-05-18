@@ -22,14 +22,14 @@ void Tilemap::GetDimensions(int dimensions[]) {
 
 Tile* Tilemap::GetTile(int x, int y) {
 	if (x >= width_ || y >= height_) {
-		throw std::out_of_range("ERROR: Attempted to get tile outside of tilemap");
+		throw std::out_of_range("Attempted to get tile outside of tilemap");
 	}
 	return map_[y * width_ + x];
 }
 
 void Tilemap::SetTile(int x, int y, Tile* tile) {
 	if (x >= width_ || y >= height_) {
-		throw std::out_of_range("ERROR: Attempted to set tile outside of tilemap");
+		throw std::out_of_range("Attempted to set tile outside of tilemap");
 	}
 	map_[y * width_ + x] = tile;
 }
