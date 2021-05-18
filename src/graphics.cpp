@@ -21,11 +21,11 @@ int Graphics::Initialize() {
 		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
-
+	std::string title = "SMB3DO - v" + std::string(META_VERSION);
 	window_main_ = SDL_CreateWindow(
-		"SMB3DO - v" META_VERSION,
+		title.c_str(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		WINDOW_WIDTH, WINDOW_HEIGHT,
+		static_cast<int>(round(WINDOW_WIDTH)), static_cast<int>(round(WINDOW_HEIGHT)),
 		SDL_WINDOW_SHOWN
 	);
 	if (window_main_ == nullptr) {
@@ -93,7 +93,7 @@ int Graphics::WindowToggleFullscreen() {
 }
 
 void Graphics::WindowSetTitle(std::string& subtitle) {
-	std::string title = "SMB3DO - v" META_VERSION;
+	auto title = "SMB3DO - v" + std::string(META_VERSION);
 	SDL_SetWindowTitle(window_main_, (title + " | " + subtitle).c_str());
 }
 
@@ -179,8 +179,8 @@ int Graphics::FlipRenderer() {
 }
 
 SDL_Rect Graphics::ViewportRects::screen_main_rect = {
-	(static_cast<int>(round(WINDOW_WIDTH / SCREEN_SCALE_X)) - WINDOW_WIDTH_NES) / 2,
-	(static_cast<int>(round(WINDOW_HEIGHT / SCREEN_SCALE_Y)) - WINDOW_HEIGHT_NES) / 2,
-	WINDOW_WIDTH_NES,
-	WINDOW_HEIGHT_NES
+	(static_cast<int>(round(WINDOW_WIDTH / SCREEN_SCALE_X)) - static_cast<int>(round(WINDOW_WIDTH_NES))) / 2,
+	(static_cast<int>(round(WINDOW_HEIGHT / SCREEN_SCALE_Y)) - static_cast<int>(round(WINDOW_HEIGHT_NES))) / 2,
+	static_cast<int>(round(WINDOW_WIDTH_NES)),
+	static_cast<int>(round(WINDOW_HEIGHT_NES))
 };
