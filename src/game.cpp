@@ -38,7 +38,7 @@ int Game::Run() {
 		&air, &air, &air, &air, &air,
 		&wood, &air, &air, &air, &wood,
 		&air, &wood, &wood, &wood, &air,
-		nullptr, &air, & air, &air, nullptr
+		nullptr, &air, &air, &air, nullptr
 	};
 	Tilemap background_tilemap = Tilemap(background_tiles, 5, 6);
 	

@@ -3,13 +3,14 @@
 #include "graphics.h"
 #include "tile.h"
 
-/**
-*  \brief Handles the tile grid routines.
-* 
-*  \description A Tilemap is a data structure that organizes tiles into a 2-D grid.  Each entry in the tilemap's map is
-*               an unsigned char corresponding to a unique tile, which has it's own properties, interaction routine, and drawing routine.
-*               These properties are defined in the Tile class.
-*/
+///	<summary>
+/// Handles the tile grid routines.
+/// </summary>
+/// <remarks>
+///	A Tilemap is a data structure that organizes tiles into a 2-D grid.  Each entry in the tilemap's map is
+///	an unsigned char corresponding to a unique tile, which has its own properties, interaction subroutines, and drawing routine.
+///	These properties are defined in the Tile class.
+/// </remarks>
 class Tilemap {
 public:
 	Tilemap(Tile* map[], unsigned int width, unsigned int height);
