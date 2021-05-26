@@ -2,16 +2,24 @@
 
 #include <stdexcept>
 #include "error.h"
+#include "graphics/missingno.xpm"
 
 Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) {
 	source_rect_ = { source_x, source_y, source_w, source_h };
 	origin_x_ = 0.0;
 	origin_y_ = 0.0;
+	color_key_ = 0x00000000;
 	SDL_Surface* sprite_surface = SDL_LoadBMP(file_path.c_str());
 	if (sprite_surface == NULL) {
+		SDL_FreeSurface(sprite_surface);
 		std::string error_msg = "Could not find file '" + file_path + "'";
-		Error::PrintError(error_msg);
-		throw std::runtime_error(error_msg);
+		Error::PrintWarning(error_msg);
+		// Attempt to use embedded fallback sprite
+		texture_ = graphics.GetDefaultTexture();
+		source_rect_ = { 0, 0, 16, 16 };
+		texture_width_ = 16;
+		texture_height_ = 16;
+		return;
 	}
 	texture_width_ = sprite_surface->w;
 	texture_height_ = sprite_surface->h;
@@ -44,8 +52,6 @@ Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, in
 		SDL_GetRGB(alpha_pixel, sprite_surface->format, &r, &g, &b);
 		color_key_ = SDL_MapRGB(sprite_surface->format, r, g, b);
 		SDL_SetColorKey(sprite_surface, SDL_TRUE, color_key_);
-	} else {
-		color_key_ = 0x00000000;
 	}
 	texture_ = graphics.CreateTextureFromSurface(sprite_surface);
 	SDL_FreeSurface(sprite_surface);  // Perhaps store surface too if we later want to adjust the texture?
@@ -116,6 +122,18 @@ void Sprite::SetOrigin(Sprite::ORIGIN_ORIENTATION origin_orientation) {
 		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_RIGHT) origin_x_ = source_rect_.w;
 		return;
 	}
+}
+
+SDL_Texture* Sprite::GetTexture() {
+	return texture_;
+}
+
+int Sprite::GetTextureHeight() {
+	return texture_height_;
+}
+
+int Sprite::GetTextureWidth() {
+	return texture_width_;
 }
 
 int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y) {

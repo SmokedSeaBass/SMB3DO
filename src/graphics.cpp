@@ -3,11 +3,13 @@
 #include <stdexcept>
 #include "constants.h"
 #include "error.h"
+#include "graphics/missingno.xpm"
 
 Graphics::Graphics() {
 	is_fullscreen_ = false;
 	renderer_main_ = nullptr;
 	window_main_ = nullptr;
+	texture_default_ = nullptr;
 }
 
 Graphics::~Graphics() {
@@ -21,6 +23,7 @@ int Graphics::Initialize() {
 		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
+	// Main window
 	std::string title = "SMB3DO - v" + std::string(META_VERSION);
 	window_main_ = SDL_CreateWindow(
 		title.c_str(),
@@ -34,6 +37,7 @@ int Graphics::Initialize() {
 		return -1;
 	}
 
+	// Accelerated renderer
 	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer_main_ == nullptr) {
 		std::string msg = "Main renderer could not be created: " + std::string(SDL_GetError());
@@ -71,6 +75,12 @@ int Graphics::Initialize() {
 	//SDL_RenderSetIntegerScale(renderer_main_, SDL_FALSE);
 	//SDL_RenderSetLogicalSize(renderer_main_, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES);
 
+	if (BuildDefaultTexture() < 0) {
+		std::string msg = "Could not build default texture";
+		Error::PrintError(std::runtime_error(msg));
+		return -1;
+	}
+
 	return 0;
 }
 
@@ -99,6 +109,23 @@ void Graphics::WindowSetTitle(std::string& subtitle) {
 
 int Graphics::SetViewport(SDL_Rect& rect) {
 	return SDL_RenderSetViewport(renderer_main_, &rect);
+}
+
+int Graphics::BuildDefaultTexture() {
+	SDL_Surface* missingno_surface = IMG_ReadXPMFromArray(missingno_xpm);
+	if (missingno_surface == NULL) {
+		std::string err = "Could not read XPM: " + std::string(IMG_GetError());
+		Error::PrintError(err);
+		SDL_FreeSurface(missingno_surface);
+		return -1;
+	}
+	texture_default_ = CreateTextureFromSurface(missingno_surface);
+	SDL_FreeSurface(missingno_surface);
+	return 0;
+}
+
+SDL_Texture* Graphics::GetDefaultTexture() {
+	return texture_default_;
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {

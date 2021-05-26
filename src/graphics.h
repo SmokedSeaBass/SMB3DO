@@ -2,8 +2,10 @@
 
 #if defined(_WIN32 )
 	#include <SDL.h>
+	#include <SDL_image.h>
 #elif __linux__
 	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_image.h>
 #endif
 #include <string>
 
@@ -25,6 +27,8 @@ public:
 	void WindowSetTitle(std::string& subtitle);
 	int SetViewport(SDL_Rect& rect);
 
+	int BuildDefaultTexture();
+	SDL_Texture* GetDefaultTexture();
 	SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
 	SDL_Texture* CreateTextureFromImage(const std::string& file_path);
 	SDL_Texture* CreateTextureFromImage(const std::string& file_path, Uint32 color_key);
@@ -38,4 +42,5 @@ private:
 	bool is_fullscreen_;
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
+	SDL_Texture* texture_default_;
 };

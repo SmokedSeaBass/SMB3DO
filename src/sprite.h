@@ -9,7 +9,6 @@
 /// </summary>
 class Sprite {
 public:
-	// TODO: Make bitwise, for optimized calculations
 	enum class ORIGIN_ORIENTATION {
 		CENTER,
 		TOP_LEFT,
@@ -44,6 +43,10 @@ public:
 
 	void SetOrigin(int x, int y);
 	void SetOrigin(ORIGIN_ORIENTATION origin_orientation);
+
+	SDL_Texture* GetTexture();
+	int GetTextureHeight();
+	int GetTextureWidth();
 
 	int Draw(Graphics& graphics, int pos_x, int pos_y);
 	int Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect);  // Does NOT modify source_rect_ member

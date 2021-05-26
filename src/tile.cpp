@@ -10,6 +10,12 @@ Tile::Tile(int id, Sprite* tileset, SDL_Rect sprite_rect, std::string name = "NU
 	tileset_ = tileset;
 	strip_rect_ = { 0, 0, 0, 0 };
 	sprite_rect_ = sprite_rect;
+	if (sprite_rect_.y + sprite_rect_.h > tileset->GetTextureHeight()) {
+		sprite_rect_.y = std::min(tileset->GetTextureHeight() - sprite_rect_.h, 0);
+	}
+	if (sprite_rect_.x + sprite_rect_.w > tileset->GetTextureWidth()) {
+		sprite_rect_.x = std::min(tileset->GetTextureWidth() - sprite_rect_.w, 0);
+	}
 	frame_time_ = 1;
 }
 
