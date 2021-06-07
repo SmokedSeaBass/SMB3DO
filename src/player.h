@@ -46,11 +46,13 @@ public:
 	int Draw(Graphics& graphics);
 
 private:
-	std::vector<int> dpad_vector_;  // Lets us cancel out opposing inputs (e.g. left + right)
+	/// @brief A vector of the D-pad inputs, ranging from [-1, 1] for each component.
+	///        Format is {horizontal, vertical}, with -1 being left/up and 1 being right/down
+	std::vector<int> dpad_vector_;
 	double speed_grounded_;
 	double aerial_speed_cap_;
-	/// <summary>
-	/// The status mario has for physics and collision calculations.  This is NOT powerup status.
+	/// @brief The bitwise status mario has for physics and collision calculations.  This is NOT powerup status.
+	/// 
 	/// 0 = default
 	/// 1 = on ground (can jump)
 	/// 2 = skidding (input is in opposite direction of motion)
@@ -60,7 +62,6 @@ private:
 	/// 32 = intangible (e.g. inside pipe)
 	/// 64 = uncontrollable (e.g. cutscene, inside pipe)
 	/// 128 = UNUSED
-	/// </summary>
 	unsigned char status_;
 	enum class Status {
 		GROUNDED = 1,

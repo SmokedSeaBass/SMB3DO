@@ -9,9 +9,7 @@
 #endif
 #include <string>
 
-/// <summary>
-/// Handles rendering of objects, window/resolution changes and properties, and framerate.
-/// </summary>
+/// @brief Handles rendering of objects, window/resolution changes and properties, and framerate.
 class Graphics {
 public:
 	struct ViewportRects {
@@ -42,5 +40,5 @@ private:
 	bool is_fullscreen_;
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
-	SDL_Texture* texture_default_;
+	SDL_Texture* default_texture_;
 };

@@ -9,7 +9,7 @@ Graphics::Graphics() {
 	is_fullscreen_ = false;
 	renderer_main_ = nullptr;
 	window_main_ = nullptr;
-	texture_default_ = nullptr;
+	default_texture_ = nullptr;
 }
 
 Graphics::~Graphics() {
@@ -119,13 +119,13 @@ int Graphics::BuildDefaultTexture() {
 		SDL_FreeSurface(missingno_surface);
 		return -1;
 	}
-	texture_default_ = CreateTextureFromSurface(missingno_surface);
+	default_texture_ = CreateTextureFromSurface(missingno_surface);
 	SDL_FreeSurface(missingno_surface);
 	return 0;
 }
 
 SDL_Texture* Graphics::GetDefaultTexture() {
-	return texture_default_;
+	return default_texture_;
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
