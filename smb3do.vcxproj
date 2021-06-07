@@ -65,19 +65,21 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2\include;D:\Programming\libraries\tinyxml2-8.1.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2\include;D:\Programming\libraries\tinyxml2-8.1.0\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
@@ -157,10 +159,14 @@
     <ClInclude Include="src\level.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\sprite.h" />
+    <ClInclude Include="src\animated_sprite.h" />
     <ClInclude Include="src\tile.h" />
     <ClInclude Include="src\tilemap.h" />
+    <ClInclude Include="src\tileset.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\libraries\tinyxml2-8.1.0\src\tinyxml2.cpp" />
+    <ClCompile Include="src\animated_sprite.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\error.cpp" />
     <ClCompile Include="src\game.cpp" />
@@ -172,6 +178,7 @@
     <ClCompile Include="src\sprite.cpp" />
     <ClCompile Include="src\tile.cpp" />
     <ClCompile Include="src\tilemap.cpp" />
+    <ClCompile Include="src\tileset.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="smb3do.rc" />

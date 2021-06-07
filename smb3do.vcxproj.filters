@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Embedded Files">
       <UniqueIdentifier>{6e9158f9-9ec9-4a9b-b4c0-e0cc043474e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\External Files">
+      <UniqueIdentifier>{cda6eb0f-ad08-4078-98a3-04943e34d812}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -60,6 +63,12 @@
     <ClInclude Include="src\level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\animated_sprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tileset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game.cpp">
@@ -93,6 +102,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\level.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animated_sprite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\libraries\tinyxml2-8.1.0\src\tinyxml2.cpp">
+      <Filter>Source Files\External Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tileset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
