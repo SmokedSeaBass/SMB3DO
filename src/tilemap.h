@@ -2,6 +2,8 @@
 #include <vector>
 #include "graphics.h"
 #include "tile.h"
+#include "sprite.h"
+#include "tileset.h"
 
 ///	<summary>
 /// Handles the tile grid routines.
@@ -13,16 +15,21 @@
 /// </remarks>
 class Tilemap {
 public:
-	Tilemap(Tile* map[], unsigned int width, unsigned int height);
+	Tilemap();
+	Tilemap(std::vector<std::vector<unsigned int>> map, Tileset* tileset);
+	Tilemap(std::string path_to_tmx);
 	~Tilemap();
 
 	void GetDimensions(int dimensions[]);
-	Tile* GetTile(int x, int y);
-	void SetTile(int x, int y, Tile* tile);
+	unsigned int GetTileID(int x, int y);
+	void SetTileID(int x, int y, unsigned int tile_id);
+	void SetTileset(Tileset* tileset);
+	Tileset* GetTileset();
 	int Draw(Graphics& graphics, int pos_x, int pos_y);
 
 private:
+	Tileset* tileset_;		// TODO 6-5-21: Replace with an array of pointers to support multiple tilesets
 	unsigned int width_;
 	unsigned int height_;
-	Tile** map_;
+	std::vector<std::vector<unsigned int>> map_;
 };

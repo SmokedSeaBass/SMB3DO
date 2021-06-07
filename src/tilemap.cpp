@@ -1,18 +1,58 @@
 #include "tilemap.h"
 
 #include <stdexcept>
+#include <sstream>
+#include "tinyxml2.h"
+#include "error.h"
 #include "constants.h"
 
-Tilemap::Tilemap(Tile* map[], unsigned int width, unsigned int height) {
-	width_ = width;
-	height_ = height;
-	map_ = new Tile*[width_ * height_];
-	std::memcpy(map_, map, sizeof(Tile*) * (width_ * height_));
+Tilemap::Tilemap() {
+	map_ = std::vector<std::vector<unsigned int>>();
+	tileset_ = nullptr;
+	width_ = 0;
+	height_ = 0;
 }
 
-Tilemap::~Tilemap() {
-	delete[] map_;
+Tilemap::Tilemap(std::vector<std::vector<unsigned int>> map, Tileset* tileset) {
+	map_ = map;
+	height_ = map.size();
+	width_ = map[0].size();
+	tileset_ = tileset;
 }
+
+Tilemap::Tilemap(std::string path_to_tmx) {
+	width_ = 0;
+	height_ = 0;
+	tileset_ = nullptr;		// TODO 6-6-21: Exctract tileset/.tsx from
+	// Load tile id csv from .tmx file
+	tinyxml2::XMLDocument tmx;
+	if (tmx.LoadFile(path_to_tmx.c_str()) != tinyxml2::XML_SUCCESS) {
+		Error::PrintError("Could not load TMX file '" + path_to_tmx + "'");
+		return;
+	}
+	tinyxml2::XMLElement* map_node = tmx.FirstChildElement("map");
+	tinyxml2::XMLElement* layer_node = map_node->FirstChildElement("layer");
+	width_ = layer_node->FindAttribute("width")->IntValue();
+	height_ = layer_node->FindAttribute("height")->IntValue();
+	tinyxml2::XMLElement* data_node = layer_node->FirstChildElement("data");
+	std::string tile_id_data = data_node->GetText();
+	tile_id_data = tile_id_data.substr(1, std::string::npos);		// Remove leading newline
+	std::vector<std::vector<unsigned int>> map;
+	std::stringstream data_stream(tile_id_data);
+	std::string line;
+	while (std::getline(data_stream, line, '\n')) {
+		std::vector<unsigned int> row;
+		std::stringstream line_stream(line);
+		std::string tile_id;
+		while (std::getline(line_stream, tile_id, ',')) {
+			row.push_back(atoi(tile_id.c_str()));
+		}
+		map.push_back(row);
+	}
+	map_ = map;
+}
+
+Tilemap::~Tilemap() { }
 
 
 void Tilemap::GetDimensions(int dimensions[]) {
@@ -20,30 +60,45 @@ void Tilemap::GetDimensions(int dimensions[]) {
 	dimensions[1] = height_;
 }
 
-Tile* Tilemap::GetTile(int x, int y) {
+unsigned int Tilemap::GetTileID(int x, int y) {
 	if (x >= width_ || y >= height_) {
 		throw std::out_of_range("Attempted to get tile outside of tilemap");
 	}
-	return map_[y * width_ + x];
+	return map_[y][x];
 }
 
-void Tilemap::SetTile(int x, int y, Tile* tile) {
+void Tilemap::SetTileID(int x, int y, unsigned int tile_id) {
 	if (x >= width_ || y >= height_) {
 		throw std::out_of_range("Attempted to set tile outside of tilemap");
 	}
-	map_[y * width_ + x] = tile;
+	map_[y][x] = tile_id;
+}
+
+void Tilemap::SetTileset(Tileset* tileset) {
+	tileset_ = tileset;
+}
+
+Tileset* Tilemap::GetTileset()
+{
+	return tileset_;
 }
 
 int Tilemap::Draw(Graphics& graphics, int pos_x, int pos_y) {
-	Tile* tile = nullptr;
+	unsigned int tile_id = 0;
 	// TODO: Optimize rendering such that only visible tiles are drawn
 	for (int y = 0; y < height_; y++) {
 		for (int x = 0; x < width_; x++) {
-			tile = map_[y * width_ + x];
-			if (tile == nullptr) {
+			tile_id = map_[y][x];
+			if (tile_id == 0) {
 				continue;
 			}
-			tile->Draw(graphics, x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y);
+			if (tileset_ != nullptr) {
+				tileset_->Draw(graphics, x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, tile_id - 1);
+			} else {
+				SDL_Rect dest_rect = { x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, BLOCKSIZE_NES , BLOCKSIZE_NES };
+				graphics.BlitTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
+			}
+			
 		}
 	}
 	return 0;
