@@ -32,9 +32,9 @@ const double FPS_LIMIT = 60;  // Set to -1 to uncap
 const double DELTA_TIME = 60.0 / FPS_LIMIT;
 
 /* NES screen dimensions */
-const double WINDOW_WIDTH_NES = 256;	// \ Original NES's typical output resolution.
-const double WINDOW_HEIGHT_NES = 224;	// / Note its 8:7 aspect ratio.
-const double BLOCKSIZE_NES = 16;		// In NES pixels
+const int WINDOW_WIDTH_NES = 256;	// \ Original NES's typical output resolution.
+const int WINDOW_HEIGHT_NES = 224;	// / Note its 8:7 aspect ratio.
+const short BLOCKSIZE_NES = 16;		// In NES pixels
 
 /* Scaling for the NES to fit output window, but stretched to 4:3 to emulate CRT stretching*/
 // TODO: Fix for output resolutions smaller than 4:3 by conditionally adapting horizontal size first instead of vertical
