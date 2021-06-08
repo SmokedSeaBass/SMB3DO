@@ -34,7 +34,8 @@ int Game::Run() {
 	Player mario = Player(&mario_spr, 32.0, 32.0);
 	// Tileset
 	Sprite debug_tileset_sprite = Sprite(graphics, "assets/tilesets/debug.bmp");
-	Tileset debug_tileset = Tileset(&debug_tileset_sprite, 16, 16, 0, 0);
+	//Tileset debug_tileset = Tileset(&debug_tileset_sprite, 16, 16, 0, 0);
+	Tileset debug_tileset = Tileset(graphics, "assets/tilesets/debug.tsx");
 	// Animated Question Block
 	AnimatedSprite question_block = AnimatedSprite(graphics, "assets/tilesets/question_block.bmp", -1, -1, 0, 0, BLOCKSIZE_NES, BLOCKSIZE_NES, 8.0, 4, 1);
 	// Tilemap
@@ -69,6 +70,7 @@ int Game::Run() {
 		/* Update */
 		mario.Update(input);
 		question_block.Update(tick_duration + tick_wait);
+		debug_tileset.Update(tick_duration + tick_wait);
 
 
 		/* Draw */
@@ -89,7 +91,7 @@ int Game::Run() {
 		const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
 		tick_duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_end - tick_start).count();
 		if (FPS_LIMIT > 0) tick_wait = 1000.0 / FPS_LIMIT - tick_duration;
-		if (tick_wait > 0) SDL_Delay((Uint32)tick_wait);
+		if (tick_wait > 0) SDL_Delay(tick_wait);
 		// Add to window's title
 		char title_buff[48];
 		snprintf(title_buff, sizeof(title_buff), "%.0f/%.2f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration + tick_wait), 1000.0 / tick_duration, tick_duration + tick_wait, tick_duration);

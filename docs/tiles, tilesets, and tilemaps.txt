@@ -1,0 +1,2 @@
+A conventional "tileset" (i.e. an image with a whole bunch of puzzle-piece blocks stitched together) is stored internally as a Sprite.
+A tile, when rendered, renders a section of that sprite.
