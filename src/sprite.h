@@ -21,6 +21,7 @@ public:
 		BOTTOM_RIGHT
 	};
 
+	Sprite();
 	/// @brief Constructs a Sprite object using a BMP image source
 	/// @param graphics Graphics rendering context to use.
 	/// @param file_path File path to the BMP source image.
@@ -63,7 +64,6 @@ public:
 
 	int Draw(Graphics& graphics, int pos_x, int pos_y);
 	int Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect);  // Does NOT modify source_rect_ member
-	int DrawTile(Graphics& graphics, int pos_x, int pos_y, int tile_index);
 
 protected:
 	SDL_Rect source_rect_;

@@ -4,6 +4,16 @@
 #include "error.h"
 #include "graphics/missingno.xpm"
 
+Sprite::Sprite() {
+	texture_ = nullptr;
+	source_rect_ = { 0, 0, 0, 0 };
+	origin_x_ = 0;
+	origin_y_ = 0;
+	color_key_ = 0x00000000;
+	texture_height_ = 0;
+	texture_width_ = 0;
+}
+
 Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) {
 	source_rect_ = { source_x, source_y, source_w, source_h };
 	origin_x_ = 0.0;
@@ -38,19 +48,24 @@ Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int sourc
 	source_rect_ = { source_x, source_y, source_w, source_h };
 	origin_x_ = 0.0;
 	origin_y_ = 0.0;
+	color_key_ = 0x00000000;		// unknown, maybe pullable from SDL_Texture?
 	if (texture != nullptr) {
 		texture_ = texture;
 	} else {
-		std::string err = "Cannot create sprite from null texture";
-		Error::PrintError(err);
-		texture_ = graphics.GetDefaultTexture();
+		std::string warn = "Sprite initialized with null texture";
+		Error::PrintWarning(warn);
+		texture_height_ = 0;
+		texture_width_ = 0;
+		texture_ = nullptr;
+		return;
 	}
 	SDL_QueryTexture(texture_, nullptr, nullptr, &texture_width_, &texture_height_);
-	color_key_ = 0x00000000;		// unknown, maybe pullable from SDL_Texture?
 }
 
 Sprite::~Sprite() {
-	SDL_DestroyTexture(texture_);
+	/*if (texture_ != nullptr) {
+		SDL_DestroyTexture(texture_);
+	}*/
 }
 
 SDL_Rect Sprite::GetRect() {
@@ -126,6 +141,9 @@ int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y) {
 		source_rect_.w,
 		source_rect_.h
 	};
+	if (texture_ == nullptr) {
+		return graphics.BlitTexture(graphics.GetDefaultTexture(), &source_rect_, &dest_rect);
+	}
 	return graphics.BlitTexture(texture_, &source_rect_, &dest_rect);
 }
 
@@ -136,6 +154,9 @@ int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_r
 		alt_source_rect.w,
 		alt_source_rect.h
 	};
+	if (texture_ == nullptr) {
+		return graphics.BlitTexture(graphics.GetDefaultTexture(), &alt_source_rect, &dest_rect);
+	}
 	return graphics.BlitTexture(texture_, &alt_source_rect, &dest_rect);
 }
 
