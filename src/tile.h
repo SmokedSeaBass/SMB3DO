@@ -2,21 +2,29 @@
 
 #include <string>
 #include "graphics.h"
-#include "sprite.h"
+#include "animated_sprite.h"
 
+/// @brief A class that holds detailed information about a tile from a tileset.
+///        Usually generated from a .tsx file and store in a tileset. Includes info such as
+///        the tile's collision and animation.
 class Tile {
 public:
-	unsigned char id_;  // Maybe change to string identifier?
-	std::string name_;
+	enum class COLLISION_TYPE {
+		NONE,
+		SOLID
+	};
 
-	Tile(int id, Sprite* tileset, SDL_Rect sprite_rect, std::string name);
+	Tile(unsigned int id, AnimatedSprite* sprite, COLLISION_TYPE collision);
 	~Tile();
 
+	unsigned int GetId();
+	COLLISION_TYPE GetCollision();
+
+	void Update(int elapsed_time_ms);
 	int Draw(Graphics& graphics, int pos_x, int pos_y);
 
 private:
-	Sprite* tileset_;
-	SDL_Rect strip_rect_;
-	SDL_Rect sprite_rect_;
-	int frame_time_;
+	unsigned int id_;
+	AnimatedSprite* sprite_;
+	COLLISION_TYPE collision_;
 };
