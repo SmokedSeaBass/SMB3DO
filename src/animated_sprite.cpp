@@ -39,7 +39,7 @@ AnimatedSprite::~AnimatedSprite() { }
 void AnimatedSprite::Update(int elapsed_time_ms) {
 	current_frame_time_ += elapsed_time_ms;
 	if (current_frame_time_ > frame_time_) {
-		current_frame_time_ = 0;
+		current_frame_time_ -= frame_time_;
 		if (current_frame_ < frame_count_ - 1) {
 			source_rect_.x += source_rect_.w + frame_gap_;
 			current_frame_++;
