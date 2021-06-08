@@ -21,8 +21,8 @@ public:
 	~Tilemap();
 
 	void GetDimensions(int dimensions[]);
-	unsigned int GetTileID(int x, int y);
-	void SetTileID(int x, int y, unsigned int tile_id);
+	unsigned int GetTileId(int x, int y);
+	void SetTileId(int x, int y, unsigned int tile_id);
 	void SetTileset(Tileset* tileset);
 	Tileset* GetTileset();
 	int Draw(Graphics& graphics, int pos_x, int pos_y);

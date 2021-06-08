@@ -24,7 +24,8 @@ Tilemap::Tilemap(std::string path_to_tmx) {
 	width_ = 0;
 	height_ = 0;
 	tileset_ = nullptr;		// TODO 6-6-21: Exctract tileset/.tsx from
-	// Load tile id csv from .tmx file
+	
+	// Get tile id csv data from .tmx file
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tmx.c_str()) != tinyxml2::XML_SUCCESS) {
 		Error::PrintError("Could not load TMX file '" + path_to_tmx + "'");
@@ -36,6 +37,8 @@ Tilemap::Tilemap(std::string path_to_tmx) {
 	height_ = layer_node->FindAttribute("height")->IntValue();
 	tinyxml2::XMLElement* data_node = layer_node->FirstChildElement("data");
 	std::string tile_id_data = data_node->GetText();
+
+	// Format and read tile id csv data
 	tile_id_data = tile_id_data.substr(1, std::string::npos);		// Remove leading newline
 	std::vector<std::vector<unsigned int>> map;
 	std::stringstream data_stream(tile_id_data);
@@ -45,7 +48,7 @@ Tilemap::Tilemap(std::string path_to_tmx) {
 		std::stringstream line_stream(line);
 		std::string tile_id;
 		while (std::getline(line_stream, tile_id, ',')) {
-			row.push_back(atoi(tile_id.c_str()));
+			row.push_back(atoi(tile_id.c_str()) - 1);
 		}
 		map.push_back(row);
 	}
@@ -60,14 +63,14 @@ void Tilemap::GetDimensions(int dimensions[]) {
 	dimensions[1] = height_;
 }
 
-unsigned int Tilemap::GetTileID(int x, int y) {
+unsigned int Tilemap::GetTileId(int x, int y) {
 	if (x >= width_ || y >= height_) {
 		throw std::out_of_range("Attempted to get tile outside of tilemap");
 	}
 	return map_[y][x];
 }
 
-void Tilemap::SetTileID(int x, int y, unsigned int tile_id) {
+void Tilemap::SetTileId(int x, int y, unsigned int tile_id) {
 	if (x >= width_ || y >= height_) {
 		throw std::out_of_range("Attempted to set tile outside of tilemap");
 	}
@@ -78,8 +81,7 @@ void Tilemap::SetTileset(Tileset* tileset) {
 	tileset_ = tileset;
 }
 
-Tileset* Tilemap::GetTileset()
-{
+Tileset* Tilemap::GetTileset() {
 	return tileset_;
 }
 
@@ -89,11 +91,11 @@ int Tilemap::Draw(Graphics& graphics, int pos_x, int pos_y) {
 	for (int y = 0; y < height_; y++) {
 		for (int x = 0; x < width_; x++) {
 			tile_id = map_[y][x];
-			if (tile_id == 0) {
+			if (tile_id == UINT_MAX) {
 				continue;
 			}
 			if (tileset_ != nullptr) {
-				tileset_->Draw(graphics, x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, tile_id - 1);
+				tileset_->Draw(graphics, x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, tile_id);
 			} else {
 				SDL_Rect dest_rect = { x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, BLOCKSIZE_NES , BLOCKSIZE_NES };
 				graphics.BlitTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
