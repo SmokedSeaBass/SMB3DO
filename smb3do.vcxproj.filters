@@ -19,6 +19,9 @@
     <Filter Include="Source Files\External Files">
       <UniqueIdentifier>{cda6eb0f-ad08-4078-98a3-04943e34d812}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\External Files">
+      <UniqueIdentifier>{b4eb806d-5ae2-4a3d-97f9-9a45da216c00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -71,6 +74,9 @@
     </ClInclude>
     <ClInclude Include="src\options.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tinyxml2\tinyxml2.h">
+      <Filter>Header Files\External Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
