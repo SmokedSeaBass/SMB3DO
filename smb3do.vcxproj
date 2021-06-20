@@ -166,7 +166,6 @@
     <ClInclude Include="src\tileset.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\libraries\tinyxml2-8.1.0\src\tinyxml2.cpp" />
     <ClCompile Include="src\animated_sprite.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\error.cpp" />
@@ -181,6 +180,7 @@
     <ClCompile Include="src\tile.cpp" />
     <ClCompile Include="src\tilemap.cpp" />
     <ClCompile Include="src\tileset.cpp" />
+    <ClCompile Include="src\tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="smb3do.rc" />

@@ -110,14 +110,14 @@
     <ClCompile Include="src\animated_sprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\libraries\tinyxml2-8.1.0\src\tinyxml2.cpp">
-      <Filter>Source Files\External Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\tileset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\options.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tinyxml2\tinyxml2.cpp">
+      <Filter>Source Files\External Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
