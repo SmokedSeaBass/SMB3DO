@@ -157,6 +157,7 @@
     <ClInclude Include="src\graphics.h" />
     <ClInclude Include="src\input.h" />
     <ClInclude Include="src\level.h" />
+    <ClInclude Include="src\options.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\sprite.h" />
     <ClInclude Include="src\animated_sprite.h" />
@@ -174,6 +175,7 @@
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\level.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\options.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\sprite.cpp" />
     <ClCompile Include="src\tile.cpp" />

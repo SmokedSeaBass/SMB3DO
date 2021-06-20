@@ -69,6 +69,9 @@
     <ClInclude Include="src\tileset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game.cpp">
@@ -111,6 +114,9 @@
       <Filter>Source Files\External Files</Filter>
     </ClCompile>
     <ClCompile Include="src\tileset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
