@@ -95,9 +95,9 @@ int Tilemap::Draw(Graphics& graphics, int pos_x, int pos_y) {
 				continue;
 			}
 			if (tileset_ != nullptr) {
-				tileset_->Draw(graphics, x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, tile_id);
+				tileset_->Draw(graphics, x * TILESIZE_NES + pos_x, y * TILESIZE_NES + pos_y, tile_id);
 			} else {
-				SDL_Rect dest_rect = { x * BLOCKSIZE_NES + pos_x, y * BLOCKSIZE_NES + pos_y, BLOCKSIZE_NES , BLOCKSIZE_NES };
+				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x, y * TILESIZE_NES + pos_y, TILESIZE_NES , TILESIZE_NES };
 				graphics.BlitTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
 			}
 			
