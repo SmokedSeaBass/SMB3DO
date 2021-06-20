@@ -6,10 +6,15 @@
 #include "graphics/missingno.xpm"
 
 Graphics::Graphics() {
-	is_fullscreen_ = false;
 	renderer_main_ = nullptr;
 	window_main_ = nullptr;
 	default_texture_ = nullptr;
+
+	is_fullscreen_ = false;
+	current_resolution_ = { 0, 0 };
+	viewport_rect_ = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES };
+	viewport_scaler_ = { 1, 1 };
+	viewport_ratio_ = { 8, 7 };
 }
 
 Graphics::~Graphics() {
@@ -17,19 +22,26 @@ Graphics::~Graphics() {
 	SDL_DestroyWindow(window_main_);
 }
 
-int Graphics::Initialize() {
+int Graphics::Initialize(Options& options) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::string msg = " SDL could not initialize: " + std::string(SDL_GetError()) + "\n";
 		Error::PrintError(std::runtime_error(msg));
 		return -1;
 	}
+
+	// Initialize graphics variables
+	is_fullscreen_ = false;
+	current_resolution_ = options.windowed_resolution_desired;
+	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
+	viewport_scaler_ = GetWindowFitViewportScaler(options);
+	
 	// Main window
 	std::string title = "SMB3DO - v" + std::string(META_VERSION);
 	window_main_ = SDL_CreateWindow(
 		title.c_str(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		static_cast<int>(round(WINDOW_WIDTH)), static_cast<int>(round(WINDOW_HEIGHT)),
-		SDL_WINDOW_SHOWN
+		static_cast<int>(round(current_resolution_.first)), static_cast<int>(round(current_resolution_.second)),
+		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 	);
 	if (window_main_ == nullptr) {
 		std::string msg = "Main window could not be created: " + std::string(SDL_GetError());
@@ -55,17 +67,17 @@ int Graphics::Initialize() {
 	//SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);  // Allow for colored rect alpha transparency
 
 	// This should be the last rendering operation done SCALED; the coordinates and rect are real-sized.  Ideally, this would use canvas coordinates.
-	if (SDL_RenderSetViewport(renderer_main_, &ViewportRects::screen_main_rect) < 0) {
+	if (SDL_RenderSetViewport(renderer_main_, &viewport_rect_) < 0) {
 		std::string msg = "Main viewport could not be created: " + std::string(SDL_GetError());
 		Error::PrintError(std::runtime_error(msg));
 		return -1;  
 	} 
 
-	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(WINDOW_WIDTH) + " x " + std::to_string(WINDOW_HEIGHT));
-	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(ViewportRects::screen_main_rect.w * SCREEN_SCALE_X) + " x " + std::to_string(ViewportRects::screen_main_rect.h * SCREEN_SCALE_Y));
+	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
+	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
 
 	// All drawing should be scaled from a 256x224 canvas
-	if (SDL_RenderSetScale(renderer_main_, static_cast<float>(SCREEN_SCALE_X), static_cast<float>(SCREEN_SCALE_Y)) < 0) {
+	if (SDL_RenderSetScale(renderer_main_, static_cast<float>(viewport_scaler_.first), static_cast<float>(viewport_scaler_.second)) < 0) {
 		std::string msg = "Main renderer scaling could not be set: " + std::string(SDL_GetError());
 		Error::PrintError(std::runtime_error(msg));
 		return -1;
@@ -84,21 +96,24 @@ int Graphics::Initialize() {
 	return 0;
 }
 
-int Graphics::WindowToggleFullscreen() {
-	is_fullscreen_ = !is_fullscreen_;
-	if (is_fullscreen_) {
+int Graphics::WindowToggleFullscreen(Options& options) {
+	if (!is_fullscreen_) {
+		SDL_MaximizeWindow(window_main_);
+		SDL_SetWindowSize(window_main_, options.fullscreen_resolution_desired.first, options.fullscreen_resolution_desired.second);
 		if (SDL_SetWindowFullscreen(window_main_, SDL_WINDOW_FULLSCREEN) < 0) {
 			std::string msg = "Could not switch to fullscreen mode: " + std::string(SDL_GetError());
 			Error::PrintError(std::runtime_error(msg));
 			return -1;
 		}
-	} else {
+	} else {  
+		SDL_SetWindowSize(window_main_, options.windowed_resolution_desired.first, options.windowed_resolution_desired.second);
 		if (SDL_SetWindowFullscreen(window_main_, 0) < 0) {
 			std::string msg = "Could not switch to windowed mode: " + std::string(SDL_GetError());
 			Error::PrintError(std::runtime_error(msg));
 			return -1;
 		}
 	}
+	is_fullscreen_ = !is_fullscreen_;
 	return 0;
 }
 
@@ -109,6 +124,38 @@ void Graphics::WindowSetTitle(std::string& subtitle) {
 
 int Graphics::SetViewport(SDL_Rect& rect) {
 	return SDL_RenderSetViewport(renderer_main_, &rect);
+}
+
+void Graphics::UpdateViewport(Options& options) {
+	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
+
+	int width, height;
+	SDL_GL_GetDrawableSize(window_main_, &width, &height);
+	current_resolution_ = { width, height };
+
+	viewport_scaler_ = GetWindowFitViewportScaler(options);
+	SDL_RenderSetScale(renderer_main_, viewport_scaler_.first, viewport_scaler_.second);
+
+	viewport_rect_ = {
+		std::max((static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)) - static_cast<int>(round(WINDOW_WIDTH_NES))) / 2, 0),
+		std::max((static_cast<int>(round(current_resolution_.second / viewport_scaler_.second)) - static_cast<int>(round(WINDOW_HEIGHT_NES))) / 2, 0),
+		static_cast<int>(round(WINDOW_WIDTH_NES)),
+		static_cast<int>(round(WINDOW_HEIGHT_NES))
+	};
+	SetViewport(viewport_rect_);
+
+	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
+	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
+}
+
+std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options) {
+	float x_stretch = ((float)WINDOW_HEIGHT_NES * viewport_ratio_.first) / ((float)WINDOW_WIDTH_NES * viewport_ratio_.second);
+	float y_scale = (current_resolution_.second / WINDOW_HEIGHT_NES);
+	if (options.forceIntegerScaling) {
+		y_scale = floor(y_scale);
+	}
+	float x_scale = y_scale * x_stretch;
+	return std::pair<float, float>(x_scale, y_scale);
 }
 
 int Graphics::BuildDefaultTexture() {
@@ -204,10 +251,3 @@ int Graphics::FlipRenderer() {
 	SDL_RenderPresent(renderer_main_);
 	return 0;
 }
-
-SDL_Rect Graphics::ViewportRects::screen_main_rect = {
-	(static_cast<int>(round(WINDOW_WIDTH / SCREEN_SCALE_X)) - static_cast<int>(round(WINDOW_WIDTH_NES))) / 2,
-	(static_cast<int>(round(WINDOW_HEIGHT / SCREEN_SCALE_Y)) - static_cast<int>(round(WINDOW_HEIGHT_NES))) / 2,
-	static_cast<int>(round(WINDOW_WIDTH_NES)),
-	static_cast<int>(round(WINDOW_HEIGHT_NES))
-};

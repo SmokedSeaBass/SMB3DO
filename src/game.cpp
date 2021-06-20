@@ -9,13 +9,24 @@
 #include "input.h"
 #include "error.h"
 
-Game::Game() { }
+double Game::fps_limit = 0;
+double Game::delta_time = 0;
+
+Game::Game() {
+	options.fps_limit = 60.0;
+	options.fullscreen_resolution_desired = { 1920, 1080 };
+	options.windowed_resolution_desired = { 640, 480 };
+	options.pixel_ratio = Options::PixelRatio::ONE_TO_ONE;
+	options.forceIntegerScaling = false;
+
+	Game::fps_limit = options.fps_limit;
+	Game::delta_time = 60.0 / Game::fps_limit;
+}
 
 Game::~Game() { }
 
 int Game::Run() {
-	Graphics graphics;
-	if (graphics.Initialize() < 0) {
+	if (graphics.Initialize(options) < 0) {
 		Error::PrintError(std::runtime_error("Could not initialize graphics"));
 		return -1;
 	}
@@ -26,10 +37,12 @@ int Game::Run() {
 
 	double tick_duration = 0;
 	double tick_wait = 0;
+
+	graphics.UpdateViewport(options);
 	
 	// Test creation code
 	// Mario
-	Sprite mario_spr = Sprite(graphics, "assets/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, static_cast<int>(round(BLOCKSIZE_NES)), static_cast<int>(round(BLOCKSIZE_NES)));
+	Sprite mario_spr = Sprite(graphics, "assets/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, static_cast<int>(round(TILESIZE_NES)), static_cast<int>(round(TILESIZE_NES)));
 	mario_spr.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
 	Player mario = Player(&mario_spr, 32.0, 32.0);
 	// Tileset
@@ -37,7 +50,7 @@ int Game::Run() {
 	//Tileset debug_tileset = Tileset(&debug_tileset_sprite, 16, 16, 0, 0);
 	Tileset debug_tileset = Tileset(graphics, "assets/tilesets/debug.tsx");
 	// Animated Question Block
-	AnimatedSprite question_block = AnimatedSprite(graphics, "assets/tilesets/question_block.bmp", -1, -1, 0, 0, BLOCKSIZE_NES, BLOCKSIZE_NES, 8.0, 4, 1);
+	AnimatedSprite question_block = AnimatedSprite(graphics, "assets/tilesets/question_block.bmp", -1, -1, 0, 0, TILESIZE_NES, TILESIZE_NES, 8.0, 4, 1);
 	// Tilemap
 	std::vector<std::vector<unsigned int>> background_tiles_2 = {
 		{0, 1, 1, 1, 0},
@@ -62,7 +75,20 @@ int Game::Run() {
 			if (event.type == SDL_KEYDOWN) {
 				if (event.key.keysym.scancode == SDL_SCANCODE_END) return -1;		// Force crash
 				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quitGame = true;
-				if (event.key.keysym.scancode == SDL_SCANCODE_F11) graphics.WindowToggleFullscreen();
+				if (event.key.keysym.scancode == SDL_SCANCODE_F11) graphics.WindowToggleFullscreen(options);
+				if (event.key.keysym.scancode == SDL_SCANCODE_P && !event.key.repeat) {
+					options.TogglePixelRatio();
+					graphics.UpdateViewport(options);
+				};
+				if (event.key.keysym.scancode == SDL_SCANCODE_I && !event.key.repeat) {
+					options.forceIntegerScaling = !options.forceIntegerScaling;
+					graphics.UpdateViewport(options);
+				};
+			}
+			if (event.type == SDL_WINDOWEVENT) {
+				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					graphics.UpdateViewport(options);
+				}
 			}
 		}
 		input.UpdateInputs(keyboard_state);
@@ -74,7 +100,6 @@ int Game::Run() {
 
 
 		/* Draw */
-		graphics.SetViewport(Graphics::ViewportRects::screen_main_rect);
 		// Fill the NES 'screen' with blue color
 		graphics.BlitColoredRect(nullptr, 0x10, 0x10, 0x40, 0xFF);
 		// Draw tilemap
@@ -90,7 +115,7 @@ int Game::Run() {
 		// Frames-per-second management
 		const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
 		tick_duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_end - tick_start).count();
-		if (FPS_LIMIT > 0) tick_wait = 1000.0 / FPS_LIMIT - tick_duration;
+		if (Game::fps_limit > 0) tick_wait = 1000.0 / Game::fps_limit - tick_duration;
 		if (tick_wait > 0) SDL_Delay(tick_wait);
 		// Add to window's title
 		char title_buff[48];

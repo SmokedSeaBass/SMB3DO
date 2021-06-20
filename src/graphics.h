@@ -8,6 +8,7 @@
 	#include <SDL2/SDL_image.h>
 #endif
 #include <string>
+#include "options.h"
 
 /// @brief Handles rendering of objects, window/resolution changes and properties, and framerate.
 class Graphics {
@@ -19,11 +20,13 @@ public:
 	Graphics();
 	~Graphics();
 
-	int Initialize();
+	int Initialize(Options& options);
 
-	int WindowToggleFullscreen();
+	int WindowToggleFullscreen(Options& options);
 	void WindowSetTitle(std::string& subtitle);
 	int SetViewport(SDL_Rect& rect);
+	void UpdateViewport(Options& options);
+	std::pair<float, float> GetWindowFitViewportScaler(Options& options);
 
 	int BuildDefaultTexture();
 	SDL_Texture* GetDefaultTexture();
@@ -37,8 +40,13 @@ public:
 	int FlipRenderer();
 
 private:
-	bool is_fullscreen_;
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
 	SDL_Texture* default_texture_;
+	
+	bool is_fullscreen_;
+	std::pair<float, float> current_resolution_;
+	SDL_Rect viewport_rect_;
+	std::pair<float, float> viewport_scaler_;
+	std::pair<unsigned short, unsigned short> viewport_ratio_;
 };
