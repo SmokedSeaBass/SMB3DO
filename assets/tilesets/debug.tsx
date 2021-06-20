@@ -24,6 +24,14 @@
    <frame tileid="7" duration="125"/>
   </animation>
  </tile>
+ <tile id="8">
+  <animation>
+   <frame tileid="8" duration="125"/>
+   <frame tileid="9" duration="125"/>
+   <frame tileid="10" duration="125"/>
+   <frame tileid="11" duration="125"/>
+  </animation>
+ </tile>
  <tile id="16">
   <objectgroup draworder="index" id="2">
    <object id="3" type="SolidCollision" x="0" y="0" width="16" height="16"/>
