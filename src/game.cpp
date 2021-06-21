@@ -40,22 +40,9 @@ int Game::Run() {
 	mario_spr.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
 	Player mario = Player(&mario_spr, 32.0, 32.0);
 	// Tileset
-	Sprite debug_tileset_sprite = Sprite(graphics, "assets/tilesets/debug.bmp");
-	//Tileset debug_tileset = Tileset(&debug_tileset_sprite, 16, 16, 0, 0);
 	Tileset debug_tileset = Tileset(graphics, "assets/tilesets/debug.tsx");
-	// Animated Question Block
-	AnimatedSprite question_block = AnimatedSprite(graphics, "assets/tilesets/question_block.bmp", -1, -1, 0, 0, TILESIZE_NES, TILESIZE_NES, 8.0, 4, 1);
 	// Tilemap
-	std::vector<std::vector<unsigned int>> background_tiles_2 = {
-		{0, 1, 1, 1, 0},
-		{1, 17, 1, 17, 1},
-		{1, 1, 1, 1, 1},
-		{17, 1, 1, 1, 17},
-		{1, 17, 17, 17, 1},
-		{0, 1, 1, 1, 0}
-	};
-	Tilemap background_tilemap = Tilemap(background_tiles_2, &debug_tileset);
-	Tilemap test_tilemap = Tilemap("assets/maps/test.tmx");
+	Tilemap test_tilemap = Tilemap(graphics, "assets/maps/test.tmx");
 	test_tilemap.SetTileset(&debug_tileset);
 	
 	// Main game loop
@@ -69,7 +56,7 @@ int Game::Run() {
 			if (event.type == SDL_KEYDOWN) {
 				if (event.key.keysym.scancode == SDL_SCANCODE_END) return -1;		// Force crash
 				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quitGame = true;
-				if (event.key.keysym.scancode == SDL_SCANCODE_F11) graphics.WindowToggleFullscreen(options);
+				if (event.key.keysym.scancode == SDL_SCANCODE_F11 && !event.key.repeat) graphics.WindowToggleFullscreen(options);
 				if (event.key.keysym.scancode == SDL_SCANCODE_P && !event.key.repeat) {
 					options.TogglePixelRatio();
 					graphics.UpdateViewport(options);
@@ -89,19 +76,22 @@ int Game::Run() {
 		
 		/* Update */
 		mario.Update(input);
-		question_block.Update(tick_duration + tick_wait);
 		debug_tileset.Update(tick_duration + tick_wait);
 
+		/*std::vector<Tile> colliding_tiles = test_tilemap.GetCollidingTiles(mario.GetColliderAbsoluteRect());
+		printf("[");
+		for (Tile t : colliding_tiles) {
+			printf("%i ", t.GetCollision());
+		}
+		printf("]\n");*/
 
 		/* Draw */
 		// Fill the NES 'screen' with blue color
 		graphics.BlitColoredRect(nullptr, 0x10, 0x10, 0x40, 0xFF);
 		// Draw tilemap
-		//background_tilemap.Draw(graphics, 16, 16);
 		test_tilemap.Draw(graphics, 0, 0);
-		// Objects
-		//question_block.Draw(graphics, 16, 128);
-		// Draw in the player
+		// Draw objects
+		// Draw player
 		mario.Draw(graphics);
 		// Flip to screen
 		graphics.FlipRenderer();

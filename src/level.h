@@ -18,6 +18,8 @@ public:
 	std::string GetDisplayName();
 	void SetDisplayName(std::string name);
 
+	std::vector<Tileset> LoadLevelTilesets();
+
 
 protected:
 	/// <summary>
@@ -32,7 +34,7 @@ protected:
 	Uint32 uid_;
 	unsigned int timelimit_;
 	SDL_Rect bounds_;
-	std::list<Entity> entity_list_;
-	std::list<Sprite> tileset_list_;
-	std::list<Tilemap> tilemap_layers_;
+	std::vector<Entity> entity_list_;
+	std::vector<Sprite> tileset_list_;
+	std::vector<Tilemap> tilemap_layers_;
 };
