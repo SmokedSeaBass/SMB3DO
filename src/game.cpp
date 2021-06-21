@@ -13,12 +13,6 @@ double Game::fps_limit = 0;
 double Game::delta_time = 0;
 
 Game::Game() {
-	options.fps_limit = 60.0;
-	options.fullscreen_resolution_desired = { 1920, 1080 };
-	options.windowed_resolution_desired = { 640, 480 };
-	options.pixel_ratio = Options::PixelRatio::ONE_TO_ONE;
-	options.forceIntegerScaling = false;
-
 	Game::fps_limit = options.fps_limit;
 	Game::delta_time = 60.0 / Game::fps_limit;
 }
