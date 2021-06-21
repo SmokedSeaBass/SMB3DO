@@ -9,6 +9,7 @@
 #endif
 #include <string>
 #include "options.h"
+#include "constants.h"
 
 /// @brief Handles rendering of objects, window/resolution changes and properties, and framerate.
 class Graphics {
@@ -26,7 +27,7 @@ public:
 	void WindowSetTitle(std::string& subtitle);
 	int SetViewport(SDL_Rect& rect);
 	void UpdateViewport(Options& options);
-	std::pair<float, float> GetWindowFitViewportScaler(Options& options);
+	std::pair<float, float> GetWindowFitViewportScaler(Options& options, SDL_Rect viewport = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES });
 
 	int BuildDefaultTexture();
 	SDL_Texture* GetDefaultTexture();

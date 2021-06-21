@@ -41,7 +41,7 @@ int Graphics::Initialize(Options& options) {
 		title.c_str(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		static_cast<int>(round(current_resolution_.first)), static_cast<int>(round(current_resolution_.second)),
-		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
+		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
 	);
 	if (window_main_ == nullptr) {
 		std::string msg = "Main window could not be created: " + std::string(SDL_GetError());
@@ -71,10 +71,7 @@ int Graphics::Initialize(Options& options) {
 		std::string msg = "Main viewport could not be created: " + std::string(SDL_GetError());
 		Error::PrintError(std::runtime_error(msg));
 		return -1;  
-	} 
-
-	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
-	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
+	}
 
 	// All drawing should be scaled from a 256x224 canvas
 	if (SDL_RenderSetScale(renderer_main_, static_cast<float>(viewport_scaler_.first), static_cast<float>(viewport_scaler_.second)) < 0) {
@@ -129,18 +126,27 @@ int Graphics::SetViewport(SDL_Rect& rect) {
 void Graphics::UpdateViewport(Options& options) {
 	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
 
-	int width, height;
-	SDL_GL_GetDrawableSize(window_main_, &width, &height);
-	current_resolution_ = { width, height };
+	int window_width, window_height;
+	SDL_GL_GetDrawableSize(window_main_, &window_width, &window_height);
+	current_resolution_ = { window_width, window_height };
 
-	viewport_scaler_ = GetWindowFitViewportScaler(options);
+	float viewport_width;
+	if (options.enableWidescreen) {
+		viewport_width = std::max((double)WINDOW_WIDTH_NES, round(current_resolution_.first / viewport_scaler_.first));
+		//viewport_width = floor((float)WINDOW_HEIGHT_NES * (current_resolution_.first / current_resolution_.second));
+	} else {
+		viewport_width = round((float)WINDOW_WIDTH_NES);
+	}
+
+	SDL_Rect viewport_dimensions = { 0, 0, viewport_width, WINDOW_HEIGHT_NES };
+	viewport_scaler_ = GetWindowFitViewportScaler(options, viewport_dimensions);
 	SDL_RenderSetScale(renderer_main_, viewport_scaler_.first, viewport_scaler_.second);
 
 	viewport_rect_ = {
-		std::max((static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)) - static_cast<int>(round(WINDOW_WIDTH_NES))) / 2, 0),
-		std::max((static_cast<int>(round(current_resolution_.second / viewport_scaler_.second)) - static_cast<int>(round(WINDOW_HEIGHT_NES))) / 2, 0),
-		static_cast<int>(round(WINDOW_WIDTH_NES)),
-		static_cast<int>(round(WINDOW_HEIGHT_NES))
+		std::max((static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)) - static_cast<int>(viewport_width)) / 2, 0),
+		std::max((static_cast<int>(round(current_resolution_.second / viewport_scaler_.second)) - static_cast<int>(WINDOW_HEIGHT_NES)) / 2, 0),
+		static_cast<int>(viewport_width),
+		static_cast<int>(WINDOW_HEIGHT_NES)
 	};
 	SetViewport(viewport_rect_);
 
@@ -148,9 +154,9 @@ void Graphics::UpdateViewport(Options& options) {
 	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
 }
 
-std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options) {
-	float x_stretch = ((float)WINDOW_HEIGHT_NES * viewport_ratio_.first) / ((float)WINDOW_WIDTH_NES * viewport_ratio_.second);
-	float y_scale = (current_resolution_.second / WINDOW_HEIGHT_NES);
+std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, SDL_Rect viewport) {
+	float x_stretch = ((float)viewport.h * viewport_ratio_.first) / ((float)viewport.w * viewport_ratio_.second);
+	float y_scale = (current_resolution_.second / viewport.h);
 	if (options.forceIntegerScaling) {
 		y_scale = floor(y_scale);
 	}
