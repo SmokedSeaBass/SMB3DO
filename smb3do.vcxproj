@@ -159,6 +159,7 @@
     <ClInclude Include="src\level.h" />
     <ClInclude Include="src\options.h" />
     <ClInclude Include="src\player.h" />
+    <ClInclude Include="src\rectangle.h" />
     <ClInclude Include="src\sprite.h" />
     <ClInclude Include="src\animated_sprite.h" />
     <ClInclude Include="src\tile.h" />
