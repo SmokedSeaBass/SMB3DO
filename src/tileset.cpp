@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <stdexcept>
-#include "tinyxml2.h"
+#include "tinyxml2\tinyxml2.h"
 #include "error.h"
 
 Tileset::Tileset() {
