@@ -3,9 +3,12 @@
 
 class Rectangle {
 public:
+	Rectangle() :
+		x_(0), y_(0), w_(0), h_(0) {}
 	Rectangle(double x, double y, double w, double h) :
 		x_(x), y_(y), w_(w), h_(h) {}
-	~Rectangle();
+	Rectangle(SDL_Rect sdl_rect) :
+		x_(sdl_rect.x), y_(sdl_rect.y), w_(sdl_rect.w), h_(sdl_rect.h) {}
 
 	double Left() const { return x_; }
 	double Right() const { return x_ + w_; }

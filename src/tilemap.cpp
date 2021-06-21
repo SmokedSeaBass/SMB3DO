@@ -5,27 +5,26 @@
 #include "tinyxml2\tinyxml2.h"
 #include "error.h"
 #include "constants.h"
+#include "tileset.h"
 
-Tilemap::Tilemap() {
-	map_ = std::vector<std::vector<unsigned int>>();
-	tileset_ = nullptr;
-	width_ = 0;
-	height_ = 0;
+Tilemap::Tilemap() : 
+	tilemap_(std::vector<std::vector<unsigned int>>()),
+	tileset_(nullptr),
+	width_(0),
+	height_(0),
+	pos_x_(0),
+	pos_y_(0) {
 }
 
-Tilemap::Tilemap(std::vector<std::vector<unsigned int>> map, Tileset* tileset) {
-	map_ = map;
-	height_ = map.size();
-	width_ = map[0].size();
+Tilemap::Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset) : Tilemap::Tilemap() {
+	tilemap_ = tilemap;
 	tileset_ = tileset;
+	width_ = tilemap[0].size();
+	height_ = tilemap.size();
 }
 
-Tilemap::Tilemap(std::string path_to_tmx) {
-	width_ = 0;
-	height_ = 0;
-	tileset_ = nullptr;		// TODO 6-6-21: Exctract tileset/.tsx from
-	
-	// Get tile id csv data from .tmx file
+Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap() {
+	// Get tile id csv data from .tmx
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tmx.c_str()) != tinyxml2::XML_SUCCESS) {
 		Error::PrintError("Could not load TMX file '" + path_to_tmx + "'");
@@ -52,7 +51,17 @@ Tilemap::Tilemap(std::string path_to_tmx) {
 		}
 		map.push_back(row);
 	}
-	map_ = map;
+	tilemap_ = map;
+
+	//// Get tileset from .tmx
+	//tinyxml2::XMLElement* tileset_node = map_node->FirstChildElement("tileset");
+	//std::string path_to_tsx = path_to_tmx + "/../" + tileset_node->FindAttribute("source")->Value();
+	//Tileset tileset = Tileset(graphics, path_to_tsx);
+	//if (tileset.GetTilesetSprite() == nullptr) {
+	//	tileset_ = nullptr;
+	//	return;
+	//}
+	//tileset_ = &tileset;
 }
 
 Tilemap::~Tilemap() { }
@@ -63,18 +72,25 @@ void Tilemap::GetDimensions(int dimensions[]) {
 	dimensions[1] = height_;
 }
 
+Tile Tilemap::GetTile(int x, int y) {
+	int tile_id = GetTileId(x, y);
+	Tile tile = tileset_->GetTileFromId(tile_id);
+	return tile;
+}
+
 unsigned int Tilemap::GetTileId(int x, int y) {
 	if (x >= width_ || y >= height_) {
-		throw std::out_of_range("Attempted to get tile outside of tilemap");
+		//throw std::out_of_range("Attempted to get tile outside of tilemap");
+		return UINT_MAX;
 	}
-	return map_[y][x];
+	return tilemap_[x][y];
 }
 
 void Tilemap::SetTileId(int x, int y, unsigned int tile_id) {
 	if (x >= width_ || y >= height_) {
 		throw std::out_of_range("Attempted to set tile outside of tilemap");
 	}
-	map_[y][x] = tile_id;
+	tilemap_[x][y] = tile_id;
 }
 
 void Tilemap::SetTileset(Tileset* tileset) {
@@ -85,19 +101,35 @@ Tileset* Tilemap::GetTileset() {
 	return tileset_;
 }
 
-int Tilemap::Draw(Graphics& graphics, int pos_x, int pos_y) {
+std::vector<Tile> Tilemap::GetCollidingTiles(const Rectangle& rect) {
+	std::vector<Tile> colliding_tiles;
+	// TODO 6-21-21: Account for offset tilemap/tilemap position
+	int top_row = static_cast<int>(floor(rect.Top() / TILESIZE_NES));
+	int bottom_row = static_cast<int>(ceil(rect.Bottom() / TILESIZE_NES) - 1);
+	int left_col = static_cast<int>(floor(rect.Left() / TILESIZE_NES));
+	int right_col = static_cast<int>(ceil(rect.Right() / TILESIZE_NES) - 1);
+	for (int row = top_row; row <= bottom_row; row++) {
+		for (int col = left_col; col <= right_col; col++) {
+			Tile tile = GetTile(row, col);
+			colliding_tiles.push_back(tile);
+		}
+	}
+	return colliding_tiles;
+}
+
+int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y) {
 	unsigned int tile_id = 0;
 	// TODO: Optimize rendering such that only visible tiles are drawn
 	for (int y = 0; y < height_; y++) {
 		for (int x = 0; x < width_; x++) {
-			tile_id = map_[y][x];
+			tile_id = tilemap_[y][x];
 			if (tile_id == UINT_MAX) {
 				continue;
 			}
 			if (tileset_ != nullptr) {
-				tileset_->Draw(graphics, x * TILESIZE_NES + pos_x, y * TILESIZE_NES + pos_y, tile_id);
+				tileset_->Draw(graphics, x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, tile_id);
 			} else {
-				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x, y * TILESIZE_NES + pos_y, TILESIZE_NES , TILESIZE_NES };
+				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, TILESIZE_NES , TILESIZE_NES };
 				graphics.BlitTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
 			}
 			

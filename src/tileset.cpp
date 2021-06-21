@@ -5,28 +5,22 @@
 #include "tinyxml2\tinyxml2.h"
 #include "error.h"
 
-Tileset::Tileset() {
-	tileset_sprite_ = nullptr;
-	tile_width_ = 0;
-	tile_height_ = 0;
-	tile_margin_ = 0;
-	tile_spacing_ = 0;
-	tile_row_size_ = 0;
-	tile_count_ = 0;
+Tileset::Tileset() :
+	tileset_sprite_(nullptr),
+	tile_width_(0),
+	tile_height_(0),
+	tile_margin_(0),
+	tile_spacing_(0),
+	tile_row_size_(0),
+	tile_count_(0) {
 }
 
-Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) {
-	tileset_sprite_ = nullptr;
-	tile_width_ = 0;
-	tile_height_ = 0;
-	tile_margin_ = 0;
-	tile_spacing_ = 0;
-	tile_row_size_ = 0;
-	tile_count_ = 0;
+Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tileset::Tileset() {
 
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tsx_file.c_str()) != tinyxml2::XML_SUCCESS) {
 		Error::PrintError("Could not load TSX file '" + path_to_tsx_file + "'");
+		return;
 	}
 
 	tinyxml2::XMLElement* tileset_node = tmx.FirstChildElement("tileset");
@@ -97,6 +91,20 @@ Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int ti
 Tileset::~Tileset() {
 	SDL_DestroyTexture(tileset_sprite_->GetTexture());
 	delete tileset_sprite_;
+}
+
+Sprite* Tileset::GetTilesetSprite() {
+	return tileset_sprite_;
+}
+
+Tile Tileset::GetTileFromId(unsigned int tile_id) {
+	std::map<unsigned int, Tile>::iterator iter;
+	iter = tiles_.find(tile_id);
+	if (iter != tiles_.end()) {
+		return iter->second;
+	} else {
+		return Tile(tile_id);
+	}
 }
 
 void Tileset::Update(int elapsed_time_ms) {

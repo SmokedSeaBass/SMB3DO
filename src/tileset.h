@@ -27,6 +27,9 @@ public:
 	);
 	~Tileset();
 
+	Sprite* GetTilesetSprite();
+	Tile GetTileFromId(unsigned int tile_id);
+
 	void Update(int elapsed_time_ms);
 	int Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id);
 

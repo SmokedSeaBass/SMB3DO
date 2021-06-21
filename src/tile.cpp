@@ -1,5 +1,11 @@
 #include "tile.h"
 
+Tile::Tile() : 
+	id_(0),
+	sprite_(nullptr),
+	collision_(COLLISION_TYPE::NONE) {
+}
+
 Tile::Tile(unsigned int id, AnimatedSprite* sprite, COLLISION_TYPE collision) {
 	id_ = id;
 	sprite_ = sprite;

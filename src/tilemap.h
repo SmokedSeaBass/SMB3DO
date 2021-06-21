@@ -1,8 +1,9 @@
 #pragma once
 #include <vector>
 #include "graphics.h"
-#include "tile.h"
+#include "rectangle.h"
 #include "sprite.h"
+#include "tile.h"
 #include "tileset.h"
 
 ///	<summary>
@@ -16,20 +17,22 @@
 class Tilemap {
 public:
 	Tilemap();
-	Tilemap(std::vector<std::vector<unsigned int>> map, Tileset* tileset);
-	Tilemap(std::string path_to_tmx);
+	Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset);
+	Tilemap(Graphics& graphics, std::string path_to_tmx);
 	~Tilemap();
 
 	void GetDimensions(int dimensions[]);
+	Tile GetTile(int x, int y);
 	unsigned int GetTileId(int x, int y);
 	void SetTileId(int x, int y, unsigned int tile_id);
 	void SetTileset(Tileset* tileset);
 	Tileset* GetTileset();
-	int Draw(Graphics& graphics, int pos_x, int pos_y);
+	std::vector<Tile> GetCollidingTiles(const Rectangle& rect);
+	int Draw(Graphics& graphics, int offset_x, int offset_y);
 
 private:
 	Tileset* tileset_;		// TODO 6-5-21: Replace with an array of pointers to support multiple tilesets
-	unsigned int width_;
-	unsigned int height_;
-	std::vector<std::vector<unsigned int>> map_;
+	unsigned int width_, height_;
+	int pos_x_, pos_y_;
+	std::vector<std::vector<unsigned int>> tilemap_;
 };

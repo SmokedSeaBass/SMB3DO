@@ -14,7 +14,8 @@ public:
 		SOLID
 	};
 
-	Tile(unsigned int id, AnimatedSprite* sprite, COLLISION_TYPE collision);
+	Tile();
+	Tile(unsigned int id, AnimatedSprite* sprite = nullptr, COLLISION_TYPE collision = COLLISION_TYPE::NONE);
 	~Tile();
 
 	unsigned int GetId();
