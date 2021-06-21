@@ -64,7 +64,8 @@ int Graphics::Initialize(Options& options) {
 		return -1;
 	}
 
-	//SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);  // Allow for colored rect alpha transparency
+	// Allow for colored rect alpha transparency
+	SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);
 
 	// This should be the last rendering operation done SCALED; the coordinates and rect are real-sized.  Ideally, this would use canvas coordinates.
 	if (SDL_RenderSetViewport(renderer_main_, &viewport_rect_) < 0) {

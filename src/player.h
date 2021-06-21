@@ -45,6 +45,8 @@ public:
 	void Update(Input& input);
 	int Draw(Graphics& graphics);
 
+	SDL_Rect GetColliderAbsoluteRect();
+
 private:
 	/// @brief A vector of the D-pad inputs, ranging from [-1, 1] for each component.
 	///        Format is {horizontal, vertical}, with -1 being left/up and 1 being right/down

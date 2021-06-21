@@ -10,7 +10,7 @@ Player::Player(Sprite* sprite, double pos_x, double pos_y) {
 	pos_y_ = pos_y;
 	vel_x_ = 0;
 	vel_y_ = 0;
-	collider_ = { -5, -14, 10, 13 };  // 0-2 3-12 13-15 on x, 0-3 4-14 15 on y for small mario
+	collider_ = { -5, -14, 10, 13 };  // 0-2 [3-12] 13-15 on x, 0-3 [4-14] 15 on y for small mario
 	speed_grounded_ = 0;
 	aerial_speed_cap_ = Physics::MAX_SPEED_RUN;
 	status_ = 0;
@@ -94,7 +94,19 @@ void Player::Update(Input& input) {
 
 int Player::Draw(Graphics& graphics) {
 	int return_code = sprite_->Draw(graphics, static_cast<int>(round(pos_x_)), static_cast<int>(round(pos_y_)));
-	SDL_Rect collider_absolute = { collider_.x + static_cast<int>(round(pos_x_)), collider_.y + static_cast<int>(round(pos_y_)), collider_.w, collider_.h };
-	//graphics.BlitColoredRect(&collider_absolute, 0xC0, 0x00, 0xC0, 0xCF);
+	if (DEBUG_SHOW_HITBOXES) {
+		SDL_Rect collider_absolute = GetColliderAbsoluteRect();
+		graphics.BlitColoredRect(&collider_absolute, 0xC0, 0x00, 0xC0, 0xCF);
+	}
 	return return_code;
+}
+
+SDL_Rect Player::GetColliderAbsoluteRect() {
+	SDL_Rect abs_rect = {
+		collider_.x + static_cast<int>(round(pos_x_)),
+		collider_.y + static_cast<int>(round(pos_y_)),
+		collider_.w,
+		collider_.h
+	};
+	return abs_rect;
 }
