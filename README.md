@@ -4,6 +4,7 @@ A personal project that aims to re-imagine the classic Nintendo NES game Super M
 
 This project is written in C++14 and runs on the SDL2 framework.  Currently there is no executable build, but see below for building from source.
 
+![SMB3DO v0.1.0](docs/smb3do_v0-1-0_sample.png)
 ## Features
 ### Upcoming (v0.1.0)
 * [x] Hello world!
