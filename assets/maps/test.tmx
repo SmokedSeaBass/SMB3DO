@@ -4,7 +4,6 @@
   <export target="test.csv" format="csv"/>
  </editorsettings>
  <tileset firstgid="1" source="../tilesets/debug.tsx"/>
- <tileset firstgid="257" source="../tilesets/wood.tsx"/>
  <layer id="1" name="Tile Layer 1" width="100" height="100">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
