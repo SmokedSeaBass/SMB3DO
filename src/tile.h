@@ -19,6 +19,7 @@ public:
 	~Tile();
 
 	unsigned int GetId();
+	const AnimatedSprite* GetSprite();
 	COLLISION_TYPE GetCollision();
 
 	void Update(int elapsed_time_ms);
