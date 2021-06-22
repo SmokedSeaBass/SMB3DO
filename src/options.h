@@ -23,7 +23,7 @@ struct Options {
 	/// @brief Whether the viewport scaler should be floored to an integer or not
 	bool forceIntegerScaling;
 	/// @brief Enables/disables "fullscreen" gameplay as oppossed to the conventional 256x224 SNES screen.  Incompatible with RETRO pixel ratio.
-	bool enableWidescreen;
+	bool enable_widescreen;
 
 	/// @brief Target framerate
 	double fps_limit;

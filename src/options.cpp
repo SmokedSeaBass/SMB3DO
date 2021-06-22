@@ -7,7 +7,7 @@ Options::Options() {
 	windowed_resolution_desired = { 640, 480 };
 	pixel_ratio = Options::PixelRatio::RETRO;
 	forceIntegerScaling = false;
-	enableWidescreen = false;
+	enable_widescreen = false;
 }
 
 

@@ -133,30 +133,27 @@ const SDL_Rect& Graphics::GetViewport() {
 }
 
 void Graphics::UpdateViewport(Options& options) {
-	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
-
 	int window_width, window_height;
 	SDL_GL_GetDrawableSize(window_main_, &window_width, &window_height);
 	current_resolution_ = { window_width, window_height };
-
-	float viewport_width;
-	if (options.enableWidescreen) {
-		viewport_width = std::max((double)WINDOW_WIDTH_NES, round(current_resolution_.first / viewport_scaler_.first));
-		//viewport_width = floor((float)WINDOW_HEIGHT_NES * (current_resolution_.first / current_resolution_.second));
-	} else {
-		viewport_width = round((float)WINDOW_WIDTH_NES);
-	}
-
-	SDL_Rect viewport_dimensions = { 0, 0, viewport_width, WINDOW_HEIGHT_NES };
-	viewport_scaler_ = GetWindowFitViewportScaler(options, viewport_dimensions);
+	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
+	viewport_scaler_ = GetWindowFitViewportScaler(options);
 	SDL_RenderSetScale(renderer_main_, viewport_scaler_.first, viewport_scaler_.second);
-
-	viewport_rect_ = {
-		std::max((static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)) - static_cast<int>(viewport_width)) / 2, 0),
-		std::max((static_cast<int>(round(current_resolution_.second / viewport_scaler_.second)) - static_cast<int>(WINDOW_HEIGHT_NES)) / 2, 0),
-		static_cast<int>(viewport_width),
-		static_cast<int>(WINDOW_HEIGHT_NES)
-	};
+	if (!options.enable_widescreen) {
+		viewport_rect_ = {
+			(static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)) - static_cast<int>(WINDOW_WIDTH_NES)) / 2,
+			(static_cast<int>(round(current_resolution_.second / viewport_scaler_.second)) - static_cast<int>(WINDOW_HEIGHT_NES)) / 2,
+			static_cast<int>(WINDOW_WIDTH_NES),
+			static_cast<int>(WINDOW_HEIGHT_NES)
+		};
+	} else {
+		viewport_rect_ = { 
+			0,
+			0,
+			static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)),
+			static_cast<int>(round(current_resolution_.second / viewport_scaler_.second))
+		};
+	}
 	SetViewport(viewport_rect_);
 
 	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));

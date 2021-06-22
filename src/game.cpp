@@ -61,8 +61,15 @@ int Game::Run() {
 					options.TogglePixelRatio();
 					graphics.UpdateViewport(options);
 				};
+				// TODO 6-21-21: Fix widescreen
+				if (event.key.keysym.scancode == SDL_SCANCODE_O && !event.key.repeat) {
+					options.enable_widescreen = !options.enable_widescreen;
+					options.forceIntegerScaling = false;
+					graphics.UpdateViewport(options);
+				};
 				if (event.key.keysym.scancode == SDL_SCANCODE_I && !event.key.repeat) {
 					options.forceIntegerScaling = !options.forceIntegerScaling;
+					options.enable_widescreen = false;
 					graphics.UpdateViewport(options);
 				};
 			}
@@ -87,10 +94,10 @@ int Game::Run() {
 
 		/* Draw */
 		// Fill the NES 'screen' with blue color
-		graphics.BlitColoredRect(nullptr, 0x10, 0x10, 0x40, 0xFF);
+		//graphics.BlitColoredRect(nullptr, 0x10, 0x10, 0x40, 0xFF);
 		// Draw tilemap
-		test_tilemap.Draw(graphics, 0, 0);
-		// Draw objects
+		test_tilemap.Draw(graphics, 0, 0);// , { (float)mario.GetColliderAbsoluteRect().x, (float)mario.GetColliderAbsoluteRect().y, (float)mario.GetColliderAbsoluteRect().w, (float)mario.GetColliderAbsoluteRect().h });
+		// Draw objects1
 		// Draw player
 		mario.Draw(graphics);
 		// Flip to screen
