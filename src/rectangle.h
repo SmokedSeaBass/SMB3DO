@@ -4,20 +4,16 @@
 class Rectangle {
 public:
 	Rectangle() :
-		x_(0), y_(0), w_(0), h_(0) {}
+		x(0), y(0), w(0), h(0) {}
 	Rectangle(double x, double y, double w, double h) :
-		x_(x), y_(y), w_(w), h_(h) {}
+		x(x), y(y), w(w), h(h) {}
 	Rectangle(SDL_Rect sdl_rect) :
-		x_(sdl_rect.x), y_(sdl_rect.y), w_(sdl_rect.w), h_(sdl_rect.h) {}
+		x(sdl_rect.x), y(sdl_rect.y), w(sdl_rect.w), h(sdl_rect.h) {}
 
-	double Left() const { return x_; }
-	double Right() const { return x_ + w_; }
-	double Top() const { return y_; }
-	double Bottom() const { return y_ + h_; }
+	double Left() const { return x; }
+	double Right() const { return x + w; }
+	double Top() const { return y; }
+	double Bottom() const { return y + h; }
 
-	double Width() const { return w_; }
-	double Height() const { return h_; }
-
-private:
-	double x_, y_, w_, h_;
+	double x, y, w, h;
 };
