@@ -94,6 +94,10 @@ int Graphics::Initialize(Options& options) {
 	return 0;
 }
 
+std::pair<unsigned short, unsigned short> Graphics::GetWindowSize() {
+	return std::pair<unsigned short, unsigned short>(current_resolution_.first, current_resolution_.second);
+}
+
 int Graphics::WindowToggleFullscreen(Options& options) {
 	if (!is_fullscreen_) {
 		SDL_MaximizeWindow(window_main_);
@@ -122,6 +126,10 @@ void Graphics::WindowSetTitle(std::string& subtitle) {
 
 int Graphics::SetViewport(SDL_Rect& rect) {
 	return SDL_RenderSetViewport(renderer_main_, &rect);
+}
+
+const SDL_Rect& Graphics::GetViewport() {
+	return viewport_rect_;
 }
 
 void Graphics::UpdateViewport(Options& options) {
