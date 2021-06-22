@@ -10,17 +10,18 @@ This project is written in C++14 and runs on the SDL2 framework.  Currently ther
 * [x] Hello world!
 * [x] Basic keyboard input
 * [x] Hardware accelerated rendering
-* [x] Basic resolution management
-* [x] Basic fullscreen support
+* [x] Support for multiple resolutions
+* [x] Fullscreen/windowed modes
+* [x] SD/Widescreen video modes
+* [x] Basic variable refresh rate support
 * [x] Simple sprite/image blitting
 * [x] Tileset rendering
 * [ ] Tile-based collision
 * [x] Basic SMB3-accurate player physics (running and jumping)
 * [ ] Basic camera
-* [x] Basic variable refresh rate support
 
 ### Long-term Planned Features:
-* Implement all features of the original SMB3 game
+* Implement all features of the original SMB3
 * Create my own SMB3 'sequel'
 * User-friendly level/map/game editor
 * Support for NES, All-Stars, and custom assets
