@@ -117,11 +117,17 @@ std::vector<Tile> Tilemap::GetCollidingTiles(const Rectangle& rect) {
 	return colliding_tiles;
 }
 
-int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y) {
+int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop) {
+	if (crop.w < 0) crop.w = graphics.GetViewport().w;
+	if (crop.h < 0) crop.h = graphics.GetViewport().h;
+
 	unsigned int tile_id = 0;
-	// TODO: Optimize rendering such that only visible tiles are drawn
-	for (int y = 0; y < height_; y++) {
-		for (int x = 0; x < width_; x++) {
+	int top_row = std::max(static_cast<int>(floor(crop.Top() / TILESIZE_NES)), 0);
+	int bottom_row = std::min(static_cast<int>(ceil(crop.Bottom() / TILESIZE_NES) - 1), static_cast<int>(height_) + 1);
+	int left_col = std::max(static_cast<int>(floor(crop.Left() / TILESIZE_NES)), 0);
+	int right_col = std::min(static_cast<int>(ceil(crop.Right() / TILESIZE_NES) - 1), static_cast<int>(width_) + 1);
+	for (int y = top_row; y <= bottom_row; y++) {
+		for (int x = left_col; x <= right_col; x++) {
 			tile_id = tilemap_[y][x];
 			if (tile_id == UINT_MAX) {
 				continue;
@@ -132,7 +138,6 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y) {
 				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, TILESIZE_NES , TILESIZE_NES };
 				graphics.BlitTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
 			}
-			
 		}
 	}
 	return 0;

@@ -28,7 +28,7 @@ public:
 	void SetTileset(Tileset* tileset);
 	Tileset* GetTileset();
 	std::vector<Tile> GetCollidingTiles(const Rectangle& rect);
-	int Draw(Graphics& graphics, int offset_x, int offset_y);
+	int Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop = { 0, 0, -1, -1 } );
 
 private:
 	Tileset* tileset_;		// TODO 6-5-21: Replace with an array of pointers to support multiple tilesets
