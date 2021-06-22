@@ -49,8 +49,23 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 	while (tile_node != nullptr) {
 		unsigned int tile_id = tile_node->FindAttribute("id")->IntValue();
 		SDL_Rect tile_rect = Tileset::TileIndexToRect(tile_id);
+
 		/* Object/tile collisions */
-		//tinyxml2::XMLElement* obj_node = tile_node->FirstChildElement("objectgroup");
+		Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
+		tinyxml2::XMLElement* objgrp_node = tile_node->FirstChildElement("objectgroup");
+		if (objgrp_node != nullptr) {
+			tinyxml2::XMLElement* obj_node = objgrp_node->FirstChildElement("object");
+			while (obj_node != nullptr) {
+				std::string obj_type = obj_node->FindAttribute("type")->Value();
+				if (obj_type == "SolidCollision") {
+					tile_collision = Tile::COLLISION_TYPE::SOLID;
+				}
+				obj_node = obj_node->NextSiblingElement("object");
+			}
+		}
+
+		/* Animation */
+		AnimatedSprite* tile_sprite = nullptr;
 		tinyxml2::XMLElement* anim_node = tile_node->FirstChildElement("animation");
 		std::vector<std::pair<unsigned int, unsigned int>> animation_tiles;
 		if (anim_node != nullptr) {
@@ -64,10 +79,15 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 			}
 			double frame_speed = 1000.0 / animation_tiles[0].second;
 			int frame_count = animation_tiles.size();
-			AnimatedSprite* tile_sprite = new AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
-			Tile tile = Tile(tile_id, tile_sprite, Tile::COLLISION_TYPE::NONE);
+			tile_sprite = new AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
+		}
+
+		/* Storing the tile */
+		if (tile_collision != Tile::COLLISION_TYPE::NONE || tile_sprite != nullptr) {		// Is the tile worth storing?
+			Tile tile = Tile(tile_id, tile_sprite, tile_collision);
 			tiles_.emplace(tile_id, tile);
 		}
+
 		tile_node = tile_node->NextSiblingElement("tile");
 	}
 }
@@ -118,11 +138,12 @@ int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id
 	iter = tiles_.find(tile_id);
 	if (iter != tiles_.end()) {
 		Tile tile = iter->second;
-		return tile.Draw(graphics, pos_x, pos_y);
-	} else {
-		SDL_Rect tile_rect = TileIndexToRect(tile_id);
-		return tileset_sprite_->Draw(graphics, pos_x, pos_y, tile_rect);
+		if (tile.GetSprite() != nullptr) {
+			return tile.Draw(graphics, pos_x, pos_y);
+		}
 	}
+	SDL_Rect tile_rect = TileIndexToRect(tile_id);
+	return tileset_sprite_->Draw(graphics, pos_x, pos_y, tile_rect);
 }
 
 
