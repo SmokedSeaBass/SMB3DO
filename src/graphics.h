@@ -7,6 +7,7 @@
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_image.h>
 #endif
+#include <map>
 #include <string>
 #include "options.h"
 #include "constants.h"
@@ -29,19 +30,23 @@ public:
 
 	int BuildDefaultTexture();
 	SDL_Texture* GetDefaultTexture();
+	/// @brief Creates an SDL_Texture from an SDL_Surface, and then frees the SDL_Surface
+	/// @param surface Pointer to the SDL_Surface to create a SDL_Texture from
+	/// @return Pointer to an SDL_Texture
 	SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
-	SDL_Texture* CreateTextureFromImage(const std::string& file_path);
-	SDL_Texture* CreateTextureFromImage(const std::string& file_path, Uint32 color_key);
-	SDL_Texture* CreateTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y);
+	SDL_Texture* LoadTextureFromImage(const std::string& file_path);
+	SDL_Texture* LoadTextureFromImage(const std::string& file_path, Uint32 color_key);
+	SDL_Texture* LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y);
 	Uint32 GetSurfacePixel(SDL_Surface* surface, int x, int y);
 	int BlitColoredRect(SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	int BlitTexture(SDL_Texture* texture, SDL_Rect* source_rect, SDL_Rect* dest_rect);
+	int BlitTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect);
 	int FlipRenderer();
 
 private:
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
-	SDL_Texture* default_texture_;
+	typedef std::map<std::string, SDL_Texture*> TextureList;
+	TextureList textures_;
 	
 	bool is_fullscreen_;
 	std::pair<float, float> current_resolution_;

@@ -71,6 +71,5 @@ protected:
 private:
 	SDL_Texture* texture_;
 	double origin_x_, origin_y_;
-	int texture_width_, texture_height_;
 	Uint32 color_key_;  // Save if we want to change later?
 };

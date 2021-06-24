@@ -34,8 +34,10 @@ public:
 	int Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id);
 
 private:
+	/// @brief Used for rendering tiles that do not have an associated Tile object
 	Sprite* tileset_sprite_;
-	std::map<unsigned int, Tile> tiles_;
+	typedef std::map<unsigned int, Tile> TileList;
+	TileList tiles_;
 	int tile_width_, tile_height_;
 	int tile_margin_, tile_spacing_;
 	int tile_row_size_, tile_count_;

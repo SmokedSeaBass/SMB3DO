@@ -8,7 +8,6 @@
 Graphics::Graphics() {
 	renderer_main_ = nullptr;
 	window_main_ = nullptr;
-	default_texture_ = nullptr;
 
 	is_fullscreen_ = false;
 	current_resolution_ = { 0, 0 };
@@ -18,6 +17,9 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+	for (TextureList::iterator iter = textures_.begin(); iter != textures_.end(); ++iter) {
+		SDL_DestroyTexture(iter->second);
+	}
 	SDL_DestroyRenderer(renderer_main_);
 	SDL_DestroyWindow(window_main_);
 }
@@ -147,7 +149,7 @@ void Graphics::UpdateViewport(Options& options) {
 			static_cast<int>(WINDOW_HEIGHT_NES)
 		};
 	} else {
-		viewport_rect_ = { 
+		viewport_rect_ = {
 			0,
 			0,
 			static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)),
@@ -178,42 +180,66 @@ int Graphics::BuildDefaultTexture() {
 		SDL_FreeSurface(missingno_surface);
 		return -1;
 	}
-	default_texture_ = CreateTextureFromSurface(missingno_surface);
-	SDL_FreeSurface(missingno_surface);
+	textures_[""] = CreateTextureFromSurface(missingno_surface);
 	return 0;
 }
 
 SDL_Texture* Graphics::GetDefaultTexture() {
-	return default_texture_;
+	return textures_[""];
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
-	return SDL_CreateTextureFromSurface(renderer_main_, surface);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_main_, surface);
+	SDL_FreeSurface(surface);
+	return texture;
 }
 
-SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path) {
-	SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
-	return SDL_CreateTextureFromSurface(renderer_main_, surface);
-}
-
-SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path, Uint32 color_key) {
-	SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
-	SDL_SetColorKey(surface, SDL_TRUE, color_key);
-	return SDL_CreateTextureFromSurface(renderer_main_, surface);
-}
-
-SDL_Texture* Graphics::CreateTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y) {
-	SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
-	Uint32 color_key = 0x00000000;
-	if (alpha_x >= 0 && alpha_y >= 0) {
-		Uint8 r = 0x00, g = 0x00, b = 0x00;
-		Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);  // Get RGB values of first pixel
-		SDL_GetRGB(alpha_pixel, surface->format, &r, &g, &b);
-		color_key = SDL_MapRGB(surface->format, r, g, b);
-		SDL_SetColorKey(surface, SDL_TRUE, color_key);
+SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path) {
+	if (textures_.count(file_path) == 0) {
+		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
+		if (surface == NULL) {
+			Error::PrintError("Could not load image: \'" + file_path + "\'");
+			return nullptr;
+		}
+		SDL_Texture* texture = CreateTextureFromSurface(surface);
+		textures_[file_path] = texture;
 	}
-	SDL_SetColorKey(surface, SDL_TRUE, color_key);
-	return SDL_CreateTextureFromSurface(renderer_main_, surface);
+	return textures_[file_path];
+}
+
+SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint32 color_key) {
+	if (textures_.count(file_path) == 0) {
+		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
+		if (surface == NULL) {
+			Error::PrintError("Could not load image: \'" + file_path + "\'");
+			return nullptr;
+		}
+		SDL_SetColorKey(surface, SDL_TRUE, color_key);
+		SDL_Texture* texture = CreateTextureFromSurface(surface);
+		textures_[file_path] = texture;
+	}
+	return textures_[file_path];
+}
+
+SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y) {
+	if (textures_.count(file_path) == 0) {
+		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
+		if (surface == NULL) {
+			Error::PrintError("Could not load image: \'" + file_path + "\'");
+			return nullptr;
+		}
+		Uint32 color_key = 0x00000000;
+		if (alpha_x >= 0 && alpha_y >= 0) {
+			Uint8 r = 0x00, g = 0x00, b = 0x00;
+			Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);  // Get RGB values of first pixel
+			SDL_GetRGB(alpha_pixel, surface->format, &r, &g, &b);
+			color_key = SDL_MapRGB(surface->format, r, g, b);
+			SDL_SetColorKey(surface, SDL_TRUE, color_key);
+		}
+		SDL_Texture* texture = CreateTextureFromSurface(surface);
+		textures_[file_path] = texture;
+	}
+	return textures_[file_path];
 }
 
 // From StackOverflow: https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface
@@ -255,7 +281,7 @@ int Graphics::BlitColoredRect(SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue
 	return 0;
 }
 
-int Graphics::BlitTexture(SDL_Texture* texture, SDL_Rect* source_rect, SDL_Rect* dest_rect) {
+int Graphics::BlitTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect) {
 	return SDL_RenderCopy(renderer_main_, texture, source_rect, dest_rect);
 }
 

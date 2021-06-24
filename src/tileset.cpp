@@ -1,7 +1,8 @@
 #include "tileset.h"
 
-#include <vector>
+#include <memory>
 #include <stdexcept>
+#include <vector>
 #include "tinyxml2\tinyxml2.h"
 #include "error.h"
 
@@ -40,8 +41,7 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 
 	tinyxml2::XMLElement* image_node = tileset_node->FirstChildElement("image");
 	std::string source_image_path = path_to_tsx_file + "/../" + image_node->FindAttribute("source")->Value();
-	Sprite* tileset_sprite = new Sprite(graphics, source_image_path);
-	tileset_sprite_ = tileset_sprite;
+	tileset_sprite_ = new Sprite(graphics, source_image_path);
 
 	// TODO 6-7-21: Iterate through tile nodes to create Tile objects and store them in the tileset's Tiles table
 	// Properties to extract from each node include collision type, hitbox, animation, etc.
@@ -85,14 +85,14 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 		/* Storing the tile */
 		if (tile_collision != Tile::COLLISION_TYPE::NONE || tile_sprite != nullptr) {		// Is the tile worth storing?
 			Tile tile = Tile(tile_id, tile_sprite, tile_collision);
-			tiles_.emplace(tile_id, tile);
+			tiles_[tile_id] = tile;
 		}
 
 		tile_node = tile_node->NextSiblingElement("tile");
 	}
 }
 
-Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int tile_margin, int tile_spacing) {
+Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int tile_margin, int tile_spacing) : Tileset::Tileset() {
 	tileset_sprite_ = tileset_sprite;
 	tile_width_ = tile_width;
 	tile_height_ = tile_height;
@@ -109,7 +109,9 @@ Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int ti
 }
 
 Tileset::~Tileset() {
-	SDL_DestroyTexture(tileset_sprite_->GetTexture());
+	for (TileList::iterator iter = tiles_.begin(); iter != tiles_.end(); ++iter) {
+		delete iter->second.GetSprite();
+	}
 	delete tileset_sprite_;
 }
 
@@ -118,13 +120,17 @@ Sprite* Tileset::GetTilesetSprite() {
 }
 
 Tile Tileset::GetTileFromId(unsigned int tile_id) {
-	std::map<unsigned int, Tile>::iterator iter;
-	iter = tiles_.find(tile_id);
-	if (iter != tiles_.end()) {
-		return iter->second;
-	} else {
+	//std::map<unsigned int, Tile>::iterator iter;
+	//iter = tiles_.find(tile_id);
+	//if (iter != tiles_.end()) {
+	//	return iter->second;
+	//} else {
+	//	return Tile(tile_id);
+	//}
+	if (tiles_.count(tile_id) == 0) {
 		return Tile(tile_id);
 	}
+	return tiles_[tile_id];
 }
 
 void Tileset::Update(int elapsed_time_ms) {
@@ -134,10 +140,8 @@ void Tileset::Update(int elapsed_time_ms) {
 }
 
 int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id) {
-	std::map<unsigned int, Tile>::iterator iter;
-	iter = tiles_.find(tile_id);
-	if (iter != tiles_.end()) {
-		Tile tile = iter->second;
+	if (tiles_.count(tile_id) != 0) {
+		Tile tile = tiles_[tile_id];
 		if (tile.GetSprite() != nullptr) {
 			return tile.Draw(graphics, pos_x, pos_y);
 		}
