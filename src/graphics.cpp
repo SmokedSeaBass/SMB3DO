@@ -121,7 +121,7 @@ int Graphics::WindowToggleFullscreen(Options& options) {
 	return 0;
 }
 
-void Graphics::WindowSetTitle(std::string& subtitle) {
+void Graphics::WindowSetTitle(const std::string& subtitle) {
 	auto title = "SMB3DO - v" + std::string(META_VERSION);
 	SDL_SetWindowTitle(window_main_, (title + " | " + subtitle).c_str());
 }
@@ -157,6 +157,11 @@ void Graphics::UpdateViewport(Options& options) {
 		};
 	}
 	SetViewport(viewport_rect_);
+	// TODO 6-29-21: Set render clipping for optimization
+	/*SDL_Rect render_clip = viewport_rect_;
+	render_clip.w *= viewport_scaler_.first;
+	render_clip.h *= viewport_scaler_.second;
+	SDL_RenderSetClipRect(renderer_main_, &render_clip);*/
 
 	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
 	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
@@ -166,7 +171,7 @@ std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, S
 	float x_stretch = ((float)viewport.h * viewport_ratio_.first) / ((float)viewport.w * viewport_ratio_.second);
 	float y_scale = (current_resolution_.second / viewport.h);
 	if (options.forceIntegerScaling) {
-		y_scale = floor(y_scale);
+		y_scale = static_cast<float>(floor(y_scale));
 	}
 	float x_scale = y_scale * x_stretch;
 	return std::pair<float, float>(x_scale, y_scale);
@@ -275,10 +280,26 @@ Uint32 Graphics::GetSurfacePixel(SDL_Surface* surface, int x, int y) {
 	return pixel;
 }
 
-int Graphics::BlitColoredRect(SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
+int Graphics::DrawColoredRect(const SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
 	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
-	SDL_RenderFillRect(renderer_main_, rect);
-	return 0;
+	return SDL_RenderFillRect(renderer_main_, rect);
+}
+
+int Graphics::DrawColoredLine(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
+	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
+	return SDL_RenderDrawLine(renderer_main_, point_1.first, point_1.second, point_2.first, point_2.second);
+}
+
+int Graphics::DrawColoredOutline(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
+	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
+	SDL_Point points[5] = {
+		{point_1.first, point_1.second},
+		{point_2.first, point_1.second},
+		{point_2.first, point_2.second},
+		{point_1.first, point_2.second},
+		{point_1.first, point_1.second}
+	};
+	return SDL_RenderDrawLines(renderer_main_, points, 5);
 }
 
 int Graphics::BlitTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect) {

@@ -22,7 +22,7 @@ public:
 
 	std::pair<unsigned short, unsigned short> GetWindowSize();
 	int WindowToggleFullscreen(Options& options);
-	void WindowSetTitle(std::string& subtitle);
+	void WindowSetTitle(const std::string& subtitle);
 	int SetViewport(SDL_Rect& rect);
 	const SDL_Rect& GetViewport();
 	void UpdateViewport(Options& options);
@@ -38,7 +38,9 @@ public:
 	SDL_Texture* LoadTextureFromImage(const std::string& file_path, Uint32 color_key);
 	SDL_Texture* LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y);
 	Uint32 GetSurfacePixel(SDL_Surface* surface, int x, int y);
-	int BlitColoredRect(SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
+	int DrawColoredRect(const SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
+	int DrawColoredLine(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
+	int DrawColoredOutline(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int BlitTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect);
 	int FlipRenderer();
 
