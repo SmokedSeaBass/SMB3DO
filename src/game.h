@@ -11,7 +11,7 @@
 class Game {
 public:
 	static double fps_limit;
-	static double delta_time;
+	static double fps_ratio;
 
 	Game();
 	~Game();

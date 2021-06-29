@@ -10,11 +10,11 @@
 #include "error.h"
 
 double Game::fps_limit = 0;
-double Game::delta_time = 0;
+double Game::fps_ratio = 0;
 
 Game::Game() {
 	Game::fps_limit = options.fps_limit;
-	Game::delta_time = 60.0 / Game::fps_limit;
+	Game::fps_ratio = 60.0 / Game::fps_limit;
 }
 
 Game::~Game() { }
@@ -31,6 +31,7 @@ int Game::Run() {
 
 	double tick_duration = 0;
 	double tick_wait = 0;
+	double delta_time = 0;
 
 	graphics.UpdateViewport(options);
 	
@@ -82,22 +83,24 @@ int Game::Run() {
 		input.UpdateInputs(keyboard_state);
 		
 		/* Update */
-		mario.Update(input);
-		debug_tileset.Update(tick_duration + tick_wait);
+		delta_time = tick_duration + tick_wait;
 
-		/*std::vector<Tile> colliding_tiles = test_tilemap.GetCollidingTiles(mario.GetColliderAbsoluteRect());
+		mario.Update(input, delta_time, test_tilemap);
+		debug_tileset.Update(delta_time);
+
+		std::vector<Tilemap::CollisionTile> colliding_tiles = test_tilemap.GetCollidingTiles(mario.GetColliderAbsoluteRect());
 		printf("[");
-		for (Tile t : colliding_tiles) {
-			printf("%i ", t.GetCollision());
+		for (Tilemap::CollisionTile t : colliding_tiles) {
+			printf("%i ", t.tile.GetCollision());
 		}
-		printf("]\n");*/
+		printf("]\n");
 
 		/* Draw */
-		// Fill the NES 'screen' with blue color
-		//graphics.BlitColoredRect(nullptr, 0x10, 0x10, 0x40, 0xFF);
 		// Draw tilemap
 		test_tilemap.Draw(graphics, 0, 0);// , { (float)mario.GetColliderAbsoluteRect().x, (float)mario.GetColliderAbsoluteRect().y, (float)mario.GetColliderAbsoluteRect().w, (float)mario.GetColliderAbsoluteRect().h });
-		// Draw objects1
+		// Draw objects
+		/*SDL_Rect block = { ceil((double)16.1), (double)128, ceil((double)16), (double)16 };
+		graphics.BlitColoredRect(&block, 0x10, 0x10, 0x40, 0xFF);*/
 		// Draw player
 		mario.Draw(graphics);
 		// Flip to screen
@@ -106,13 +109,14 @@ int Game::Run() {
 		// Frames-per-second management
 		const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
 		tick_duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_end - tick_start).count();
-		if (Game::fps_limit > 0) tick_wait = 1000.0 / Game::fps_limit - tick_duration;
-		if (tick_wait > 0) SDL_Delay(tick_wait);
+		if (Game::fps_limit > 0)
+			tick_wait = 1000.0 / Game::fps_limit - tick_duration;
+		if (tick_wait > 0)
+			SDL_Delay(static_cast<Uint32>(tick_wait));
 		// Add to window's title
 		char title_buff[48];
 		snprintf(title_buff, sizeof(title_buff), "%.0f/%.2f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration + tick_wait), 1000.0 / tick_duration, tick_duration + tick_wait, tick_duration);
-		std::string subtitle(title_buff);
-		graphics.WindowSetTitle(subtitle);
+		graphics.WindowSetTitle(title_buff);
 	}
 	return 0;
 }
