@@ -133,9 +133,9 @@ Tile Tileset::GetTileFromId(unsigned int tile_id) {
 	return tiles_[tile_id];
 }
 
-void Tileset::Update(int elapsed_time_ms) {
+void Tileset::Update(int delta_time) {
 	for (std::pair<unsigned int, Tile> tile_pair : tiles_) {
-		tile_pair.second.Update(elapsed_time_ms);
+		tile_pair.second.Update(delta_time);
 	}
 }
 
