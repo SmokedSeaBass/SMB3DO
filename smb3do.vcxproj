@@ -65,8 +65,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2_ttf-2.0.15\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\libraries\SDL2_ttf-2.0.15\lib\x86;D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
@@ -74,8 +74,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2_ttf-2.0.15\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Programming\libraries\SDL2_ttf-2.0.15\lib\x86;D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>bin\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
@@ -104,7 +104,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,7 +123,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
