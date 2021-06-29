@@ -72,13 +72,13 @@ void Tilemap::GetDimensions(int dimensions[]) {
 	dimensions[1] = height_;
 }
 
-Tile Tilemap::GetTile(int x, int y) {
+Tile Tilemap::GetTile(int x, int y) const {
 	int tile_id = GetTileId(x, y);
 	Tile tile = tileset_->GetTileFromId(tile_id);
 	return tile;
 }
 
-unsigned int Tilemap::GetTileId(int x, int y) {
+unsigned int Tilemap::GetTileId(int x, int y) const{
 	if (x >= width_ || y >= height_) {
 		//throw std::out_of_range("Attempted to get tile outside of tilemap");
 		return UINT_MAX;
@@ -101,17 +101,20 @@ Tileset* Tilemap::GetTileset() {
 	return tileset_;
 }
 
-std::vector<Tile> Tilemap::GetCollidingTiles(const Rectangle& rect) {
-	std::vector<Tile> colliding_tiles;
+std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& rect) const {
+	std::vector<CollisionTile> colliding_tiles;
 	// TODO 6-21-21: Account for offset tilemap/tilemap position
 	int top_row = static_cast<int>(floor(rect.Top() / TILESIZE_NES));
-	int bottom_row = static_cast<int>(ceil(rect.Bottom() / TILESIZE_NES) - 1);
+	int bottom_row = static_cast<int>(floor(rect.Bottom() / TILESIZE_NES));
 	int left_col = static_cast<int>(floor(rect.Left() / TILESIZE_NES));
-	int right_col = static_cast<int>(ceil(rect.Right() / TILESIZE_NES) - 1);
+	int right_col = static_cast<int>(floor(rect.Right() / TILESIZE_NES));
 	for (int row = top_row; row <= bottom_row; row++) {
 		for (int col = left_col; col <= right_col; col++) {
-			Tile tile = GetTile(row, col);
-			colliding_tiles.push_back(tile);
+			CollisionTile col_tile;
+			col_tile.tile = GetTile(row, col);
+			col_tile.row = row;
+			col_tile.col = col;
+			colliding_tiles.push_back(col_tile);
 		}
 	}
 	return colliding_tiles;

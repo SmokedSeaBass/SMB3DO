@@ -16,19 +16,24 @@
 /// </remarks>
 class Tilemap {
 public:
+	struct CollisionTile {
+		Tile tile;
+		int col, row;
+	};
+
 	Tilemap();
 	Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset);
 	Tilemap(Graphics& graphics, std::string path_to_tmx);
 	~Tilemap();
 
 	void GetDimensions(int dimensions[]);
-	Tile GetTile(int x, int y);
-	unsigned int GetTileId(int x, int y);
+	Tile GetTile(int x, int y) const;
+	unsigned int GetTileId(int x, int y) const;
 	void SetTileId(int x, int y, unsigned int tile_id);
 	void SetTileset(Tileset* tileset);
 	Tileset* GetTileset();
-	std::vector<Tile> GetCollidingTiles(const Rectangle& rect);
-	int Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop = { 0, 0, -1, -1 } );
+	std::vector<CollisionTile> GetCollidingTiles(const Rectangle& rect) const;
+	int Draw(Graphics& graphics, int offset_x = 0, int offset_y = 0, Rectangle crop = { 0, 0, -1, -1 } );
 
 private:
 	Tileset* tileset_;		// TODO 6-5-21: Replace with an array of pointers to support multiple tilesets
