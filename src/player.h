@@ -1,7 +1,10 @@
 #pragma once
 #include "entity.h"
+
 #include <vector>
 #include "input.h"
+#include "rectangle.h"
+#include "tilemap.h"
 
 class Player : public Entity {
 public:
@@ -37,15 +40,24 @@ public:
 		static constexpr double ACCEL_AIR = (double)0x000E / 0x100;
 		static constexpr double SKID_AIR = (double)0x0020 / 0x100;
 	};
+	struct CollisionInfo {
+		bool collided;
+		int row, col;
+	};
 
 	Player(Sprite* sprite, double pos_x = 0, double pos_y = 0);
 	~Player();
 
 	void HandleInputs(Input& input);
-	void Update(Input& input);
+	void Update(Input& input, int elapsed_time_ms, const Tilemap& tilemap);
 	int Draw(Graphics& graphics);
 
-	SDL_Rect GetColliderAbsoluteRect();
+	Rectangle GetColliderAbsoluteRect();
+	Rectangle LeftCollision(double delta) const;
+	Rectangle RightCollision(double delta) const;
+	Rectangle TopCollision(double delta) const;
+	Rectangle BottomCollision(double delta) const;
+	CollisionInfo GetCollisionInfo(const Tilemap& tilemap, const Rectangle& rectangle);
 
 private:
 	/// @brief A vector of the D-pad inputs, ranging from [-1, 1] for each component.
