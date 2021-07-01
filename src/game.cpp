@@ -88,19 +88,20 @@ int Game::Run() {
 		mario.Update(input, delta_time, test_tilemap);
 		debug_tileset.Update(delta_time);
 
-		std::vector<Tilemap::CollisionTile> colliding_tiles = test_tilemap.GetCollidingTiles(mario.GetColliderAbsoluteRect());
+		/*std::vector<Tilemap::CollisionTile> colliding_tiles = test_tilemap.GetCollidingTiles(mario.GetColliderAbsoluteRect());
 		printf("[");
 		for (Tilemap::CollisionTile t : colliding_tiles) {
 			printf("%i ", t.tile.GetCollision());
 		}
-		printf("]\n");
+		printf("]\n");*/
 
 		/* Draw */
 		// Draw tilemap
 		test_tilemap.Draw(graphics, 0, 0);// , { (float)mario.GetColliderAbsoluteRect().x, (float)mario.GetColliderAbsoluteRect().y, (float)mario.GetColliderAbsoluteRect().w, (float)mario.GetColliderAbsoluteRect().h });
 		// Draw objects
-		/*SDL_Rect block = { ceil((double)16.1), (double)128, ceil((double)16), (double)16 };
-		graphics.BlitColoredRect(&block, 0x10, 0x10, 0x40, 0xFF);*/
+		//SDL_Rect block = { (double)16, (double)128, (double)16, (double)16 };
+		//graphics.DrawColoredOutline({block.x, block.y}, {block.x + block.w, block.y + block.h} , 0x10, 0x10, 0x40, 0xFF);
+		//graphics.DrawColoredRect(Rectangle(32.5, 128, 16.5, 16), 0x80, 0x10, 0x10, 0xFF);
 		// Draw player
 		mario.Draw(graphics);
 		// Flip to screen
