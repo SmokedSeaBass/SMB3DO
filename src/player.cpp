@@ -1,13 +1,13 @@
-#include "player.h"
+﻿#include "player.h"
 
 #include <assert.h>
 #include "constants.h"
 #include "error.h"
 #include "game.h"
 
-const Rectangle COLLIDER_X(-5, -13, 10, 9);
-const Rectangle COLLIDER_Y(-4, -14, 8, 13);
-const Rectangle COLLIDER_Y_UP(-1, -14, 2, 13);		// Special collider that's skinnier and causes easier sideways "sliding" 
+const Rectangle COLLIDER_X(-5, -10, 10, 7);
+const Rectangle COLLIDER_Y(-4, -12, 8, 11);
+const Rectangle COLLIDER_Y_UP(-1, -12, 2, 11);		// Special collider that's skinnier and causes easier sideways "sliding" 
 
 Player::Player(Sprite* sprite, double pos_x, double pos_y) {
 	sprite_ = sprite;
@@ -88,10 +88,10 @@ void Player::Update(Input& input, int delta_time, const Tilemap& tilemap) {
 	if (vel_y_ > Physics::VEL_TERM * Game::fps_ratio) vel_y_ = Physics::VEL_TERM * Game::fps_ratio;
 
 	/* Check collisions and make corrections */
-	Error::PrintDebug("X:  " + std::to_string(pos_x_) + ", Y:  " + std::to_string(pos_y_));
-	/*Error::PrintDebug("VX: " + std::to_string(vel_x_) + ", VY: " + std::to_string(vel_y_)); */
-	Error::PrintDebug("XL:  " + std::to_string(pos_x_ + COLLIDER_X.Left()) + ", XR:  " + std::to_string(pos_x_ + COLLIDER_X.Right()));
-	//Error::PrintDebug("YL:  " + std::to_string(pos_x_ + COLLIDER_Y.Left()) + ", YR:  " + std::to_string(pos_x_ + COLLIDER_Y.Right()));
+	//Error::PrintDebug("X:  " + std::to_string(pos_x_) + ", Y:  " + std::to_string(pos_y_));
+	//Error::PrintDebug("VX: " + std::to_string(vel_x_) + ", VY: " + std::to_string(vel_y_));
+	//Error::PrintDebug("XL:  " + std::to_string(pos_x_ + COLLIDER_X.Left()) + ", XR:  " + std::to_string(pos_x_ + COLLIDER_X.Right()));
+	//Error::PrintDebug("YL:  " + std::to_string(TopCollision(0).Left()) + ", YR:  " + std::to_string(TopCollision(0).Right()));
 	double delta_x = vel_x_;
 	double delta_y = vel_y_;
 	if (delta_x >= 0) {
@@ -138,13 +138,13 @@ void Player::Update(Input& input, int delta_time, const Tilemap& tilemap) {
 		// Check for collision in opposite direction
 		info = GetCollisionInfo(tilemap, TopCollision(0));
 		if (info.collided) {
-			pos_y_ = (info.row + 1) * TILESIZE_NES + COLLIDER_Y.Bottom() + COLLIDER_Y.h;
+			pos_y_ = (info.row + 1) * TILESIZE_NES - COLLIDER_Y_UP.Top();
 		}
 	} else {
-		//// React to collision UP
+		// React to collision UP
 		CollisionInfo info = GetCollisionInfo(tilemap, TopCollision(delta_y));
 		if (info.collided) {
-			pos_y_ = (info.row + 1) * TILESIZE_NES - COLLIDER_Y.Bottom() + COLLIDER_Y.h;
+			pos_y_ = (info.row + 1) * TILESIZE_NES - COLLIDER_Y_UP.Top();
 			vel_y_ = 0;
 		} else {
 			pos_y_ += delta_y;
@@ -159,11 +159,16 @@ void Player::Update(Input& input, int delta_time, const Tilemap& tilemap) {
 }
 
 int Player::Draw(Graphics& graphics) {
-	double pos_x = (pos_x_), pos_y = (pos_y_);
+	double pos_x = floor(pos_x_), pos_y = floor(pos_y_);
 	int return_code = sprite_->Draw(graphics, static_cast<int>(pos_x), static_cast<int>(pos_y));
 	if (DEBUG_SHOW_HITBOXES) {
-		graphics.DrawColoredOutline({ COLLIDER_X.Left() + pos_x_, COLLIDER_X.Top() + pos_y_ }, { COLLIDER_X.Right() + pos_x_, COLLIDER_X.Bottom() + pos_y_ }, 0xFF, 0x6B, 0xFA, 0x9F);
-		graphics.DrawColoredOutline({ COLLIDER_Y.Left() + pos_x_, COLLIDER_Y.Top() + pos_y_ }, { COLLIDER_Y.Right() + pos_x_, COLLIDER_Y.Bottom() + pos_y_ }, 0xA6, 0xFF, 0x70, 0x9F);
+		//graphics.DrawColoredOutline({ COLLIDER_X.Left() + pos_x_, COLLIDER_X.Top() + pos_y_ }, { COLLIDER_X.Right() + pos_x_, COLLIDER_X.Bottom() + pos_y_ }, 0xFF, 0x6B, 0xFA, 0x9F);
+		//graphics.DrawColoredOutline({ COLLIDER_Y.Left() + pos_x_, COLLIDER_Y.Top() + pos_y_ }, { COLLIDER_Y.Right() + pos_x_ - 1, COLLIDER_Y.Bottom() + pos_y_ - 1}, 0xA6, 0xFF, 0x70, 0x9F);
+		graphics.DrawColoredRect(RightCollision(0), 0xFF, 0x15, 0x00, 0xAF);
+		graphics.DrawColoredRect(LeftCollision(0), 0xA6, 0xFF, 0x70, 0xAF);
+		graphics.DrawColoredRect(BottomCollision(0), 0x00, 0x4C, 0xFF, 0xAF);
+		graphics.DrawColoredRect(TopCollision(0), 0xFF, 0x6B, 0xFA, 0xAF);
+		//graphics.DrawColoredRect(Rectangle( pos_x_ + COLLIDER_Y.x, pos_y_ + COLLIDER_Y.y, COLLIDER_Y.w, COLLIDER_Y.h ), 0x00, 0x4C, 0xFF, 0xAF);
 	}
 	return return_code;
 }
@@ -181,10 +186,10 @@ Rectangle Player::GetColliderAbsoluteRect() {
 Rectangle Player::LeftCollision(double delta) const {
 	assert(delta <= 0);
 	Rectangle delta_rect(
-		(pos_x_ + COLLIDER_X.Left() + delta),
-		(pos_y_ + COLLIDER_X.Top()),
-		(COLLIDER_X.w / 2.0 - delta),
-		(COLLIDER_X.h)
+		floor(pos_x_) + COLLIDER_X.Left() + delta,
+		floor(pos_y_) + COLLIDER_X.Top(),
+		COLLIDER_X.w / 2.0 - delta,
+		COLLIDER_X.h
 	);
 	return delta_rect;
 }
@@ -192,9 +197,9 @@ Rectangle Player::LeftCollision(double delta) const {
 Rectangle Player::RightCollision(double delta) const {
 	assert(delta >= 0);
 	Rectangle delta_rect(
-		pos_x_ + COLLIDER_X.Left() + COLLIDER_X.w / 2,
-		pos_y_ + COLLIDER_X.Top(),
-		COLLIDER_X.w / 2 + delta,
+		floor(pos_x_) + COLLIDER_X.Left() + COLLIDER_X.w / 2.0,
+		floor(pos_y_) + COLLIDER_X.Top(),
+		COLLIDER_X.w / 2.0 + delta,
 		COLLIDER_X.h
 	);
 	return delta_rect;
@@ -203,10 +208,10 @@ Rectangle Player::RightCollision(double delta) const {
 Rectangle Player::TopCollision(double delta) const {
 	assert(delta <= 0);
 	Rectangle delta_rect(
-		(pos_x_ + COLLIDER_Y.Left()),
-		(pos_y_ + COLLIDER_Y.Top()),
-		(COLLIDER_Y.w),
-		(COLLIDER_Y.h / 2 - delta)
+		floor(pos_x_) + COLLIDER_Y_UP.Left(),
+		floor(pos_y_) + COLLIDER_Y_UP.Top() + delta,
+		COLLIDER_Y_UP.w,
+		COLLIDER_Y_UP.h / 2.0 - delta
 	);
 	return delta_rect;
 }
@@ -214,10 +219,10 @@ Rectangle Player::TopCollision(double delta) const {
 Rectangle Player::BottomCollision(double delta) const {
 	assert(delta >= 0);
 	Rectangle delta_rect(
-		(pos_x_ + COLLIDER_Y.Left()),
-		(pos_y_ + COLLIDER_Y.Top() + COLLIDER_Y.h / 2),
-		(COLLIDER_Y.w),
-		(COLLIDER_Y.h / 2 + delta)
+		floor(pos_x_) + COLLIDER_Y.Left(),
+		floor(pos_y_) + COLLIDER_Y.Top() + COLLIDER_Y.h / 2.0,
+		COLLIDER_Y.w,
+		COLLIDER_Y.h / 2.0 + delta
 	);
 	return delta_rect;
 }
