@@ -105,9 +105,9 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 	std::vector<CollisionTile> colliding_tiles;
 	// TODO 6-21-21: Account for offset tilemap/tilemap position
 	int top_row = static_cast<int>(floor(rect.Top() / TILESIZE_NES));
-	int bottom_row = static_cast<int>(floor(rect.Bottom() / TILESIZE_NES));
+	int bottom_row = static_cast<int>(ceil(rect.Bottom() / TILESIZE_NES) - 1);
 	int left_col = static_cast<int>(floor(rect.Left() / TILESIZE_NES));
-	int right_col = static_cast<int>(floor(rect.Right() / TILESIZE_NES));
+	int right_col = static_cast<int>(ceil(rect.Right() / TILESIZE_NES) - 1);
 	for (int row = top_row; row <= bottom_row; row++) {
 		for (int col = left_col; col <= right_col; col++) {
 			CollisionTile col_tile;
@@ -126,9 +126,9 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 
 	unsigned int tile_id = 0;
 	int top_row = std::max(static_cast<int>(floor(crop.Top() / TILESIZE_NES)), 0);
-	int bottom_row = std::min(static_cast<int>(ceil(crop.Bottom() / TILESIZE_NES) - 1), static_cast<int>(height_) + 1);
+	int bottom_row = std::min(static_cast<int>(floor(crop.Bottom() / TILESIZE_NES)), static_cast<int>(height_) + 1);
 	int left_col = std::max(static_cast<int>(floor(crop.Left() / TILESIZE_NES)), 0);
-	int right_col = std::min(static_cast<int>(ceil(crop.Right() / TILESIZE_NES) - 1), static_cast<int>(width_) + 1);
+	int right_col = std::min(static_cast<int>(floor(crop.Right() / TILESIZE_NES)), static_cast<int>(width_) + 1);
 	for (int y = top_row; y <= bottom_row; y++) {
 		for (int x = left_col; x <= right_col; x++) {
 			tile_id = tilemap_[y][x];
