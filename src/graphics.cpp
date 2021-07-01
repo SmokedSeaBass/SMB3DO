@@ -285,6 +285,18 @@ int Graphics::DrawColoredRect(const SDL_Rect* rect, Uint8 red, Uint8 green, Uint
 	return SDL_RenderFillRect(renderer_main_, rect);
 }
 
+int Graphics::DrawColoredRect(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
+	int x = static_cast<int>(floor(rect.x));
+	int y = static_cast<int>(floor(rect.y));
+	int w = static_cast<int>(ceil(rect.x + rect.w)) - x;
+	int h = static_cast<int>(ceil(rect.y + rect.h)) - y;
+	SDL_Rect sdl_rect = {
+		x, y, w, h
+	};
+	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
+	return SDL_RenderFillRect(renderer_main_, &sdl_rect);
+}
+
 int Graphics::DrawColoredLine(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
 	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
 	return SDL_RenderDrawLine(renderer_main_, point_1.first, point_1.second, point_2.first, point_2.second);
@@ -298,6 +310,17 @@ int Graphics::DrawColoredOutline(const std::pair<int, int>& point_1, const std::
 		{point_2.first, point_2.second},
 		{point_1.first, point_2.second},
 		{point_1.first, point_1.second}
+	};
+	return SDL_RenderDrawLines(renderer_main_, points, 5);
+}
+int Graphics::DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
+	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
+	SDL_Point points[5] = {
+		{rect.Left(), rect.Top()},
+		{rect.Right() - 1, rect.Top()},
+		{rect.Right() - 1, rect.Bottom() - 1},
+		{rect.Left(), rect.Bottom() - 1},
+		{rect.Left(), rect.Top()}
 	};
 	return SDL_RenderDrawLines(renderer_main_, points, 5);
 }

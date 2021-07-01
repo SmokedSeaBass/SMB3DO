@@ -9,8 +9,9 @@
 #endif
 #include <map>
 #include <string>
-#include "options.h"
 #include "constants.h"
+#include "options.h"
+#include "rectangle.h"
 
 /// @brief Handles rendering of objects, window/resolution changes and properties, and framerate.
 class Graphics {
@@ -39,8 +40,10 @@ public:
 	SDL_Texture* LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y);
 	Uint32 GetSurfacePixel(SDL_Surface* surface, int x, int y);
 	int DrawColoredRect(const SDL_Rect* rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
+	int DrawColoredRect(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int DrawColoredLine(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int DrawColoredOutline(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
+	int DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int BlitTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect);
 	int FlipRenderer();
 
