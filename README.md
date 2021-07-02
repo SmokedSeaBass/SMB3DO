@@ -22,7 +22,9 @@ This project is written in C++14 and runs on the SDL2 framework.
 
 ### Coming Soon
 * [ ] Basic camera
+* [ ] Animated Mario
 * [ ] Hitbox visualization toggle
+* [ ] On-screen debug info
 
 ### Long-Term Plans:
 * Implement all features of the original SMB3
@@ -47,7 +49,12 @@ Download the `.zip` file for the latest relase in the Releases tab.  Unzip to a 
 * [F11] - Toggle fullscreen/windowed mode
 
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Building From Source <img src="docs/smb3do_bullet.png" width="32px"/>
-The Visual Studio solution file `smb3do.sln` is included for your convenience; after cloning the repository, you should be able to open the file and easily build from within Microsoft Visual Studio.  However, you'll need to first download and install [Simple Directmedia Layer 2.0](https://www.libsdl.org/).  Installation instructions can be found here: [Lazy Foo' Productions - Hello SDL](https://lazyfoo.net/tutorials/SDL/01_hello_SDL/index.php).  Remember to change the project's include directories according to your SDL2 install location.
+The Visual Studio solution file `smb3do.sln` is included for your convenience.  However, there is a small amount of setup required:
+1. Download and install [Visual Studio Community](https://visualstudio.microsoft.com/free-developer-offers/).
+2. Download and install [Simple Directmedia Layer 2.0](https://www.libsdl.org/download-2.0.php) for **Visual C++ on Windows**.
+3. Download/clone this repository to a location of your choice.
+4. Open `smb3do.sln` from the root of the repository in Visual Studio. Follow the instructions here: [Lazy Foo' Productions - Hello SDL](https://lazyfoo.net/tutorials/SDL/01_hello_SDL/index.php) to properly link the SDL2 libraries to the project.
+5. Build and run!
 
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Dependencies and Utilities <img src="docs/smb3do_bullet.png" width="32px"/>
 * [Simple Directmedia Layer 2.0](https://www.libsdl.org/) (v2.0.14)
@@ -56,6 +63,6 @@ The Visual Studio solution file `smb3do.sln` is included for your convenience; a
 
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Credits <img src="docs/smb3do_bullet.png" width="32px"/>
 * SmokedSeaBass - Programmer/Designer
-* Nintendo - Original author of Super Mario Bros. 3
 * Jdaster64 - SMB3 physics breakdown
 * Southbird - SMB3 disassembly
+* Nintendo - Developer/Publisher of Super Mario Bros. 3
