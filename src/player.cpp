@@ -180,7 +180,7 @@ int Player::Draw(Graphics& graphics) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
 	int return_code = sprite_->Draw(graphics, static_cast<int>(pos_x), static_cast<int>(pos_y), flip);
-	if (DEBUG_SHOW_HITBOXES) {
+	if (Game::debug_show_hitboxes) {
 		graphics.DrawColoredRect({ pos_x - 8, pos_y - 16, 16, 16 }, 0x00, 0x00, 0x00, 0x40);
 		graphics.DrawColoredRect(RightCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);
 		graphics.DrawColoredRect(LeftCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);

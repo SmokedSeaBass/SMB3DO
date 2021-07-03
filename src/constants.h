@@ -23,7 +23,6 @@
 
 /* Debugging */
 constexpr bool META_DEBUG = true;
-constexpr bool DEBUG_SHOW_HITBOXES = true;
 constexpr char* META_VERSION = "0.2.0";
 
 /* Render window attributes */

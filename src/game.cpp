@@ -13,16 +13,21 @@ double Game::fps_limit = 0;
 double Game::fps_ratio = 0;
 float Game::time_multiplier = 0;
 
+bool Game::debug_show_hitboxes = false;
+
 Game::Game() {
-	Game::fps_limit = options.fps_limit;
+	Game::fps_limit = options_.fps_limit;
 	Game::fps_ratio = 60.0 / Game::fps_limit;		// TODO: Replace uses with proper delta_time math
 	Game::time_multiplier = 1;
+	if (META_DEBUG) {
+		Game::debug_show_hitboxes = true;
+	}
 }
 
 Game::~Game() { }
 
 int Game::Run() {
-	if (graphics.Initialize(options) < 0) {
+	if (graphics_.Initialize(options_) < 0) {
 		Error::PrintError(std::runtime_error("Could not initialize graphics"));
 		return -1;
 	}
@@ -35,17 +40,17 @@ int Game::Run() {
 	double tick_wait = 0;
 	double delta_time = 0;
 
-	graphics.UpdateViewport(options);
+	graphics_.UpdateViewport(options_);
 	
 	// Test creation code
 	// Mario
-	Sprite mario_spr = Sprite(graphics, "assets/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, static_cast<int>(round(TILESIZE_NES)), static_cast<int>(round(TILESIZE_NES)));
+	Sprite mario_spr = Sprite(graphics_, "assets/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, static_cast<int>(round(TILESIZE_NES)), static_cast<int>(round(TILESIZE_NES)));
 	mario_spr.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
 	Player mario = Player(&mario_spr, 32.0, 32.0);
 	// Tileset
-	Tileset debug_tileset = Tileset(graphics, "assets/tilesets/debug.tsx");
+	Tileset debug_tileset = Tileset(graphics_, "assets/tilesets/debug.tsx");
 	// Tilemap
-	Tilemap test_tilemap = Tilemap(graphics, "assets/maps/test.tmx");
+	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test.tmx");
 	test_tilemap.SetTileset(&debug_tileset);
 	
 	// Main game loop
@@ -59,26 +64,28 @@ int Game::Run() {
 			if (event.type == SDL_KEYDOWN) {
 				if (event.key.keysym.scancode == SDL_SCANCODE_END) return -1;		// Force crash
 				if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quitGame = true;
-				if (event.key.keysym.scancode == SDL_SCANCODE_F11 && !event.key.repeat) graphics.WindowToggleFullscreen(options);
+				if (event.key.keysym.scancode == SDL_SCANCODE_F11 && !event.key.repeat) graphics_.WindowToggleFullscreen(options_);
 				if (event.key.keysym.scancode == SDL_SCANCODE_P && !event.key.repeat) {
-					options.TogglePixelRatio();
-					graphics.UpdateViewport(options);
+					options_.TogglePixelRatio();
+					graphics_.UpdateViewport(options_);
 				};
-				// TODO 6-21-21: Fix widescreen
 				if (event.key.keysym.scancode == SDL_SCANCODE_O && !event.key.repeat) {
-					options.enable_widescreen = !options.enable_widescreen;
-					options.forceIntegerScaling = false;
-					graphics.UpdateViewport(options);
+					options_.enable_widescreen = !options_.enable_widescreen;
+					options_.forceIntegerScaling = false;
+					graphics_.UpdateViewport(options_);
 				};
 				if (event.key.keysym.scancode == SDL_SCANCODE_I && !event.key.repeat) {
-					options.forceIntegerScaling = !options.forceIntegerScaling;
-					options.enable_widescreen = false;
-					graphics.UpdateViewport(options);
+					options_.forceIntegerScaling = !options_.forceIntegerScaling;
+					options_.enable_widescreen = false;
+					graphics_.UpdateViewport(options_);
+				};
+				if (event.key.keysym.scancode == SDL_SCANCODE_H && !event.key.repeat) {
+					Game::debug_show_hitboxes = !Game::debug_show_hitboxes;
 				};
 			}
 			if (event.type == SDL_WINDOWEVENT) {
 				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-					graphics.UpdateViewport(options);
+					graphics_.UpdateViewport(options_);
 				}
 			}
 		}
@@ -97,15 +104,15 @@ int Game::Run() {
 
 		/* Draw */
 		// Draw tilemap
-		test_tilemap.Draw(graphics, 0, 0);// , { (float)mario.GetColliderAbsoluteRect().x, (float)mario.GetColliderAbsoluteRect().y, (float)mario.GetColliderAbsoluteRect().w, (float)mario.GetColliderAbsoluteRect().h });
+		test_tilemap.Draw(graphics_, 0, 0);// , { (float)mario.GetColliderAbsoluteRect().x, (float)mario.GetColliderAbsoluteRect().y, (float)mario.GetColliderAbsoluteRect().w, (float)mario.GetColliderAbsoluteRect().h });
 		// Draw objects
 		//SDL_Rect block = { (double)16, (double)128, (double)16, (double)16 };
 		//graphics.DrawColoredOutline({block.x, block.y}, {block.x + block.w, block.y + block.h} , 0x10, 0x10, 0x40, 0xFF);
-		//graphics.DrawColoredRect(Rectangle(32.5, 128, 16.5, 16), 0x80, 0x10, 0x10, 0xFF);
+		//graphics.DrawColoredOutline(Rectangle(32.5, 128, 16, 16), 0x80, 0x10, 0x10, 0xFF);
 		// Draw player
-		mario.Draw(graphics);
+		mario.Draw(graphics_);
 		// Flip to screen
-		graphics.FlipRenderer();
+		graphics_.FlipRenderer();
 
 		// Frames-per-second management
 		const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
@@ -118,7 +125,7 @@ int Game::Run() {
 		// Add to window's title
 		char title_buff[48];
 		snprintf(title_buff, sizeof(title_buff), "%.2f/%.0f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration), Game::fps_limit, tick_duration, 1000.0 / Game::fps_limit);
-		graphics.WindowSetTitle(title_buff);
+		graphics_.WindowSetTitle(title_buff);
 	}
 	return 0;
 }

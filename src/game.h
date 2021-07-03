@@ -14,6 +14,8 @@ public:
 	static double fps_ratio;
 	static float time_multiplier;
 
+	static bool debug_show_hitboxes;
+
 	Game();
 	~Game();
 
@@ -24,6 +26,6 @@ public:
 	int Run();
 
 private:
-	Options options;
-	Graphics graphics;
+	Options options_;
+	Graphics graphics_;
 };
