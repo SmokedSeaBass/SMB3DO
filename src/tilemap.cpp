@@ -83,14 +83,14 @@ unsigned int Tilemap::GetTileId(int x, int y) const{
 		//throw std::out_of_range("Attempted to get tile outside of tilemap");
 		return UINT_MAX;
 	}
-	return tilemap_[x][y];
+	return tilemap_[y][x];
 }
 
 void Tilemap::SetTileId(int x, int y, unsigned int tile_id) {
 	if (x >= width_ || y >= height_) {
 		throw std::out_of_range("Attempted to set tile outside of tilemap");
 	}
-	tilemap_[x][y] = tile_id;
+	tilemap_[y][x] = tile_id;
 }
 
 void Tilemap::SetTileset(Tileset* tileset) {
@@ -108,12 +108,12 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 	int bottom_row = static_cast<int>(ceil(rect.Bottom() / TILESIZE_NES) - 1);
 	int left_col = static_cast<int>(floor(rect.Left() / TILESIZE_NES));
 	int right_col = static_cast<int>(ceil(rect.Right() / TILESIZE_NES) - 1);
-	for (int row = top_row; row <= bottom_row; row++) {
-		for (int col = left_col; col <= right_col; col++) {
+	for (int y = top_row; y <= bottom_row; y++) {
+		for (int x = left_col; x <= right_col; x++) {
 			CollisionTile col_tile;
-			col_tile.tile = GetTile(row, col);
-			col_tile.row = row;
-			col_tile.col = col;
+			col_tile.tile = GetTile(x, y);
+			col_tile.row = y;
+			col_tile.col = x;
 			colliding_tiles.push_back(col_tile);
 		}
 	}
@@ -131,7 +131,7 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 	int right_col = std::min(static_cast<int>(floor(crop.Right() / TILESIZE_NES)), static_cast<int>(width_) + 1);
 	for (int y = top_row; y <= bottom_row; y++) {
 		for (int x = left_col; x <= right_col; x++) {
-			tile_id = tilemap_[y][x];
+			tile_id = GetTileId(x, y);
 			if (tile_id == UINT_MAX) {
 				continue;
 			}
