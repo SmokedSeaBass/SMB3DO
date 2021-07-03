@@ -21,16 +21,24 @@ Player::Player(Sprite* sprite, double pos_x, double pos_y) {
 	aerial_speed_cap_ = Physics::MAX_SPEED_RUN;
 	status_ = 0;
 	dpad_vector_ = { 0, 0 };
+	dir_facing_ = 1;
 }
 
 Player::~Player() { }
 
 void Player::HandleInputs(const Input& input) {
 	dpad_vector_ = { 0, 0 };
-	if (input.IsButtonDown(Input::Button::P1_RIGHT)) dpad_vector_[0] += 1;
-	if (input.IsButtonDown(Input::Button::P1_UP)) dpad_vector_[1] += -1;
-	if (input.IsButtonDown(Input::Button::P1_LEFT)) dpad_vector_[0] += -1;
-	if (input.IsButtonDown(Input::Button::P1_DOWN)) dpad_vector_[1] += 1;
+	if (input.IsButtonDown(Input::Button::P1_RIGHT))
+		dpad_vector_[0] += 1;
+	if (input.IsButtonDown(Input::Button::P1_UP))
+		dpad_vector_[1] += -1;
+	if (input.IsButtonDown(Input::Button::P1_LEFT))
+		dpad_vector_[0] += -1;
+	if (input.IsButtonDown(Input::Button::P1_DOWN))
+		dpad_vector_[1] += 1;
+	
+	if (dpad_vector_[0] != 0)
+		dir_facing_ = dpad_vector_[0];
 }
 
 void Player::Update(const Input& input, double delta_time, const Tilemap& tilemap) {
@@ -61,7 +69,7 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 			double ground_speed_cap = Physics::MAX_SPEED_WALK * Game::fps_ratio;
 			if (input.IsButtonDown(Input::Button::P1_B)) ground_speed_cap = Physics::MAX_SPEED_RUN * Game::fps_ratio;
 			if (abs(vel_x_) > ground_speed_cap) {									// Ground x-speed limit
-				vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowing down if cap is exceeded
+vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowing down if cap is exceeded
 			}
 		}
 		// Set air speed cap based on acheived ground speed
@@ -70,14 +78,14 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 		//else aerial_speed_cap_ = Physics::MAX_SPEED_RUN * Game::fps_ratio;
 		aerial_speed_cap_ = Physics::MAX_SPEED_RUN * Game::fps_ratio;
 	} else {																	// Mid-air physics
-		if (dpad_vector_[0] == -sgn(vel_x_)) {										// Mid-air skidding
-			vel_x_ += dpad_vector_[0] * Physics::SKID_AIR * Game::fps_ratio * Game::fps_ratio;
-		} else {																	// Mid-air accelerating/neutral
-			vel_x_ += dpad_vector_[0] * Physics::ACCEL_AIR * Game::fps_ratio * Game::fps_ratio;
-		}
-		if (abs(vel_x_) > aerial_speed_cap_) {
-			vel_x_ -= Physics::SKID_AIR * Game::fps_ratio * sgn(vel_x_);								// Mid-air x-speed limit (forced deceleration)
-		}
+	if (dpad_vector_[0] == -sgn(vel_x_)) {										// Mid-air skidding
+		vel_x_ += dpad_vector_[0] * Physics::SKID_AIR * Game::fps_ratio * Game::fps_ratio;
+	} else {																	// Mid-air accelerating/neutral
+		vel_x_ += dpad_vector_[0] * Physics::ACCEL_AIR * Game::fps_ratio * Game::fps_ratio;
+	}
+	if (abs(vel_x_) > aerial_speed_cap_) {
+		vel_x_ -= Physics::SKID_AIR * Game::fps_ratio * sgn(vel_x_);								// Mid-air x-speed limit (forced deceleration)
+	}
 	}
 
 	// Gravity
@@ -161,8 +169,17 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 }
 
 int Player::Draw(Graphics& graphics) {
+	if (status_ & (unsigned char)Status::GROUNDED) {
+		sprite_->SetSourceRect(215, 88, 16, 16);
+	} else {
+		sprite_->SetSourceRect(335, 89, 16, 16);
+	}
 	double pos_x = floor(pos_x_), pos_y = floor(pos_y_);
-	int return_code = sprite_->Draw(graphics, static_cast<int>(pos_x), static_cast<int>(pos_y));
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	if (dir_facing_ == -1) {
+		flip = SDL_FLIP_HORIZONTAL;
+	}
+	int return_code = sprite_->Draw(graphics, static_cast<int>(pos_x), static_cast<int>(pos_y), flip);
 	if (DEBUG_SHOW_HITBOXES) {
 		graphics.DrawColoredRect({ pos_x - 8, pos_y - 16, 16, 16 }, 0x00, 0x00, 0x00, 0x40);
 		graphics.DrawColoredRect(RightCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);
