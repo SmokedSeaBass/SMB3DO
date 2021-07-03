@@ -46,12 +46,12 @@ public:
 	);
 	~AnimatedSprite();
 
-	void Update(int elapsed_time_ms);
+	void Update(double delta_time);
 
 private:
-	const int frame_time_;		// Time (in ms) per animation frame
+	const double frame_time_;		// Time (in ms) per animation frame
 	const int frame_count_;		// Number of total frames in the animation
 	const int frame_gap_;		// Pixel gap between each frame of animation
 	int current_frame_;			// Current frame in the animation
-	int current_frame_time_;	// Time (in ms) elapsed for this current animation frame
+	double current_frame_time_;	// Time (in ms) elapsed for this current animation frame
 };

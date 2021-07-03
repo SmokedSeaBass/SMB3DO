@@ -17,7 +17,7 @@ AnimatedSprite::AnimatedSprite(
 		int source_w, int source_h,
 		double frame_speed, int frame_count, int frame_gap) :
 	Sprite(graphics, file_path, alpha_x, alpha_y, source_x, source_y, source_w, source_h),
-	frame_time_(static_cast<int>(round(1000.0 / frame_speed))),
+	frame_time_(round(1000.0 / frame_speed)),
 	frame_count_(frame_count),
 	frame_gap_(frame_gap),
 	current_frame_(0),
@@ -31,7 +31,7 @@ AnimatedSprite::AnimatedSprite(
 		int source_w, int source_h,
 		double frame_speed, int frame_count, int frame_gap) :
 	Sprite(graphics, texture, source_x, source_y, source_w, source_h),
-	frame_time_(static_cast<int>(round(1000.0 / frame_speed))),
+	frame_time_(round(1000.0 / frame_speed)),
 	frame_count_(frame_count),
 	frame_gap_(frame_gap),
 	current_frame_(0),
@@ -40,8 +40,8 @@ AnimatedSprite::AnimatedSprite(
 
 AnimatedSprite::~AnimatedSprite() { }
 
-void AnimatedSprite::Update(int elapsed_time_ms) {
-	current_frame_time_ += elapsed_time_ms;
+void AnimatedSprite::Update(double delta_time) {
+	current_frame_time_ += delta_time;
 	if (current_frame_time_ > frame_time_) {
 		current_frame_time_ -= frame_time_;
 		if (current_frame_ < frame_count_ - 1) {

@@ -30,9 +30,9 @@ Tile::COLLISION_TYPE Tile::GetCollision() {
 	return collision_;
 }
 
-void Tile::Update(int elapsed_time_ms) {
+void Tile::Update(double delta_time) {
 	if (sprite_ != nullptr) {
-		sprite_->Update(elapsed_time_ms);
+		sprite_->Update(delta_time);
 	}
 }
 

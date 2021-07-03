@@ -22,7 +22,7 @@ public:
 	const AnimatedSprite* GetSprite();
 	COLLISION_TYPE GetCollision();
 
-	void Update(int elapsed_time_ms);
+	void Update(double delta_time);
 	int Draw(Graphics& graphics, int pos_x, int pos_y);
 
 private:
