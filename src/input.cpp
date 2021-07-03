@@ -32,24 +32,24 @@ void Input::UpdateInputs(const Uint8* keyboard_state) {
 		input_map_[Button::P1_START] = keyboard_state[SDL_SCANCODE_RETURN];
 		input_map_[Button::P1_SELECT] = keyboard_state[SDL_SCANCODE_SPACE];
 	} else if (input_mode_ == Mode::CONTROLLER) {
-
+		// TODO
 	}
 }
 
-bool Input::IsButtonPressed(Button button) {
-	if (input_map_[button] && !input_map_prev_[button]) return true;
+bool Input::IsButtonPressed(const Button& button) const {
+	if (input_map_.find(button)->second && !input_map_prev_.find(button)->second) return true;
 	return false;
 }
 
-bool Input::IsButtonDown(Button button) {
-	return input_map_[button];
+bool Input::IsButtonDown(const Button& button) const {
+	return input_map_.find(button)->second;
 }
 
-bool Input::IsButtonReleased(Button button) {
-	if (!input_map_[button] && input_map_prev_[button]) return true;
+bool Input::IsButtonReleased(const Button& button) const {
+	if (!input_map_.find(button)->second && input_map_prev_.find(button)->second) return true;
 	return false;
 }
 
-bool Input::IsButtonUp(Button button) {
-	return !input_map_[button];
+bool Input::IsButtonUp(const Button& button) const {
+	return !input_map_.find(button)->second;
 }

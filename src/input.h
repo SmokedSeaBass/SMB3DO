@@ -27,10 +27,10 @@ public:
 	~Input();
 
 	void UpdateInputs(const Uint8* keyboard_state);
-	bool IsButtonPressed(Button button);  // Only true on the frame a button was pressed
-	bool IsButtonDown(Button button);
-	bool IsButtonReleased(Button button);  // Only true on the frame a button was released
-	bool IsButtonUp(Button button);
+	bool IsButtonPressed(const Button& button) const;  // Only true on the frame a button was pressed
+	bool IsButtonDown(const Button& button) const;
+	bool IsButtonReleased(const Button& button) const;  // Only true on the frame a button was released
+	bool IsButtonUp(const Button& button) const;
 
 private:
 	Mode input_mode_;
