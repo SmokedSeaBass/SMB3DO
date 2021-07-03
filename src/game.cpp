@@ -11,10 +11,12 @@
 
 double Game::fps_limit = 0;
 double Game::fps_ratio = 0;
+float Game::time_multiplier = 0;
 
 Game::Game() {
 	Game::fps_limit = options.fps_limit;
-	Game::fps_ratio = 60.0 / Game::fps_limit;
+	Game::fps_ratio = 60.0 / Game::fps_limit;		// TODO: Replace uses with proper delta_time math
+	Game::time_multiplier = 1;
 }
 
 Game::~Game() { }
@@ -83,8 +85,6 @@ int Game::Run() {
 		input.UpdateInputs(keyboard_state);
 		
 		/* Update */
-		delta_time = tick_duration + tick_wait;
-
 		mario.Update(input, delta_time, test_tilemap);
 		debug_tileset.Update(delta_time);
 
@@ -111,12 +111,13 @@ int Game::Run() {
 		const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
 		tick_duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_end - tick_start).count();
 		if (Game::fps_limit > 0)
-			tick_wait = 1000.0 / Game::fps_limit - tick_duration;
+			tick_wait =  (1000.0 / (Game::fps_limit * Game::time_multiplier))  - tick_duration;
+		delta_time = tick_duration + std::max(tick_wait, 0.0);
 		if (tick_wait > 0)
 			SDL_Delay(static_cast<Uint32>(tick_wait));
 		// Add to window's title
 		char title_buff[48];
-		snprintf(title_buff, sizeof(title_buff), "%.0f/%.2f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration + tick_wait), 1000.0 / tick_duration, tick_duration + tick_wait, tick_duration);
+		snprintf(title_buff, sizeof(title_buff), "%.2f/%.0f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration), Game::fps_limit, tick_duration, 1000.0 / Game::fps_limit);
 		graphics.WindowSetTitle(title_buff);
 	}
 	return 0;

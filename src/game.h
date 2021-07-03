@@ -12,6 +12,7 @@ class Game {
 public:
 	static double fps_limit;
 	static double fps_ratio;
+	static float time_multiplier;
 
 	Game();
 	~Game();
