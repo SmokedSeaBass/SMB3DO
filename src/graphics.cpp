@@ -316,17 +316,17 @@ int Graphics::DrawColoredOutline(const std::pair<int, int>& point_1, const std::
 int Graphics::DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
 	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
 	SDL_Point points[5] = {
-		{rect.Left(), rect.Top()},
-		{rect.Right() - 1, rect.Top()},
-		{rect.Right() - 1, rect.Bottom() - 1},
-		{rect.Left(), rect.Bottom() - 1},
-		{rect.Left(), rect.Top()}
+		{static_cast<int>(floor(rect.Left())), static_cast<int>(floor(rect.Top()))},
+		{static_cast<int>(ceil(rect.Right())) - 1, static_cast<int>(floor(rect.Top()))},
+		{static_cast<int>(ceil(rect.Right())) - 1, static_cast<int>(ceil(rect.Bottom())) - 1},
+		{static_cast<int>(floor(rect.Left())), static_cast<int>(ceil(rect.Bottom())) - 1},
+		{static_cast<int>(floor(rect.Left())), static_cast<int>(floor(rect.Top()))}
 	};
 	return SDL_RenderDrawLines(renderer_main_, points, 5);
 }
 
-int Graphics::BlitTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect) {
-	return SDL_RenderCopy(renderer_main_, texture, source_rect, dest_rect);
+int Graphics::DrawTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect, const SDL_RendererFlip flip) {
+	return SDL_RenderCopyEx(renderer_main_, texture, source_rect, dest_rect, 0.0, NULL, flip);
 }
 
 int Graphics::FlipRenderer() {

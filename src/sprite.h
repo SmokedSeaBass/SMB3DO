@@ -51,19 +51,19 @@ public:
 	);
 	~Sprite();
 
-	SDL_Rect GetRect();
-	void SetRect(SDL_Rect& rect);
-	void SetRect(int rect_x, int rect_y, int rect_w, int rect_h);
+	SDL_Rect GetSourceRect() const;
+	void SetSourceRect(SDL_Rect& rect);
+	void SetSourceRect(int rect_x, int rect_y, int rect_w, int rect_h);
 
 	void SetOrigin(int x, int y);
 	void SetOrigin(ORIGIN_ORIENTATION origin_orientation);
 
-	SDL_Texture* GetTexture();
-	int GetTextureHeight();
-	int GetTextureWidth();
+	SDL_Texture* GetTexture() const;
+	int GetTextureHeight() const;
+	int GetTextureWidth() const;
 
-	int Draw(Graphics& graphics, int pos_x, int pos_y);
-	int Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect);  // Does NOT modify source_rect_ member
+	int Draw(Graphics& graphics, int pos_x, int pos_y, const SDL_RendererFlip flip = SDL_FLIP_NONE) const;
+	int Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect, const SDL_RendererFlip flip = SDL_FLIP_NONE) const;
 
 protected:
 	SDL_Rect source_rect_;

@@ -139,7 +139,7 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 				tileset_->Draw(graphics, x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, tile_id);
 			} else {
 				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, TILESIZE_NES , TILESIZE_NES };
-				graphics.BlitTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
+				graphics.DrawTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
 			}
 		}
 	}

@@ -28,18 +28,18 @@ Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int sourc
 
 Sprite::~Sprite() { }
 
-SDL_Rect Sprite::GetRect() {
+SDL_Rect Sprite::GetSourceRect() const {
 	return source_rect_;
 }
 
-void Sprite::SetRect(SDL_Rect& rect) {
+void Sprite::SetSourceRect(SDL_Rect& rect) {
 	source_rect_.x = rect.x;
 	source_rect_.y = rect.y;
 	source_rect_.w = rect.w;
 	source_rect_.h = rect.h;
 }
 
-void Sprite::SetRect(int rect_x, int rect_y, int rect_w, int rect_h) {
+void Sprite::SetSourceRect(int rect_x, int rect_y, int rect_w, int rect_h) {
 	source_rect_.x = rect_x;
 	source_rect_.y = rect_y;
 	source_rect_.w = rect_w;
@@ -82,23 +82,23 @@ void Sprite::SetOrigin(Sprite::ORIGIN_ORIENTATION origin_orientation) {
 	}
 }
 
-SDL_Texture* Sprite::GetTexture() {
+SDL_Texture* Sprite::GetTexture() const {
 	return texture_;
 }
 
-int Sprite::GetTextureHeight() {
+int Sprite::GetTextureHeight() const {
 	int height;
 	SDL_QueryTexture(texture_, NULL, NULL, NULL, &height);
 	return height;
 }
 
-int Sprite::GetTextureWidth() {
+int Sprite::GetTextureWidth() const {
 	int width;
 	SDL_QueryTexture(texture_, NULL, NULL, &width, NULL);
 	return width;
 }
 
-int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y) {
+int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, const SDL_RendererFlip flip) const {
 	SDL_Rect dest_rect = {
 		static_cast<int>(round(pos_x - origin_x_)),
 		static_cast<int>(round(pos_y - origin_y_)),
@@ -107,12 +107,12 @@ int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y) {
 	};
 	if (texture_ == nullptr) {
 		SDL_Rect default_rect = { 0, 0, 16, 16 };
-		return graphics.BlitTexture(graphics.GetDefaultTexture(), &default_rect, &dest_rect);
+		return graphics.DrawTexture(graphics.GetDefaultTexture(), &default_rect, &dest_rect, flip);
 	}
-	return graphics.BlitTexture(texture_, &source_rect_, &dest_rect);
+	return graphics.DrawTexture(texture_, &source_rect_, &dest_rect, flip);
 }
 
-int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect) {
+int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect, const SDL_RendererFlip flip) const {
 	SDL_Rect dest_rect = {
 		static_cast<int>(round(pos_x - origin_x_)),
 		static_cast<int>(round(pos_y - origin_y_)),
@@ -120,8 +120,8 @@ int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_r
 		alt_source_rect.h
 	};
 	if (texture_ == nullptr) {
-		return graphics.BlitTexture(graphics.GetDefaultTexture(), &alt_source_rect, &dest_rect);
+		return graphics.DrawTexture(graphics.GetDefaultTexture(), &alt_source_rect, &dest_rect, flip);
 	}
-	return graphics.BlitTexture(texture_, &alt_source_rect, &dest_rect);
+	return graphics.DrawTexture(texture_, &alt_source_rect, &dest_rect, flip);
 }
 
