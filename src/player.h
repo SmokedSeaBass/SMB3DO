@@ -48,8 +48,8 @@ public:
 	Player(Sprite* sprite, double pos_x = 0, double pos_y = 0);
 	~Player();
 
-	void HandleInputs(Input& input);
-	void Update(Input& input, int elapsed_time_ms, const Tilemap& tilemap);
+	void HandleInputs(const Input& input);
+	void Update(const Input& input, double delta_time, const Tilemap& tilemap);
 	int Draw(Graphics& graphics);
 
 	Rectangle GetColliderAbsoluteRect();
