@@ -81,6 +81,9 @@
     <ClInclude Include="src\rectangle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\bitmap_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game.cpp">
@@ -127,6 +130,9 @@
     </ClCompile>
     <ClCompile Include="src\tinyxml2\tinyxml2.cpp">
       <Filter>Source Files\External Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bitmap_font.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

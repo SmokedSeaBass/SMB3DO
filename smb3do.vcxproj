@@ -67,8 +67,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2_ttf-2.0.15\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programming\libraries\SDL2_ttf-2.0.15\lib\x86;D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\obj\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
@@ -76,18 +76,22 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2_ttf-2.0.15\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programming\libraries\SDL2_ttf-2.0.15\lib\x86;D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Configuration)\obj\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
     <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
     <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,7 +111,11 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>echo Copying assets folder to Debug... &amp;&amp; xcopy /y /s /i $(ProjectDir)assets\  $(OutDir)assets &amp;&amp; echo Post-build completed!</Command>
+      <Command>echo ...Starting Post-Build Event
+echo Copying assets folder to Debug...
+xcopy /y /s /i $(ProjectDir)assets\  $(OutDir)assets
+echo Done!
+echo Post-Build Event completed!</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,7 +131,7 @@
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -141,7 +149,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
     <ClCompile>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
@@ -165,6 +173,7 @@
     <ClInclude Include="src\rectangle.h" />
     <ClInclude Include="src\sprite.h" />
     <ClInclude Include="src\animated_sprite.h" />
+    <ClInclude Include="src\bitmap_font.h" />
     <ClInclude Include="src\tile.h" />
     <ClInclude Include="src\tilemap.h" />
     <ClInclude Include="src\tileset.h" />
@@ -172,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\animated_sprite.cpp" />
+    <ClCompile Include="src\bitmap_font.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\error.cpp" />
     <ClCompile Include="src\game.cpp" />
