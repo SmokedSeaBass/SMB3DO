@@ -17,7 +17,7 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
-	for (TextureList::iterator iter = textures_.begin(); iter != textures_.end(); ++iter) {
+	for (TextureMap::iterator iter = texture_cache_.begin(); iter != texture_cache_.end(); ++iter) {
 		SDL_DestroyTexture(iter->second);
 	}
 	SDL_DestroyRenderer(renderer_main_);
@@ -26,8 +26,12 @@ Graphics::~Graphics() {
 
 int Graphics::Initialize(Options& options) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		std::string msg = " SDL could not initialize: " + std::string(SDL_GetError()) + "\n";
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("SDL could not initialize: " + std::string(SDL_GetError()));
+		return -1;
+	}
+
+	if (TTF_Init() < 0) {
+		Error::PrintError("SDL_TTF could not initialize: " + std::string(TTF_GetError()));
 		return -1;
 	}
 
@@ -46,58 +50,43 @@ int Graphics::Initialize(Options& options) {
 		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
 	);
 	if (window_main_ == nullptr) {
-		std::string msg = "Main window could not be created: " + std::string(SDL_GetError());
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("Main window could not be created: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
 	// Accelerated renderer
 	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer_main_ == nullptr) {
-		std::string msg = "Main renderer could not be created: " + std::string(SDL_GetError());
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
 		return -1;
 	}
 	
-	// Pixel uspcale, no softening or antialias
+	// Set pixel uspcale, no softening or antialias
 	if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest") == SDL_FALSE) {
-		std::string msg = "Render scale quality hint could not be set: " + std::string(SDL_GetError());
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("Render scale quality hint could not be set: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
 	// Allow for colored rect alpha transparency
 	SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);
 
-	// This should be the last rendering operation done SCALED; the coordinates and rect are real-sized.  Ideally, this would use canvas coordinates.
 	if (SDL_RenderSetViewport(renderer_main_, &viewport_rect_) < 0) {
-		std::string msg = "Main viewport could not be created: " + std::string(SDL_GetError());
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("Main viewport could not be created: " + std::string(SDL_GetError()));
 		return -1;  
 	}
 
 	// All drawing should be scaled from a 256x224 canvas
 	if (SDL_RenderSetScale(renderer_main_, static_cast<float>(viewport_scaler_.first), static_cast<float>(viewport_scaler_.second)) < 0) {
-		std::string msg = "Main renderer scaling could not be set: " + std::string(SDL_GetError());
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("Main renderer scaling could not be set: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
-	// Alternative scaling process.  Automatically creates 1-to-1 pixel ratio, instead of 4:3
-	//SDL_RenderSetIntegerScale(renderer_main_, SDL_FALSE);
-	//SDL_RenderSetLogicalSize(renderer_main_, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES);
-
 	if (BuildDefaultTexture() < 0) {
-		std::string msg = "Could not build default texture";
-		Error::PrintError(std::runtime_error(msg));
+		Error::PrintError("Could not build default texture");
 		return -1;
 	}
 
 	return 0;
-}
-
-std::pair<unsigned short, unsigned short> Graphics::GetWindowSize() {
-	return std::pair<unsigned short, unsigned short>(current_resolution_.first, current_resolution_.second);
 }
 
 int Graphics::WindowToggleFullscreen(Options& options) {
@@ -105,15 +94,13 @@ int Graphics::WindowToggleFullscreen(Options& options) {
 		SDL_MaximizeWindow(window_main_);
 		SDL_SetWindowSize(window_main_, options.fullscreen_resolution_desired.first, options.fullscreen_resolution_desired.second);
 		if (SDL_SetWindowFullscreen(window_main_, SDL_WINDOW_FULLSCREEN) < 0) {
-			std::string msg = "Could not switch to fullscreen mode: " + std::string(SDL_GetError());
-			Error::PrintError(std::runtime_error(msg));
+			Error::PrintError("Could not switch to fullscreen mode: " + std::string(SDL_GetError()));
 			return -1;
 		}
 	} else {  
 		SDL_SetWindowSize(window_main_, options.windowed_resolution_desired.first, options.windowed_resolution_desired.second);
 		if (SDL_SetWindowFullscreen(window_main_, 0) < 0) {
-			std::string msg = "Could not switch to windowed mode: " + std::string(SDL_GetError());
-			Error::PrintError(std::runtime_error(msg));
+			Error::PrintError("Could not switch to windowed mode: " + std::string(SDL_GetError()));
 			return -1;
 		}
 	}
@@ -185,12 +172,12 @@ int Graphics::BuildDefaultTexture() {
 		SDL_FreeSurface(missingno_surface);
 		return -1;
 	}
-	textures_[""] = CreateTextureFromSurface(missingno_surface);
+	texture_cache_[""] = CreateTextureFromSurface(missingno_surface);
 	return 0;
 }
 
 SDL_Texture* Graphics::GetDefaultTexture() {
-	return textures_[""];
+	return texture_cache_[""];
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
@@ -200,20 +187,20 @@ SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path) {
-	if (textures_.count(file_path) == 0) {
+	if (texture_cache_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
 			Error::PrintError("Could not load image: \'" + file_path + "\'");
 			return nullptr;
 		}
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		textures_[file_path] = texture;
+		texture_cache_[file_path] = texture;
 	}
-	return textures_[file_path];
+	return texture_cache_[file_path];
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint32 color_key) {
-	if (textures_.count(file_path) == 0) {
+	if (texture_cache_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
 			Error::PrintError("Could not load image: \'" + file_path + "\'");
@@ -221,13 +208,13 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint32
 		}
 		SDL_SetColorKey(surface, SDL_TRUE, color_key);
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		textures_[file_path] = texture;
+		texture_cache_[file_path] = texture;
 	}
-	return textures_[file_path];
+	return texture_cache_[file_path];
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y) {
-	if (textures_.count(file_path) == 0) {
+	if (texture_cache_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
 			Error::PrintError("Could not load image: \'" + file_path + "\'");
@@ -242,9 +229,21 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int al
 			SDL_SetColorKey(surface, SDL_TRUE, color_key);
 		}
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		textures_[file_path] = texture;
+		texture_cache_[file_path] = texture;
 	}
-	return textures_[file_path];
+	return texture_cache_[file_path];
+}
+
+int Graphics::UnloadTexture(SDL_Texture* texture) {
+	for (std::pair<std::string, SDL_Texture*> entry : texture_cache_) {
+		if (entry.second == texture) {
+			SDL_DestroyTexture(entry.second);
+			texture_cache_.erase(entry.first);
+			return 0;
+		}
+	}
+	Error::PrintWarning("Cannot unload texture " + Error::ptr_to_string(texture) + "; not found in texture cache");
+	return -1;
 }
 
 // From StackOverflow: https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface
