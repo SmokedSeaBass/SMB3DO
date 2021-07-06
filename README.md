@@ -23,8 +23,8 @@ This project is written in C++14 and runs on the SDL2 framework.
 ### Coming Soon
 * [ ] Basic camera
 * [ ] Animated Mario
-* [ ] Hitbox visualization toggle
-* [ ] On-screen debug info
+* [x] Hitbox visualization toggle
+* [x] On-screen debug info
 
 ### Long-Term Plans:
 * Implement all features of the original SMB3
