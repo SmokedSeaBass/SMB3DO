@@ -1,19 +1,21 @@
 #include "game.h"
 
 #include <chrono>
-#include "constants.h"
-#include "tilemap.h"
-#include "sprite.h"
 #include "animated_sprite.h"
-#include "player.h"
-#include "input.h"
+#include "bitmap_font.h"
+#include "constants.h"
 #include "error.h"
+#include "input.h"
+#include "player.h"
+#include "sprite.h"
+#include "tilemap.h"
 
 double Game::fps_limit = 0;
 double Game::fps_ratio = 0;
 float Game::time_multiplier = 0;
 
 bool Game::debug_show_hitboxes = false;
+bool Game::debug_show_info = false;
 
 Game::Game() {
 	Game::fps_limit = options_.fps_limit;
@@ -21,6 +23,7 @@ Game::Game() {
 	Game::time_multiplier = 1;
 	if (META_DEBUG) {
 		Game::debug_show_hitboxes = true;
+		Game::debug_show_info = true;
 	}
 }
 
@@ -52,6 +55,10 @@ int Game::Run() {
 	// Tilemap
 	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test.tmx");
 	test_tilemap.SetTileset(&debug_tileset);
+
+	SDL_Texture* test_font_texture = graphics_.LoadTextureFromImage("assets/sprite_sheets/hud_font_ascii.bmp", 0, 0);
+	BitmapFont test_font;
+	test_font.LoadBitmap(test_font_texture, 8, 8);
 	
 	// Main game loop
 	while (!quitGame) {
@@ -82,6 +89,9 @@ int Game::Run() {
 				if (event.key.keysym.scancode == SDL_SCANCODE_H && !event.key.repeat) {
 					Game::debug_show_hitboxes = !Game::debug_show_hitboxes;
 				};
+				if (event.key.keysym.scancode == SDL_SCANCODE_U && !event.key.repeat) {
+					Game::debug_show_info = !Game::debug_show_info;
+				};
 			}
 			if (event.type == SDL_WINDOWEVENT) {
 				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
@@ -111,6 +121,12 @@ int Game::Run() {
 		//graphics.DrawColoredOutline(Rectangle(32.5, 128, 16, 16), 0x80, 0x10, 0x10, 0xFF);
 		// Draw player
 		mario.Draw(graphics_);
+		// UI
+		if (Game::debug_show_info) {
+			char debug_info[48];
+			snprintf(debug_info, sizeof(debug_info), "%.2f/%.0f fps\n%.4f/%.2f ms", 1000.0 / (tick_duration), Game::fps_limit, tick_duration, 1000.0 / Game::fps_limit);
+			test_font.DrawText(graphics_, debug_info, 0, 0);
+		}
 		// Flip to screen
 		graphics_.FlipRenderer();
 
@@ -118,14 +134,10 @@ int Game::Run() {
 		const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
 		tick_duration = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_end - tick_start).count();
 		if (Game::fps_limit > 0)
-			tick_wait =  (1000.0 / (Game::fps_limit * Game::time_multiplier))  - tick_duration;
+			tick_wait = (1000.0 / (Game::fps_limit * Game::time_multiplier)) - tick_duration;
 		delta_time = tick_duration + std::max(tick_wait, 0.0);
 		if (tick_wait > 0)
 			SDL_Delay(static_cast<Uint32>(tick_wait));
-		// Add to window's title
-		char title_buff[48];
-		snprintf(title_buff, sizeof(title_buff), "%.2f/%.0f fps (%.4f/%.4f ms)", 1000.0 / (tick_duration), Game::fps_limit, tick_duration, 1000.0 / Game::fps_limit);
-		graphics_.WindowSetTitle(title_buff);
 	}
 	return 0;
 }

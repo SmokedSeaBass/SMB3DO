@@ -15,6 +15,7 @@ public:
 	static float time_multiplier;
 
 	static bool debug_show_hitboxes;
+	static bool debug_show_info;
 
 	Game();
 	~Game();
