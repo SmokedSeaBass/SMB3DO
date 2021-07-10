@@ -112,8 +112,11 @@
     </Link>
     <PostBuildEvent>
       <Command>echo ...Starting Post-Build Event
-echo Copying assets folder to Debug...
-xcopy /y /s /i $(ProjectDir)assets\  $(OutDir)assets
+echo Copying assets to $(ConfigurationName)...
+xcopy $(ProjectDir)assets\maps $(OutDir)assets\maps /y /s /i /D
+xcopy $(ProjectDir)assets\objects $(OutDir)assets\objects /y /s /i /D
+xcopy $(ProjectDir)assets\sprite_sheets $(OutDir)assets\sprite_sheets /y /s /i /D
+xcopy $(ProjectDir)assets\tilesets $(OutDir)assets\tilesets /y /s /i /D
 echo Done!
 echo Post-Build Event completed!</Command>
     </PostBuildEvent>
@@ -136,6 +139,16 @@ echo Post-Build Event completed!</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>echo ...Starting Post-Build Event
+echo Copying assets to $(ConfigurationName)...
+xcopy $(ProjectDir)assets\maps $(OutDir)assets\maps /y /s /i /D
+xcopy $(ProjectDir)assets\objects $(OutDir)assets\objects /y /s /i /D
+xcopy $(ProjectDir)assets\sprite_sheets $(OutDir)assets\sprite_sheets /y /s /i /D
+xcopy $(ProjectDir)assets\tilesets $(OutDir)assets\tilesets /y /s /i /D
+echo Done!
+echo Post-Build Event completed!</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
