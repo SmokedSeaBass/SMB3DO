@@ -27,7 +27,7 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 	// Get tile id csv data from .tmx
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tmx.c_str()) != tinyxml2::XML_SUCCESS) {
-		Error::PrintError("Could not load TMX file '" + path_to_tmx + "'");
+		Error::PrintError("Could not load TMX file: '" + path_to_tmx + "'");
 		return;
 	}
 	tinyxml2::XMLElement* map_node = tmx.FirstChildElement("map");

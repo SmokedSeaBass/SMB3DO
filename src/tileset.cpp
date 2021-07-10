@@ -20,7 +20,7 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tsx_file.c_str()) != tinyxml2::XML_SUCCESS) {
-		Error::PrintError("Could not load TSX file '" + path_to_tsx_file + "'");
+		Error::PrintError("Could not load TSX file: '" + path_to_tsx_file + "'");
 		return;
 	}
 
