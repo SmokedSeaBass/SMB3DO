@@ -40,6 +40,9 @@ int BitmapFont::LoadBitmap(SDL_Texture* texture, int glyph_width, int glyph_heig
 }
 
 SDL_Rect BitmapFont::GetGlyphSourceRect(char chr) const {
+	if (texture_width_ == 0 || glyph_width_ == 0) {
+		return { 0, 0, 0, 0 };
+	}
 	int ascii_code = static_cast<int>(chr);
 	int glyph_index = ascii_code - 16 * 2;		// Remove first 32 special characters
 	int row_size = texture_width_ / glyph_width_;
@@ -60,9 +63,14 @@ int BitmapFont::DrawText(Graphics& graphics, const std::string& text, int pos_x,
 			y += glyph_height_;
 			continue;
 		}
-		src_rect = GetGlyphSourceRect(chr);
 		dst_rect = { x, y, glyph_width_, glyph_height_ };
-		graphics.DrawTexture(texture_, &src_rect, &dst_rect);
+		if (texture_ != nullptr) {
+			src_rect = GetGlyphSourceRect(chr);
+			graphics.DrawTexture(texture_, &src_rect, &dst_rect);
+		} else {
+			src_rect = { 0, 0, glyph_width_, glyph_height_ };
+			graphics.DrawTexture(graphics.GetDefaultTexture(), &src_rect, &dst_rect);
+		}
 		x += glyph_width_;
 	}
 	return 0;
