@@ -55,7 +55,10 @@ int Graphics::Initialize(Options& options) {
 	}
 
 	// Accelerated renderer
-	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	Uint32 flags = SDL_RENDERER_ACCELERATED;
+	if (options.enable_vsync)
+		flags |= SDL_RENDERER_PRESENTVSYNC;
+	renderer_main_ = SDL_CreateRenderer(window_main_, -1, flags);
 	if (renderer_main_ == nullptr) {
 		Error::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
 		return -1;
@@ -111,6 +114,12 @@ int Graphics::WindowToggleFullscreen(Options& options) {
 void Graphics::WindowSetTitle(const std::string& subtitle) {
 	auto title = "SMB3DO - v" + std::string(META_VERSION);
 	SDL_SetWindowTitle(window_main_, (title + " | " + subtitle).c_str());
+}
+
+SDL_DisplayMode Graphics::GetCurrentDisplayMode() {
+	SDL_DisplayMode display_mode;
+	SDL_GetDesktopDisplayMode(0, &display_mode);		// TODO 7-12-21: Add use thorough displayIndex choosing
+	return display_mode;
 }
 
 int Graphics::SetViewport(SDL_Rect& rect) {

@@ -74,56 +74,55 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 	HandleInputs(input);
 
 	/* Apply physics to get intended position */
-	// TODO 6-28-21: Proper variable delta_time physics calculations
-	double delta_ratio = delta_time / (1000.0 / 60.0);
+	double dt_ratio = delta_time / (1000.0 / 60.0);
 
 	// Jumping
 	if ((status_ & (unsigned char)Status::GROUNDED) && (input.IsButtonPressed(Input::Button::P1_A))) {
-		if (abs(vel_x_) > (double)0x0300 * Game::fps_ratio / 256.0) vel_y_ = -Physics::JUMP_VEL_SPRINT * Game::fps_ratio;
-		else if (abs(vel_x_) > (double)0x0200 * Game::fps_ratio / 256.0) vel_y_ = -Physics::JUMP_VEL_RUN * Game::fps_ratio;
-		else if (abs(vel_x_) > (double)0x0100 * Game::fps_ratio / 256.0) vel_y_ = -Physics::JUMP_VEL_WALK * Game::fps_ratio;
-		else vel_y_ = -Physics::JUMP_VEL_STAND * Game::fps_ratio;
+		if (abs(vel_x_) > (double)0x0300 * dt_ratio / 256.0) vel_y_ = -Physics::JUMP_VEL_SPRINT * dt_ratio;
+		else if (abs(vel_x_) > (double)0x0200 * dt_ratio / 256.0) vel_y_ = -Physics::JUMP_VEL_RUN * dt_ratio;
+		else if (abs(vel_x_) > (double)0x0100 * dt_ratio / 256.0) vel_y_ = -Physics::JUMP_VEL_WALK * dt_ratio;
+		else vel_y_ = -Physics::JUMP_VEL_STAND * dt_ratio;
 		status_ &= ~(unsigned char)Status::GROUNDED;
 	}
 
 	// Lateral movement
 	if (status_ & (unsigned char)Status::GROUNDED) {								// Grounded physics
 		if (dpad_vector_[0] == 0) {												// Neutral input, normal deceleration
-			if (abs(vel_x_) < Physics::DECEL_GROUND_NORMAL * Game::fps_ratio * Game::fps_ratio) vel_x_ = 0;
-			else vel_x_ -= Physics::DECEL_GROUND_NORMAL * Game::fps_ratio * Game::fps_ratio * sgn(vel_x_);
+			if (abs(vel_x_) < Physics::DECEL_GROUND_NORMAL * dt_ratio * dt_ratio) vel_x_ = 0;
+			else vel_x_ -= Physics::DECEL_GROUND_NORMAL * dt_ratio * dt_ratio * sgn(vel_x_);
 		} else if (dpad_vector_[0] == -sgn(vel_x_)) {								// Opposing input, skid deceleration
-			vel_x_ += dpad_vector_[0] * Physics::SKID_GROUND_NORMAL * Game::fps_ratio * Game::fps_ratio;
+			vel_x_ += dpad_vector_[0] * Physics::SKID_GROUND_NORMAL * dt_ratio * dt_ratio;
 		} else {																	// Accelerating
-			vel_x_ += dpad_vector_[0] * Physics::ACCEL_GROUND * Game::fps_ratio * Game::fps_ratio;
-			double ground_speed_cap = Physics::MAX_SPEED_WALK * Game::fps_ratio;
-			if (input.IsButtonDown(Input::Button::P1_B)) ground_speed_cap = Physics::MAX_SPEED_RUN * Game::fps_ratio;
+			vel_x_ += dpad_vector_[0] * Physics::ACCEL_GROUND * dt_ratio * dt_ratio;
+			double ground_speed_cap = Physics::MAX_SPEED_WALK * dt_ratio;
+			if (input.IsButtonDown(Input::Button::P1_B)) ground_speed_cap = Physics::MAX_SPEED_RUN * dt_ratio;
 			if (abs(vel_x_) > ground_speed_cap) {									// Ground x-speed limit
 				vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowing down if cap is exceeded
 			}
 		}
 		// Set air speed cap based on acheived ground speed
-		//if (abs(vel_x_) <= Physics::MAX_SPEED_WALK * Game::fps_ratio) aerial_speed_cap_ = Physics::MAX_SPEED_WALK * Game::fps_ratio;
-		//else if (abs(vel_x_) >= Physics::MAX_SPEED_SPRINT * Game::fps_ratio) aerial_speed_cap_ = Physics::MAX_SPEED_SPRINT * Game::fps_ratio;
-		//else aerial_speed_cap_ = Physics::MAX_SPEED_RUN * Game::fps_ratio;
-		aerial_speed_cap_ = Physics::MAX_SPEED_RUN * Game::fps_ratio;
+		//if (abs(vel_x_) <= Physics::MAX_SPEED_WALK * dt_ratio) aerial_speed_cap_ = Physics::MAX_SPEED_WALK * dt_ratio;
+		//else if (abs(vel_x_) >= Physics::MAX_SPEED_SPRINT * dt_ratio) aerial_speed_cap_ = Physics::MAX_SPEED_SPRINT * dt_ratio;
+		//else aerial_speed_cap_ = Physics::MAX_SPEED_RUN * dt_ratio;
+		aerial_speed_cap_ = Physics::MAX_SPEED_RUN * dt_ratio;
 	} else {																	// Mid-air physics
 	if (dpad_vector_[0] == -sgn(vel_x_)) {										// Mid-air skidding
-		vel_x_ += dpad_vector_[0] * Physics::SKID_AIR * Game::fps_ratio * Game::fps_ratio;
+		vel_x_ += dpad_vector_[0] * Physics::SKID_AIR * dt_ratio * dt_ratio;
 	} else {																	// Mid-air accelerating/neutral
-		vel_x_ += dpad_vector_[0] * Physics::ACCEL_AIR * Game::fps_ratio * Game::fps_ratio;
+		vel_x_ += dpad_vector_[0] * Physics::ACCEL_AIR * dt_ratio * dt_ratio;
 	}
 	if (abs(vel_x_) > aerial_speed_cap_) {
-		vel_x_ -= Physics::SKID_AIR * Game::fps_ratio * sgn(vel_x_);								// Mid-air x-speed limit (forced deceleration)
+		vel_x_ -= Physics::SKID_AIR * dt_ratio * sgn(vel_x_);								// Mid-air x-speed limit (forced deceleration)
 	}
 	}
 
 	// Gravity
-	if (input.IsButtonDown(Input::Button::P1_A) && (vel_y_ < (double)-0x0200 * Game::fps_ratio / 256.0)) {
-		vel_y_ += Physics::GRAVITY_LIGHT * Game::fps_ratio * Game::fps_ratio;
+	if (input.IsButtonDown(Input::Button::P1_A) && (vel_y_ < (double)-0x0200 * dt_ratio / 256.0)) {
+		vel_y_ += Physics::GRAVITY_LIGHT * dt_ratio * dt_ratio;
 	} else {
-		vel_y_ += Physics::GRAVITY_HEAVY * Game::fps_ratio * Game::fps_ratio;
+		vel_y_ += Physics::GRAVITY_HEAVY * dt_ratio * dt_ratio;
 	}
-	if (vel_y_ > Physics::VEL_TERM * Game::fps_ratio) vel_y_ = Physics::VEL_TERM * Game::fps_ratio;
+	if (vel_y_ > Physics::VEL_TERM * dt_ratio) vel_y_ = Physics::VEL_TERM * dt_ratio;
 
 	/* Check collisions and make corrections */
 	double delta_x = vel_x_;
@@ -133,7 +132,7 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 		CollisionInfo info = GetCollisionInfo(tilemap, RightCollision(delta_x));
 		if (info.collided) {
 			//pos_x_ = info.col * TILESIZE_NES - COLLIDER_X.Right();
-			pos_x_ = std::max(info.col * TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * Game::fps_ratio);
+			pos_x_ = std::max(info.col * TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * dt_ratio);
 			vel_x_ = 0;
 		} else {
 			pos_x_ += delta_x;
@@ -141,14 +140,14 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 		// Check for collision in opposite direction
 		info = GetCollisionInfo(tilemap, LeftCollision(0));
 		if (info.collided) {
-			pos_x_ = std::min((info.col + 1) * TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * Game::fps_ratio);
+			pos_x_ = std::min((info.col + 1) * TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * dt_ratio);
 		}
 	} else {
 		// React to collision LEFT
 		CollisionInfo info = GetCollisionInfo(tilemap, LeftCollision(delta_x));
 		if (info.collided) {
 			//pos_x_ = (info.col + 1) * TILESIZE_NES - COLLIDER_X.Left();
-			pos_x_ = std::min((info.col + 1) * TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * Game::fps_ratio);
+			pos_x_ = std::min((info.col + 1) * TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * dt_ratio);
 			vel_x_ = 0;
 		} else {
 			pos_x_ += delta_x;
@@ -156,7 +155,7 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 		// Check for collision in opposite direction
 		info = GetCollisionInfo(tilemap, RightCollision(0));
 		if (info.collided) {
-			pos_x_ = std::max(info.col * TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * Game::fps_ratio);
+			pos_x_ = std::max(info.col * TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * dt_ratio);
 		}
 	}
 	if (delta_y > 0) {
@@ -198,10 +197,10 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 	if (status_ & (unsigned char)Status::GROUNDED) {
 		if (speed_x == 0) {
 			new_sprite = sprite_map_["stand"].get();
-		} else if (speed_x < Player::Physics::MAX_SPEED_WALK * Game::fps_ratio) {
+		} else if (speed_x < Player::Physics::MAX_SPEED_WALK * dt_ratio) {
 			new_sprite = sprite_map_["walk"].get();
 			new_sprite->SetAnimationSpeed(6 * (1000.0 / 60.0));
-		} else if (speed_x < Player::Physics::MAX_SPEED_RUN * Game::fps_ratio) {
+		} else if (speed_x < Player::Physics::MAX_SPEED_RUN * dt_ratio) {
 			new_sprite = sprite_map_["walk"].get();
 			new_sprite->SetAnimationSpeed(4 * (1000.0 / 60.0));
 		} else {

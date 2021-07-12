@@ -20,6 +20,10 @@ public:
 	Game();
 	~Game();
 
+	int GetInput();
+	int Update();
+	int Render();
+
 	/// <summary>
 	/// Runs the game's main logical loop.
 	/// </summary>

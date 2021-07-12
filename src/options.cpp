@@ -2,7 +2,8 @@
 
 
 Options::Options() {
-	fps_limit = 60;
+	fps_limit = 144;
+	enable_vsync = true;
 	fullscreen_resolution_desired = { 1920, 1080 };
 	windowed_resolution_desired = { 640, 480 };
 	pixel_ratio = Options::PixelRatio::RETRO;
