@@ -46,10 +46,12 @@ public:
 	);
 	~AnimatedSprite();
 
-	void Update(double delta_time);
+	void ResetAnimation() override;
+	void SetAnimationSpeed(double frame_time) override;
+	void Update(double delta_time) override;
 
 private:
-	const double frame_time_;		// Time (in ms) per animation frame
+	double frame_time_;		// Time (in ms) per animation frame
 	const int frame_count_;		// Number of total frames in the animation
 	const int frame_gap_;		// Pixel gap between each frame of animation
 	int current_frame_;			// Current frame in the animation
