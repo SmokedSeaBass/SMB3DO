@@ -21,8 +21,6 @@ Game::Game() {
 	if (!options_.enable_vsync) {
 		Game::fps_limit = options_.fps_limit;
 	}
-	
-	
 	Game::time_multiplier = 1;
 	if (META_DEBUG) {
 		Game::debug_show_hitboxes = true;
@@ -59,8 +57,8 @@ int Game::Run() {
 	}
 	double tick_accumulator = 0.0;
 	double delta_time = 1000.0 / 60.0;
-	if (!options_.enable_vsync && Game::fps_limit != 0) {
-		delta_time = 1000.0 / Game::fps_limit;
+	if (options_.enable_vsync && Game::fps_limit != 0) {
+		delta_time = 1000.0 / (60.0 * ceil(Game::fps_limit / 60.0));
 	}
 	std::chrono::high_resolution_clock::time_point tick_start = std::chrono::high_resolution_clock::now();
 
