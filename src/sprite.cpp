@@ -8,8 +8,7 @@ Sprite::Sprite() :
 	texture_ (nullptr),
 	source_rect_({ 0, 0, 0, 0 }),
 	origin_x_(0),
-	origin_y_(0),
-	color_key_(0x00000000) {
+	origin_y_(0) {
 }
 
 Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) : Sprite::Sprite() {

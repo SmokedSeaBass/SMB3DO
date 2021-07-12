@@ -10,18 +10,46 @@ const Rectangle COLLIDER_BOTTOM(-4, -2, 8, 1);
 const Rectangle COLLIDER_LEFT(-5, -12, 1, 9);
 const Rectangle COLLIDER_RIGHT(4, -12, 1, 9);
 
-Player::Player(Sprite* sprite, double pos_x, double pos_y) {
+Player::Player() : 
+	dpad_vector_({ 0, 0 }),
+	dir_facing_(1),
+	speed_grounded_(0.0),
+	aerial_speed_cap_(Physics::MAX_SPEED_RUN),
+	status_(0) {
+	collider_ = { -5, -13, 10, 9 };  // 0-2 [3-12] 13-15 on x, 0-1 [2-14] 15 on y for small mario
+}
+
+Player::Player(Graphics& graphics, const std::string& path_to_bmp, double pos_x, double pos_y) : Player::Player() {
+	pos_x_ = pos_x;
+	pos_y_ = pos_y;
+	// Initialize spritemap
+	// All hardcoded for now
+	// Walk speeds are 8 (crawl), 12 (walk), 16 (run)
+	SDL_Texture* player_texture = graphics.LoadTextureFromImage(path_to_bmp, 0, 0);
+
+	Sprite spr_stand = Sprite(graphics, player_texture, 17 + 1, 1, 16, 16);
+	spr_stand.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	sprite_map_["stand"] = std::make_unique<Sprite>(spr_stand);
+
+	AnimatedSprite spr_walk = AnimatedSprite(graphics, player_texture, 1, 1, 16, 16, 12, 2, 1);
+	spr_walk.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	sprite_map_["walk"] = std::make_unique<AnimatedSprite>(spr_walk);
+
+	Sprite spr_jump = Sprite(graphics, player_texture, 17*2 + 1, 1, 16, 16);
+	spr_jump.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	sprite_map_["jump"] = std::make_unique<Sprite>(spr_jump);
+
+	Sprite spr_skid = Sprite(graphics, player_texture, 86, 1, 16, 16);
+	spr_skid.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	sprite_map_["skid"] = std::make_unique<Sprite>(spr_skid);
+
+	sprite_ = sprite_map_["stand"].get();
+}
+
+Player::Player(Sprite* sprite, double pos_x, double pos_y) : Player::Player() {
 	sprite_ = sprite;
 	pos_x_ = pos_x;
 	pos_y_ = pos_y;
-	vel_x_ = 0;
-	vel_y_ = 0;
-	collider_ = { -5, -13, 10, 9 };  // 0-2 [3-12] 13-15 on x, 0-1 [2-14] 15 on y for small mario
-	speed_grounded_ = 0;
-	aerial_speed_cap_ = Physics::MAX_SPEED_RUN;
-	status_ = 0;
-	dpad_vector_ = { 0, 0 };
-	dir_facing_ = 1;
 }
 
 Player::~Player() { }
@@ -47,6 +75,7 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 
 	/* Apply physics to get intended position */
 	// TODO 6-28-21: Proper variable delta_time physics calculations
+	double delta_ratio = delta_time / (1000.0 / 60.0);
 
 	// Jumping
 	if ((status_ & (unsigned char)Status::GROUNDED) && (input.IsButtonPressed(Input::Button::P1_A))) {
@@ -69,7 +98,7 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 			double ground_speed_cap = Physics::MAX_SPEED_WALK * Game::fps_ratio;
 			if (input.IsButtonDown(Input::Button::P1_B)) ground_speed_cap = Physics::MAX_SPEED_RUN * Game::fps_ratio;
 			if (abs(vel_x_) > ground_speed_cap) {									// Ground x-speed limit
-vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowing down if cap is exceeded
+				vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowing down if cap is exceeded
 			}
 		}
 		// Set air speed cap based on acheived ground speed
@@ -97,10 +126,6 @@ vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowin
 	if (vel_y_ > Physics::VEL_TERM * Game::fps_ratio) vel_y_ = Physics::VEL_TERM * Game::fps_ratio;
 
 	/* Check collisions and make corrections */
-	//Error::PrintDebug("X:  " + std::to_string(pos_x_) + ", Y:  " + std::to_string(pos_y_));
-	//Error::PrintDebug("VX: " + std::to_string(vel_x_) + ", VY: " + std::to_string(vel_y_));
-	//Error::PrintDebug("XL:  " + std::to_string(pos_x_ + COLLIDER_X.Left()) + ", XR:  " + std::to_string(pos_x_ + COLLIDER_X.Right()));
-	//Error::PrintDebug("YL:  " + std::to_string(TopCollision(0).Left()) + ", YR:  " + std::to_string(TopCollision(0).Right()));
 	double delta_x = vel_x_;
 	double delta_y = vel_y_;
 	if (delta_x >= 0) {
@@ -166,14 +191,39 @@ vel_x_ = ground_speed_cap * sgn(vel_x_);							// TODO: Implement gradual slowin
 			status_ |= (unsigned char)Status::GROUNDED;
 		}
 	}
+
+	// Update Sprite
+	Sprite* new_sprite = nullptr;
+	double speed_x = abs(vel_x_);
+	if (status_ & (unsigned char)Status::GROUNDED) {
+		if (speed_x == 0) {
+			new_sprite = sprite_map_["stand"].get();
+		} else if (speed_x < Player::Physics::MAX_SPEED_WALK * Game::fps_ratio) {
+			new_sprite = sprite_map_["walk"].get();
+			new_sprite->SetAnimationSpeed(6 * (1000.0 / 60.0));
+		} else if (speed_x < Player::Physics::MAX_SPEED_RUN * Game::fps_ratio) {
+			new_sprite = sprite_map_["walk"].get();
+			new_sprite->SetAnimationSpeed(4 * (1000.0 / 60.0));
+		} else {
+			new_sprite = sprite_map_["walk"].get();
+			new_sprite->SetAnimationSpeed(2 * (1000.0 / 60.0));
+		}
+		if (dpad_vector_[0] != 0 && sgn(vel_x_) == -dpad_vector_[0]) {
+			new_sprite = sprite_map_["skid"].get();
+		}
+	} else {
+		new_sprite = sprite_map_["jump"].get();
+	}
+	if (new_sprite != sprite_) {
+		sprite_ = new_sprite;
+		sprite_->ResetAnimation();
+	}
+	if (sprite_ != nullptr) {
+		sprite_->Update(delta_time);
+	}
 }
 
 int Player::Draw(Graphics& graphics) {
-	if (status_ & (unsigned char)Status::GROUNDED) {
-		sprite_->SetSourceRect(215, 88, 16, 16);
-	} else {
-		sprite_->SetSourceRect(335, 89, 16, 16);
-	}
 	double pos_x = floor(pos_x_), pos_y = floor(pos_y_);
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	if (dir_facing_ == -1) {

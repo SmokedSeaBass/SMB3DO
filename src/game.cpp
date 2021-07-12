@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include <chrono>
+#include <thread>
 #include "animated_sprite.h"
 #include "bitmap_font.h"
 #include "constants.h"
@@ -47,9 +48,7 @@ int Game::Run() {
 	
 	// Test creation code
 	// Mario
-	Sprite mario_spr = Sprite(graphics_, "assets/sprite_sheets/mario_8bit.bmp", 0, 0, 215, 88, static_cast<int>(round(TILESIZE_NES)), static_cast<int>(round(TILESIZE_NES)));
-	mario_spr.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
-	Player mario = Player(&mario_spr, 32.0, 32.0);
+	Player mario = Player(graphics_, "assets/sprite_sheets/mario.bmp", 32, 32);
 	// Tileset
 	Tileset debug_tileset = Tileset(graphics_, "assets/tilesets/debug.tsx");
 	// Tilemap
@@ -136,8 +135,11 @@ int Game::Run() {
 		if (Game::fps_limit > 0)
 			tick_wait = (1000.0 / (Game::fps_limit * Game::time_multiplier)) - tick_duration;
 		delta_time = tick_duration + std::max(tick_wait, 0.0);
-		if (tick_wait > 0)
-			SDL_Delay(static_cast<Uint32>(tick_wait));
+		if (tick_wait > 0) {
+			//SDL_Delay(static_cast<Uint32>(std::max(1.0, tick_wait)));
+			std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(tick_wait));
+		}
+			
 	}
 	return 0;
 }

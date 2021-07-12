@@ -62,6 +62,10 @@ public:
 	int GetTextureHeight() const;
 	int GetTextureWidth() const;
 
+	virtual void ResetAnimation() {}
+	virtual void SetAnimationSpeed(double frame_time) {}
+	virtual void Update(double delta_time) {}
+
 	int Draw(Graphics& graphics, int pos_x, int pos_y, const SDL_RendererFlip flip = SDL_FLIP_NONE) const;
 	int Draw(Graphics& graphics, int pos_x, int pos_y, SDL_Rect alt_source_rect, const SDL_RendererFlip flip = SDL_FLIP_NONE) const;
 
@@ -71,5 +75,4 @@ protected:
 private:
 	SDL_Texture* texture_;
 	double origin_x_, origin_y_;
-	Uint32 color_key_;  // Save if we want to change later?
 };

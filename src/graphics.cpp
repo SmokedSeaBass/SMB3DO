@@ -55,7 +55,7 @@ int Graphics::Initialize(Options& options) {
 	}
 
 	// Accelerated renderer
-	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED);
+	renderer_main_ = SDL_CreateRenderer(window_main_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (renderer_main_ == nullptr) {
 		Error::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
 		return -1;

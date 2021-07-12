@@ -1,6 +1,7 @@
 #pragma once
 #include "entity.h"
 
+#include <memory>
 #include <vector>
 #include "input.h"
 #include "rectangle.h"
@@ -45,6 +46,8 @@ public:
 		int row, col;
 	};
 
+	Player();
+	Player(Graphics& graphics, const std::string& path_to_bmp, double pos_x = 0, double pos_y = 0);
 	Player(Sprite* sprite, double pos_x = 0, double pos_y = 0);
 	~Player();
 
@@ -88,4 +91,6 @@ private:
 	/// 64 = uncontrollable, fixed motion (e.g. cutscene, inside pipe)
 	/// 128 = UNUSED
 	unsigned int status_;
+	typedef std::map<std::string, std::unique_ptr<Sprite>> SpriteMap;
+	SpriteMap sprite_map_;
 };
