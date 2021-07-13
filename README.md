@@ -22,7 +22,9 @@ This project is written in C++14 and runs on the SDL2 framework.
 
 ### Coming Soon
 * [ ] Basic camera
-* [ ] Animated Mario
+* [ ] Basic level format
+* [x] Animated Mario
+* [x] Improved variable refresh rate support
 * [x] Hitbox visualization toggle
 * [x] On-screen debug info
 
