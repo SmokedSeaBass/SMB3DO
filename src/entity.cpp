@@ -11,6 +11,16 @@ Entity::Entity() :
 
 Entity::~Entity() { }
 
+std::vector<double> Entity::GetPosition() const {
+	std::vector<double> position = {pos_x_, pos_y_};
+	return position;
+}
+
+std::vector<double> Entity::GetVelocity() const {
+	std::vector<double> velocity = { vel_x_, vel_y_ };
+	return velocity;
+}
+
 void Entity::Update() { }
 void Entity::Update(const Uint8* keyboard_state) { }
-int Entity::Draw(Graphics& graphics) { return 0; }
+int Entity::Draw(Graphics& graphics, double offset_x, double offset_y) { return 0; }

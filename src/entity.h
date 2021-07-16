@@ -9,9 +9,12 @@ public:
 	Entity();
 	~Entity();
 
+	std::vector<double> GetPosition() const;
+	std::vector<double> GetVelocity() const;
+
 	virtual void Update();
 	virtual void Update(const Uint8* keyboard_state);
-	virtual int Draw(Graphics& graphics);
+	virtual int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0);
 
 protected:
 	Sprite* sprite_;
