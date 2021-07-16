@@ -53,7 +53,7 @@ public:
 
 	void HandleInputs(const Input& input);
 	void Update(const Input& input, double delta_time, const Tilemap& tilemap);
-	int Draw(Graphics& graphics);
+	int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0);
 
 	Rectangle GetColliderAbsoluteRect();
 	Rectangle LeftCollision(double delta) const;

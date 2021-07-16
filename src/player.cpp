@@ -222,19 +222,18 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 	}
 }
 
-int Player::Draw(Graphics& graphics) {
-	double pos_x = floor(pos_x_), pos_y = floor(pos_y_);
+int Player::Draw(Graphics& graphics, double offset_x, double offset_y) {
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	if (dir_facing_ == -1) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
-	int return_code = sprite_->Draw(graphics, static_cast<int>(pos_x), static_cast<int>(pos_y), flip);
+	int return_code = sprite_->Draw(graphics, static_cast<int>(floor(pos_x_)) + offset_x, static_cast<int>(floor(pos_y_)) + offset_y, flip);
 	if (Game::debug_show_hitboxes) {
-		graphics.DrawColoredRect({ pos_x - 8, pos_y - 16, 16, 16 }, 0x00, 0x00, 0x00, 0x40);
-		graphics.DrawColoredRect(RightCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);
-		graphics.DrawColoredRect(LeftCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);
-		graphics.DrawColoredRect(BottomCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);
-		graphics.DrawColoredRect(TopCollision(0), 0xFF, 0xFF, 0xFF, 0xFF);
+		graphics.DrawColoredRect({ floor(pos_x_) - 8 + offset_x, floor(pos_y_) - 16 + offset_y, 16, 16 }, 0x00, 0x00, 0x00, 0x40);
+		graphics.DrawColoredRect(RightCollision(0) + Rectangle(offset_x, offset_y, 0, 0 ), 0xFF, 0xFF, 0xFF, 0xFF);
+		graphics.DrawColoredRect(LeftCollision(0) + Rectangle(offset_x, offset_y, 0, 0), 0xFF, 0xFF, 0xFF, 0xFF);
+		graphics.DrawColoredRect(BottomCollision(0) + Rectangle(offset_x, offset_y, 0, 0), 0xFF, 0xFF, 0xFF, 0xFF);
+		graphics.DrawColoredRect(TopCollision(0) + Rectangle(offset_x, offset_y, 0, 0), 0xFF, 0xFF, 0xFF, 0xFF);
 	}
 	return return_code;
 }
