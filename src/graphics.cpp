@@ -55,6 +55,9 @@ int Graphics::Initialize(Options& options) {
 	}
 
 	// Accelerated renderer
+	if (SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl") == SDL_FALSE) {
+		Error::PrintError("Render driver hint could not be set");
+	}
 	Uint32 flags = SDL_RENDERER_ACCELERATED;
 	if (options.enable_vsync)
 		flags |= SDL_RENDERER_PRESENTVSYNC;
@@ -122,8 +125,12 @@ SDL_DisplayMode Graphics::GetCurrentDisplayMode() {
 	return display_mode;
 }
 
-int Graphics::SetViewport(SDL_Rect& rect) {
-	return SDL_RenderSetViewport(renderer_main_, &rect);
+int Graphics::SetViewport(const SDL_Rect* rect) {
+	if (rect == NULL) {
+		SDL_Rect window_rect = {0, 0, current_resolution_.first, current_resolution_.second };
+		return SDL_RenderSetViewport(renderer_main_, &window_rect);
+	}
+	return SDL_RenderSetViewport(renderer_main_, rect);
 }
 
 const SDL_Rect& Graphics::GetViewport() {
@@ -152,15 +159,11 @@ void Graphics::UpdateViewport(Options& options) {
 			static_cast<int>(round(current_resolution_.second / viewport_scaler_.second))
 		};
 	}
-	SetViewport(viewport_rect_);
-	// TODO 6-29-21: Set render clipping for optimization
-	/*SDL_Rect render_clip = viewport_rect_;
-	render_clip.w *= viewport_scaler_.first;
-	render_clip.h *= viewport_scaler_.second;
-	SDL_RenderSetClipRect(renderer_main_, &render_clip);*/
-
-	Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
-	Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
+	SetViewport(&viewport_rect_);
+	SDL_Rect window_draw_rect = { 0, 0, window_width, window_height };
+	SDL_RenderSetClipRect(renderer_main_, &window_draw_rect);
+	//Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
+	//Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
 }
 
 std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, SDL_Rect viewport) {

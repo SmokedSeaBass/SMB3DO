@@ -26,7 +26,7 @@ public:
 	int WindowToggleFullscreen(Options& options);
 	void WindowSetTitle(const std::string& subtitle);
 	SDL_DisplayMode GetCurrentDisplayMode();
-	int SetViewport(SDL_Rect& rect);
+	int SetViewport(const SDL_Rect* rect);
 	const SDL_Rect& GetViewport();
 	void UpdateViewport(Options& options);
 	std::pair<float, float> GetWindowFitViewportScaler(Options& options, SDL_Rect viewport = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES });
