@@ -1,5 +1,6 @@
 #pragma once
 #include "graphics.h"
+#include "input.h"
 #include "options.h"
 
 /**
@@ -11,7 +12,6 @@
 class Game {
 public:
 	static double fps_limit;
-	static double fps_ratio;
 	static float time_multiplier;
 
 	static bool debug_show_hitboxes;
@@ -20,9 +20,9 @@ public:
 	Game();
 	~Game();
 
-	int GetInput();
-	int Update();
-	int Render();
+	int GetInput(Input& input, SDL_Event& event, const Uint8* keyboard_state, bool& quit_game);
+	int Update(const double delta_time);
+	int Render(Graphics& graphics);
 
 	/// <summary>
 	/// Runs the game's main logical loop.
