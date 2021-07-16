@@ -104,6 +104,7 @@ Tileset* Tilemap::GetTileset() {
 std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& rect) const {
 	std::vector<CollisionTile> colliding_tiles;
 	// TODO 6-21-21: Account for offset tilemap/tilemap position
+	Rectangle collision_rect = rect + Rectangle(pos_x_, pos_y_, 0, 0);
 	int top_row = static_cast<int>(floor(rect.Top() / TILESIZE_NES));
 	int bottom_row = static_cast<int>(ceil(rect.Bottom() / TILESIZE_NES) - 1);
 	int left_col = static_cast<int>(floor(rect.Left() / TILESIZE_NES));
@@ -123,6 +124,8 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop) {
 	if (crop.w < 0) crop.w = graphics.GetViewport().w;
 	if (crop.h < 0) crop.h = graphics.GetViewport().h;
+	crop.x -= offset_x;
+	crop.y -= offset_y;
 
 	unsigned int tile_id = 0;
 	int top_row = std::max(static_cast<int>(floor(crop.Top() / TILESIZE_NES)), 0);
