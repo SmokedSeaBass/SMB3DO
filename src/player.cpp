@@ -7,8 +7,8 @@
 
 const Rectangle COLLIDER_TOP(-1, -13, 2, 1);		// Special collider that's skinnier and causes easier sideways "sliding"
 const Rectangle COLLIDER_BOTTOM(-4, -2, 8, 1);
-const Rectangle COLLIDER_LEFT(-5, -12, 1, 9);
-const Rectangle COLLIDER_RIGHT(4, -12, 1, 9);
+const Rectangle COLLIDER_LEFT(-5, -12, 1, 8);
+const Rectangle COLLIDER_RIGHT(4, -12, 1, 8);
 
 Player::Player() : 
 	dpad_vector_({ 0, 0 }),
@@ -104,16 +104,24 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 		//if (abs(vel_x_) <= Physics::MAX_SPEED_WALK * dt_ratio) aerial_speed_cap_ = Physics::MAX_SPEED_WALK * dt_ratio;
 		//else if (abs(vel_x_) >= Physics::MAX_SPEED_SPRINT * dt_ratio) aerial_speed_cap_ = Physics::MAX_SPEED_SPRINT * dt_ratio;
 		//else aerial_speed_cap_ = Physics::MAX_SPEED_RUN * dt_ratio;
-		aerial_speed_cap_ = Physics::MAX_SPEED_RUN * dt_ratio;
 	} else {																	// Mid-air physics
-	if (dpad_vector_[0] == -sgn(vel_x_)) {										// Mid-air skidding
-		vel_x_ += dpad_vector_[0] * Physics::SKID_AIR * dt_ratio * dt_ratio;
-	} else {																	// Mid-air accelerating/neutral
-		vel_x_ += dpad_vector_[0] * Physics::ACCEL_AIR * dt_ratio * dt_ratio;
-	}
-	if (abs(vel_x_) > aerial_speed_cap_) {
-		vel_x_ -= Physics::SKID_AIR * dt_ratio * sgn(vel_x_);								// Mid-air x-speed limit (forced deceleration)
-	}
+		if (input.IsButtonDown(Input::Button::P1_B)) {
+			aerial_speed_cap_ = Physics::MAX_SPEED_RUN * dt_ratio;
+		} else {
+			aerial_speed_cap_ = Physics::MAX_SPEED_WALK * dt_ratio;
+		}
+		if (dpad_vector_[0] == -sgn(vel_x_)) {										// Mid-air skidding
+			vel_x_ += dpad_vector_[0] * Physics::SKID_AIR * dt_ratio * dt_ratio;
+		} else {																	// Mid-air accelerating/neutral
+			double accel = dpad_vector_[0] * Physics::ACCEL_AIR * dt_ratio * dt_ratio;
+			if (abs(vel_x_ + accel) > aerial_speed_cap_) {							// Only speed up if aerial speed cap allows.  Otherwise, keep current speed
+				accel = 0;
+			}
+			vel_x_ += accel;
+		}
+		//if (abs(vel_x_) > aerial_speed_cap_) {
+		//	vel_x_ -= Physics::SKID_AIR * dt_ratio * sgn(vel_x_);								// Mid-air x-speed limit (forced deceleration)
+		//}
 	}
 
 	// Gravity
@@ -227,7 +235,7 @@ int Player::Draw(Graphics& graphics, double offset_x, double offset_y) {
 	if (dir_facing_ == -1) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
-	int return_code = sprite_->Draw(graphics, static_cast<int>(floor(pos_x_)) + offset_x, static_cast<int>(floor(pos_y_)) + offset_y, flip);
+	int return_code = sprite_->Draw(graphics, static_cast<int>(floor(pos_x_ + offset_x)) , static_cast<int>(floor(pos_y_ + offset_y)), flip);
 	if (Game::debug_show_hitboxes) {
 		graphics.DrawColoredRect({ floor(pos_x_) - 8 + offset_x, floor(pos_y_) - 16 + offset_y, 16, 16 }, 0x00, 0x00, 0x00, 0x40);
 		graphics.DrawColoredRect(RightCollision(0) + Rectangle(offset_x, offset_y, 0, 0 ), 0xFF, 0xFF, 0xFF, 0xFF);
