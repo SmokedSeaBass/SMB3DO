@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include "graphics.h"
 #include "animated_sprite.h"
@@ -16,17 +17,16 @@ public:
 
 	Tile();
 	Tile(unsigned int id, AnimatedSprite* sprite = nullptr, COLLISION_TYPE collision = COLLISION_TYPE::NONE);
-	~Tile();
 
-	unsigned int GetId();
-	const AnimatedSprite* GetSprite();
-	COLLISION_TYPE GetCollision();
+	unsigned int GetId() const;
+	const AnimatedSprite* GetSprite() const;
+	COLLISION_TYPE GetCollision() const;
 
 	void Update(double delta_time);
-	int Draw(Graphics& graphics, int pos_x, int pos_y);
+	int Draw(Graphics& graphics, int pos_x, int pos_y) const;
 
 private:
 	unsigned int id_;
-	AnimatedSprite* sprite_;
+	std::shared_ptr<AnimatedSprite> sprite_;
 	COLLISION_TYPE collision_;
 };

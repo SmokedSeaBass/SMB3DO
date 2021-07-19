@@ -10,23 +10,23 @@ Tile::Tile() :
 
 Tile::Tile(unsigned int id, AnimatedSprite* sprite, COLLISION_TYPE collision) {
 	id_ = id;
-	sprite_ = sprite;
+	if (sprite == nullptr) {
+		sprite_ = nullptr;
+	} else {
+		sprite_ = std::make_shared<AnimatedSprite>(*sprite);
+	}
 	collision_ = collision;
 }
 
-Tile::~Tile() {
-
-}
-
-unsigned int Tile::GetId() {
+unsigned int Tile::GetId() const {
 	return id_;
 }
 
-const AnimatedSprite* Tile::GetSprite() {
-	return sprite_;
+const AnimatedSprite* Tile::GetSprite() const {
+	return sprite_.get();
 }
 
-Tile::COLLISION_TYPE Tile::GetCollision() {
+Tile::COLLISION_TYPE Tile::GetCollision() const {
 	return collision_;
 }
 
@@ -36,7 +36,7 @@ void Tile::Update(double delta_time) {
 	}
 }
 
-int Tile::Draw(Graphics& graphics, int pos_x, int pos_y) {
+int Tile::Draw(Graphics& graphics, int pos_x, int pos_y) const{
 	if (sprite_ == nullptr) {
 		//Error::PrintWarning("Attempted to draw tile #" + std::to_string(id_) + ", which has null sprite");
 		return -1;
