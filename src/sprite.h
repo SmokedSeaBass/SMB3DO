@@ -49,7 +49,8 @@ public:
 		SDL_Texture* texture,
 		int source_x = -1, int source_y = -1, int source_w = -1, int source_h = -1
 	);
-	~Sprite();
+
+	Sprite(Graphics& graphics, const std::string& file_path, SDL_Rect source_rect, Uint8 alpha_red, Uint8 alpha_green, Uint8 alpha_blue);
 
 	SDL_Rect GetSourceRect() const;
 	void SetSourceRect(SDL_Rect& rect);

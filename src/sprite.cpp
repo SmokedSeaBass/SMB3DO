@@ -11,12 +11,12 @@ Sprite::Sprite() :
 	origin_y_(0) {
 }
 
-Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) : Sprite::Sprite() {
+Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) : Sprite() {
 	source_rect_ = { source_x, source_y, source_w, source_h };
 	texture_ = graphics.LoadTextureFromImage(file_path, alpha_x, alpha_y);
 }
 
-Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int source_y, int source_w, int source_h) : Sprite::Sprite() {
+Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int source_y, int source_w, int source_h) : Sprite() {
 	if (texture == nullptr) {
 		Error::PrintWarning("Sprite initialized with null texture");
 		return;
@@ -25,7 +25,10 @@ Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int sourc
 	texture_ = texture;
 }
 
-Sprite::~Sprite() { }
+Sprite::Sprite(Graphics& graphics, const std::string& file_path, SDL_Rect source_rect, Uint8 alpha_red, Uint8 alpha_green, Uint8 alpha_blue) : Sprite() {
+	source_rect_ = { source_rect.x, source_rect.y, source_rect.w, source_rect.h };
+	texture_ = graphics.LoadTextureFromImage(file_path, alpha_red, alpha_green, alpha_blue);
+}
 
 SDL_Rect Sprite::GetSourceRect() const {
 	return source_rect_;
