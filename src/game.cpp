@@ -55,20 +55,24 @@ int Game::Run() {
 		Game::fps_limit = graphics_.GetCurrentDisplayMode().refresh_rate;
 	}
 	double tick_accumulator = 0.0;
-	double delta_time = 1000.0 / 60.0;
-	if (options_.enable_vsync && Game::fps_limit != 0) {
-		delta_time = 1000.0 / (60.0 * ceil(Game::fps_limit / 60.0));
+	if (options_.interp_factor == 0) {
+		if (fps_limit != 0) {
+			options_.interp_factor = static_cast<int>(ceil(Game::fps_limit / 60.0));
+		} else {
+			options_.interp_factor = static_cast<int>(ceil(graphics_.GetCurrentDisplayMode().refresh_rate / 60.0));
+		}
 	}
+	double delta_time = 1000.0 / (60.0 * options_.interp_factor);
 	std::chrono::high_resolution_clock::time_point tick_start = std::chrono::high_resolution_clock::now();
 	
 	// Test creation code
 	// Mario
 	Player mario = Player(graphics_, "assets/sprite_sheets/mario.bmp", 32, 32);
 	// Tileset
-	Tileset debug_tileset = Tileset(graphics_, "assets/tilesets/debug.tsx");
+	//Tileset debug_tileset(graphics_, "assets/tilesets/debug.tsx");
 	// Tilemap
-	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test.tmx");
-	test_tilemap.SetTileset(&debug_tileset);
+	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test2.tmx");
+	//test_tilemap.AddTileset(&debug_tileset);
 
 	// Bitmap font
 	SDL_Texture* test_font_texture = graphics_.LoadTextureFromImage("assets/sprite_sheets/hud_font_ascii.bmp", 0, 0);
@@ -127,7 +131,7 @@ int Game::Run() {
 			mario.Update(input, delta_time, test_tilemap);
 			camera.SetDimensions(graphics_.GetViewport().w, graphics_.GetViewport().h);
 			camera.Update(delta_time);
-			debug_tileset.Update(delta_time);
+			test_tilemap.Update(delta_time);
 
 			tick_accumulator -= delta_time;
 		}
@@ -138,6 +142,7 @@ int Game::Run() {
 		graphics_.SetViewport(NULL);
 		graphics_.DrawColoredRect(NULL, 0x00, 0x00, 0x00, 0xFF);
 		graphics_.SetViewport(&game_view);
+		graphics_.DrawColoredRect(NULL, 0xAF, 0xE5, 0xEA, 0xFF);
 		// Draw tilemap
 		test_tilemap.Draw(graphics_, -static_cast<int>(floor(camera.GetPosition()[0])), -static_cast<int>(floor(camera.GetPosition()[1])));
 		// Draw objects
