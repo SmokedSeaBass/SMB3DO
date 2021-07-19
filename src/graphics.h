@@ -41,11 +41,13 @@ public:
 	/// @param file_path Path to a BMP image.
 	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
 	SDL_Texture* LoadTextureFromImage(const std::string& file_path);
-	/// @brief Caches/recalls a cached SDL_Texture corresponding to a source BMP image, utilizing a 32-bit color key.
+	/// @brief Caches/recalls a cached SDL_Texture corresponding to a source BMP image, using a RGB value for transparency.
 	/// @param file_path Path to a BMP image.
-	/// @param color_key 32-bit color key.
+	/// @param red Red byte of transparent RGB value
+	/// @param green Green byte of transparent RGB value
+	/// @param blue Blue byte of transparent RGB value
 	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
-	SDL_Texture* LoadTextureFromImage(const std::string& file_path, Uint32 color_key);
+	SDL_Texture* LoadTextureFromImage(const std::string& file_path, Uint8 red, Uint8 green, Uint8 blue);
 	/// @brief Caches/recalls a cached SDL_Texture corresponding to a source BMP image, utilizing a specific pixel for transparency.
 	/// @param file_path Path to a BMP image.
 	/// @param alpha_x Integer x-coordinate of the color mask pixel.

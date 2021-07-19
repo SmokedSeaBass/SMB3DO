@@ -211,13 +211,14 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path) {
 	return texture_cache_[file_path];
 }
 
-SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint32 color_key) {
+SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint8 red, Uint8 green, Uint8 blue) {
 	if (texture_cache_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
 			Error::PrintError("Could not load image: \'" + file_path + "\'");
 			return nullptr;
 		}
+		Uint32 color_key = SDL_MapRGB(surface->format, red, green, blue);
 		SDL_SetColorKey(surface, SDL_TRUE, color_key);
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
 		texture_cache_[file_path] = texture;
@@ -235,10 +236,8 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int al
 		Uint32 color_key = 0x00000000;
 		if (alpha_x >= 0 && alpha_y >= 0) {
 			Uint8 r = 0x00, g = 0x00, b = 0x00;
-			Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);  // Get RGB values of first pixel
-			SDL_GetRGB(alpha_pixel, surface->format, &r, &g, &b);
-			color_key = SDL_MapRGB(surface->format, r, g, b);
-			SDL_SetColorKey(surface, SDL_TRUE, color_key);
+			Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);
+			SDL_SetColorKey(surface, SDL_TRUE, alpha_pixel);
 		}
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
 		texture_cache_[file_path] = texture;
