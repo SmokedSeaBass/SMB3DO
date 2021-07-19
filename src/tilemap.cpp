@@ -9,7 +9,6 @@
 
 Tilemap::Tilemap() : 
 	tilemap_(std::vector<std::vector<unsigned int>>()),
-	tileset_(nullptr),
 	width_(0),
 	height_(0),
 	pos_x_(0),
@@ -18,7 +17,11 @@ Tilemap::Tilemap() :
 
 Tilemap::Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset) : Tilemap::Tilemap() {
 	tilemap_ = tilemap;
-	tileset_ = tileset;
+	if (tileset == nullptr) {
+		tilesets_.push_back(nullptr);
+	} else {
+		tilesets_.push_back(std::make_shared<Tileset>(*tileset));
+	}
 	width_ = tilemap[0].size();
 	height_ = tilemap.size();
 }
@@ -53,18 +56,19 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 	}
 	tilemap_ = map;
 
-	//// Get tileset from .tmx
-	//tinyxml2::XMLElement* tileset_node = map_node->FirstChildElement("tileset");
-	//std::string path_to_tsx = path_to_tmx + "/../" + tileset_node->FindAttribute("source")->Value();
-	//Tileset tileset = Tileset(graphics, path_to_tsx);
-	//if (tileset.GetTilesetSprite() == nullptr) {
-	//	tileset_ = nullptr;
-	//	return;
-	//}
-	//tileset_ = &tileset;
+	// Get tileset from .tmx
+	tinyxml2::XMLElement* tileset_node = map_node->FirstChildElement("tileset");
+	std::string path_to_tsx = "";
+	while (tileset_node != nullptr) {
+		path_to_tsx = path_to_tmx + "/../" + tileset_node->FindAttribute("source")->Value();
+		Tileset tileset = Tileset(graphics, path_to_tsx);
+		if (tileset.GetTilesetSprite() == nullptr) {
+			Error::PrintWarning("Tileset '" + path_to_tsx + "' extracted from TMX file '" + path_to_tmx +  "'  has null Sprite");
+		}
+		tilesets_.push_back(std::make_shared<Tileset>(tileset));
+		tileset_node = tileset_node->NextSiblingElement("tileset");
+	}
 }
-
-Tilemap::~Tilemap() { }
 
 
 void Tilemap::GetDimensions(int dimensions[]) {
@@ -73,9 +77,16 @@ void Tilemap::GetDimensions(int dimensions[]) {
 }
 
 Tile Tilemap::GetTile(int x, int y) const {
-	int tile_id = GetTileId(x, y);
-	Tile tile = tileset_->GetTileFromId(tile_id);
-	return tile;
+	unsigned int tile_id = GetTileId(x, y);
+	if (tile_id == UINT_MAX) {
+		return Tile(tile_id);
+	}
+	unsigned int tile_index = tile_id;
+	const Tileset* tileset = GetTileset(tile_id, &tile_index);
+	if (tileset == nullptr) {
+		return Tile(tile_id);
+	}
+	return tileset->GetTileFromTileIndex(tile_index);
 }
 
 unsigned int Tilemap::GetTileId(int x, int y) const{
@@ -93,12 +104,26 @@ void Tilemap::SetTileId(int x, int y, unsigned int tile_id) {
 	tilemap_[y][x] = tile_id;
 }
 
-void Tilemap::SetTileset(Tileset* tileset) {
-	tileset_ = tileset;
+void Tilemap::AddTileset(Tileset* tileset) {
+	if (tileset == nullptr) {
+		return;
+	}
+	tilesets_.push_back(std::make_shared<Tileset>(*tileset));
 }
 
-Tileset* Tilemap::GetTileset() {
-	return tileset_;
+const Tileset* Tilemap::GetTileset(unsigned int tile_id, unsigned int* tile_index) const {
+	unsigned int counter = 0;
+	for (std::shared_ptr<Tileset> tileset : tilesets_) {
+		tile_id -= counter;
+		counter += tileset->GetTileCount();
+		if (tile_id < counter) {
+			if (tile_index != nullptr) {
+				*tile_index = tile_id;
+			}
+			return tileset.get();
+		}
+	}
+	return nullptr;
 }
 
 std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& rect) const {
@@ -121,6 +146,12 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 	return colliding_tiles;
 }
 
+void Tilemap::Update(double delta_time) {
+	for (std::shared_ptr<Tileset> tileset : tilesets_) {
+		tileset->Update(delta_time);
+	}
+}
+
 int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop) {
 	if (crop.w < 0) crop.w = graphics.GetViewport().w;
 	if (crop.h < 0) crop.h = graphics.GetViewport().h;
@@ -134,15 +165,17 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 	int right_col = std::min(static_cast<int>(floor(crop.Right() / TILESIZE_NES)), static_cast<int>(width_) + 1);
 	for (int y = top_row; y <= bottom_row; y++) {
 		for (int x = left_col; x <= right_col; x++) {
-			tile_id = GetTileId(x, y);
+			unsigned int tile_id = GetTileId(x, y);
 			if (tile_id == UINT_MAX) {
 				continue;
 			}
-			if (tileset_ != nullptr) {
-				tileset_->Draw(graphics, x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, tile_id);
-			} else {
+			unsigned int tile_index = tile_id;
+			const Tileset* tileset = GetTileset(tile_id, &tile_index);
+			if (tileset == nullptr) {
 				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, TILESIZE_NES , TILESIZE_NES };
 				graphics.DrawTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
+			} else {
+				tileset->Draw(graphics, x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, tile_index);
 			}
 		}
 	}
