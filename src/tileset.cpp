@@ -41,14 +41,23 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 
 	tinyxml2::XMLElement* image_node = tileset_node->FirstChildElement("image");
 	std::string source_image_path = path_to_tsx_file + "/../" + image_node->FindAttribute("source")->Value();
-	tileset_sprite_ = new Sprite(graphics, source_image_path);
+	std::string color_key = "";
+ 	const tinyxml2::XMLAttribute* trans_param = image_node->FindAttribute("trans");
+	if (trans_param != nullptr) {
+		std::string color_key = trans_param->Value();
+		unsigned int alpha_red = std::stoul(color_key.substr(0, 2), nullptr, 16);
+		unsigned int alpha_green = std::stoul(color_key.substr(2, 2), nullptr, 16);
+		unsigned int alpha_blue = std::stoul(color_key.substr(4, 2), nullptr, 16);
+		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path, { -1, -1, -1, -1 }, alpha_red, alpha_green, alpha_blue));
+	} else {
+		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path));
+	}
 
-	// TODO 6-7-21: Iterate through tile nodes to create Tile objects and store them in the tileset's Tiles table
 	// Properties to extract from each node include collision type, hitbox, animation, etc.
 	tinyxml2::XMLElement* tile_node = image_node->NextSiblingElement("tile");
 	while (tile_node != nullptr) {
 		unsigned int tile_id = tile_node->FindAttribute("id")->IntValue();
-		SDL_Rect tile_rect = Tileset::TileIndexToRect(tile_id);
+		SDL_Rect tile_rect = TileIndexToRect(tile_id);
 
 		/* Object/tile collisions */
 		Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
@@ -67,8 +76,8 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 		/* Animation */
 		AnimatedSprite* tile_sprite = nullptr;
 		tinyxml2::XMLElement* anim_node = tile_node->FirstChildElement("animation");
-		std::vector<std::pair<unsigned int, unsigned int>> animation_tiles;
 		if (anim_node != nullptr) {
+			std::vector<std::pair<unsigned int, unsigned int>> animation_tiles;
 			tinyxml2::XMLElement* frame_node = anim_node->FirstChildElement("frame");
 			while (frame_node != nullptr) {
 				unsigned int frame_tile_id = frame_node->FindAttribute("tileid")->IntValue();
@@ -79,21 +88,22 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 			}
 			double frame_speed = 1000.0 / animation_tiles[0].second;
 			int frame_count = animation_tiles.size();
-			tile_sprite = new AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
+			tile_rect = TileIndexToRect(animation_tiles[0].first);
+			tile_sprite = &AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
+		} else {
+			// TODO 7-19-21: Replace with Sprite polymorphism
+			tile_sprite = &AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h);
 		}
 
-		/* Storing the tile */
-		if (tile_collision != Tile::COLLISION_TYPE::NONE || tile_sprite != nullptr) {		// Is the tile worth storing?
-			Tile tile = Tile(tile_id, tile_sprite, tile_collision);
-			tiles_[tile_id] = tile;
-		}
+		/* Store the tile in the TileList */
+		tiles_[tile_id] = std::make_shared<Tile>(Tile(tile_id, tile_sprite, tile_collision));
 
 		tile_node = tile_node->NextSiblingElement("tile");
 	}
 }
 
 Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int tile_margin, int tile_spacing) : Tileset::Tileset() {
-	tileset_sprite_ = tileset_sprite;
+	tileset_sprite_ = std::make_shared<Sprite>(*tileset_sprite);
 	tile_width_ = tile_width;
 	tile_height_ = tile_height;
 	tile_margin_ = tile_margin;
@@ -108,42 +118,35 @@ Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int ti
 	tile_count_ = tile_row_size_ * tile_col_size;
 }
 
-Tileset::~Tileset() {
-	for (TileList::iterator iter = tiles_.begin(); iter != tiles_.end(); ++iter) {
-		delete iter->second.GetSprite();
-	}
-	delete tileset_sprite_;
+unsigned int Tileset::GetTileCount() const {
+	return tile_count_;
 }
 
-Sprite* Tileset::GetTilesetSprite() {
-	return tileset_sprite_;
+const Sprite* Tileset::GetTilesetSprite() const {
+	return tileset_sprite_.get();
 }
 
-Tile Tileset::GetTileFromId(unsigned int tile_id) {
-	//std::map<unsigned int, Tile>::iterator iter;
-	//iter = tiles_.find(tile_id);
-	//if (iter != tiles_.end()) {
-	//	return iter->second;
-	//} else {
-	//	return Tile(tile_id);
-	//}
-	if (tiles_.count(tile_id) == 0) {
-		return Tile(tile_id);
+const Tile Tileset::GetTileFromTileIndex(unsigned int tile_index) const {
+	if (tiles_.count(tile_index) == 0) {
+		return Tile(tile_index);
 	}
-	return tiles_[tile_id];
+	Tile tile = *(tiles_.find(tile_index)->second);
+	return tile;
 }
 
 void Tileset::Update(double delta_time) {
-	for (std::pair<unsigned int, Tile> tile_pair : tiles_) {
-		tile_pair.second.Update(delta_time);
+	TileList::iterator tile_iter = tiles_.begin();
+	while (tile_iter != tiles_.end()) {
+		tile_iter->second.get()->Update(delta_time);
+		tile_iter++;
 	}
 }
 
-int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id) {
+int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id) const {
 	if (tiles_.count(tile_id) != 0) {
-		Tile tile = tiles_[tile_id];
-		if (tile.GetSprite() != nullptr) {
-			return tile.Draw(graphics, pos_x, pos_y);
+		const Tile* tile = tiles_.find(tile_id)->second.get();
+		if (tile->GetSprite() != nullptr) {
+			return tile->Draw(graphics, pos_x, pos_y);
 		}
 	}
 	SDL_Rect tile_rect = TileIndexToRect(tile_id);
@@ -151,9 +154,9 @@ int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id
 }
 
 
-SDL_Rect Tileset::TileIndexToRect(unsigned int tile_id) {
-	int row_index = tile_id % tile_row_size_;
-	int col_index = tile_id / tile_row_size_;
+SDL_Rect Tileset::TileIndexToRect(unsigned int tile_index) const {
+	int row_index = tile_index % tile_row_size_;
+	int col_index = tile_index / tile_row_size_;
 	int rect_x = row_index * (tile_width_ + tile_spacing_) + tile_margin_;
 	int rect_y = col_index * (tile_height_ + tile_spacing_) + tile_margin_;
 	SDL_Rect tile_rect = {

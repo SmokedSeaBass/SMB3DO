@@ -25,22 +25,23 @@ public:
 		int tile_width = 16, int tile_height = 16,
 		int tile_margin = 0, int tile_spacing = 0
 	);
-	~Tileset();
 
-	Sprite* GetTilesetSprite();
-	Tile GetTileFromId(unsigned int tile_id);
+	unsigned int GetTileCount() const;
+
+	const Sprite* GetTilesetSprite() const;
+	const Tile GetTileFromTileIndex(unsigned int tile_index) const;
 
 	void Update(double delta_time);
-	int Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id);
+	int Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_index) const;
 
 private:
 	/// @brief Used for rendering tiles that do not have an associated Tile object
-	Sprite* tileset_sprite_;
-	typedef std::map<unsigned int, Tile> TileList;
+	std::shared_ptr<Sprite> tileset_sprite_;
+	typedef std::map<unsigned int, std::shared_ptr<Tile>> TileList;
 	TileList tiles_;
 	int tile_width_, tile_height_;
 	int tile_margin_, tile_spacing_;
 	int tile_row_size_, tile_count_;
 
-	SDL_Rect TileIndexToRect(unsigned int tile_id);
+	SDL_Rect TileIndexToRect(unsigned int tile_id) const;
 };
