@@ -1,6 +1,7 @@
 #pragma once
+
+#include <memory>
 #include <string>
-#include <list>
 #include "constants.h"
 #include "entity.h"
 #include "tilemap.h"
@@ -28,13 +29,14 @@ protected:
 	std::string display_name_;
 	// TODO 5-19-21: Probably should be translated to the sublevel class, identify/access any sublevel via 0xWWLLAAAA. Maybe include entrances?: 0xWWLLAAEE
 	/// <summary>
-	/// The level's unique 32-bit identifier number. Intended practice is that the format is 0xWWWWLLLL,
+	/// The level's 
+	///  32-bit identifier number. Intended practice is that the format is 0xWWWWLLLL,
 	/// where WWWW is the 16-bit world number and LLLL is the 16-bit level number.
 	/// </summary>
 	Uint32 uid_;
 	unsigned int timelimit_;
 	SDL_Rect bounds_;
-	std::vector<Entity> entity_list_;
+	std::vector<std::shared_ptr<Entity>> entity_list_;
 	std::vector<Sprite> tileset_list_;
 	std::vector<Tilemap> tilemap_layers_;
 };

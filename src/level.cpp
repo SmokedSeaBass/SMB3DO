@@ -4,7 +4,7 @@ Level::Level() {
 	display_name_ = std::string("Test Level");
 	timelimit_ = 999;
 	bounds_ = {0, 0, 0, 0};
-	entity_list_ = std::vector<Entity>();
+	entity_list_ = std::vector<std::shared_ptr<Entity>>();
 	tileset_list_ = std::vector<Sprite>();
 	tilemap_layers_ = std::vector<Tilemap>();
 }
