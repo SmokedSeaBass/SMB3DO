@@ -15,19 +15,34 @@ public:
 		CameraTarget(int x, int y) : x(x), y(y), entity(nullptr) { }
 	};
 
+	enum class VerticalScrollRule {
+		NONE, ALWAYS, SELECTIVE
+	};
+
 	Camera(const SDL_Rect& rect = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES });
+
+	std::vector<double> GetPosition() const;
+	std::vector<double> GetDimensions() const;
 	
 	void SetRect(const Rectangle& rect);
 	void SetPosition(double x, double y);
 	void SetDimensions(double w, double h);
 	void SetTarget(CameraTarget& target);
+	void SetBounds(const Rectangle& rect);
+	void SetCaptureBounds(const Rectangle& rect);
+	void SetVerticalScrollRule(VerticalScrollRule rule);
 	void SetInterpRatio(float interp_ratio);
-	std::vector<double> GetPosition() const;
 	int Update(double delta_time);
 
 private:
 	Rectangle rect_;
+	Rectangle bounds_;
+	Rectangle capture_bounds_;
 	CameraTarget* target_;
+	VerticalScrollRule vertical_scroll_;
 	float interp_ratio_;
+
+	void UpdatePosX(double delta_time, const Rectangle& inner_bound);
+	void UpdatePosY(double delta_time, const Rectangle& inner_bound);
 };
 

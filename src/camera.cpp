@@ -3,7 +3,18 @@
 Camera::Camera(const SDL_Rect& rect) {
 	rect_ = rect;
 	target_ = nullptr;
+	bounds_ = Rectangle(0, 0, -1, -1);
+	capture_bounds_ = Rectangle(0, 0, 0, 0);
+	vertical_scroll_ = VerticalScrollRule::ALWAYS;
 	interp_ratio_ = 1;
+}
+
+std::vector<double> Camera::GetPosition() const {
+	return { rect_.x, rect_.y };
+}
+
+std::vector<double> Camera::GetDimensions() const {
+	return { rect_.w, rect_.h };
 }
 
 void Camera::SetRect(const Rectangle& rect) {
@@ -24,16 +35,24 @@ void Camera::SetTarget(CameraTarget& target) {
 	target_ = &target;
 }
 
+void Camera::SetBounds(const Rectangle& rect) {
+	bounds_ = rect;
+}
+
+void Camera::SetCaptureBounds(const Rectangle& rect) {
+	capture_bounds_ = rect;
+}
+
+void Camera::SetVerticalScrollRule(VerticalScrollRule rule) {
+	vertical_scroll_ = rule;
+}
+
 void Camera::SetInterpRatio(float interp_ratio) {
 	if (interp_ratio < 0.0f)
 		interp_ratio = 0.0f;
 	if (interp_ratio > 1.0f)
 		interp_ratio = 1.0f;
 	interp_ratio_ = interp_ratio;
-}
-
-std::vector<double> Camera::GetPosition() const {
-	return std::vector<double>({ static_cast<double>(rect_.x), static_cast<double>(rect_.y) });
 }
 
 int Camera::Update(double delta_time) {
@@ -44,25 +63,68 @@ int Camera::Update(double delta_time) {
 		target_->x = static_cast<int>(floor(target_->entity->GetPosition()[0]));
 		target_->y = static_cast<int>(floor(target_->entity->GetPosition()[1]));
 	}
-	if (interp_ratio_ == 1.0f) {
-		rect_.x = (double)target_->x - rect_.w / 2.0;
-		rect_.y = (double)target_->y - rect_.h / 2.0;
-		return 0;
+
+	// Only move if target exits capture bounds
+	Rectangle inner_bound = Rectangle(rect_.x + rect_.w / 2.0 + capture_bounds_.x , rect_.y + rect_.h / 2.0 + capture_bounds_.y, capture_bounds_.w, capture_bounds_.h);
+	if (!capture_bounds_.w >= 0 && (target_->x < inner_bound.Left() || target_->x > inner_bound.Right())) {
+		UpdatePosX(delta_time, inner_bound);
 	}
-	double dt_ratio = delta_time / (1000.0 / 60.0);
-	double center_x = rect_.x + rect_.w / 2.0;
-	double center_y = rect_.y + rect_.h / 2.0;
-	double delta_x = ((double)target_->x - center_x) * interp_ratio_ * dt_ratio;
-	double delta_y = ((double)target_->y - center_y) * interp_ratio_ * dt_ratio;
-	if (abs(delta_x) < 0.1 * interp_ratio_ * dt_ratio) {
-		rect_.x = (double)target_->x - rect_.w / 2.0;
-	} else {
-		rect_.x += delta_x;
-	}
-	if (abs(delta_y) < 0.1 * interp_ratio_ * dt_ratio) {
-		rect_.y = (double)target_->y - rect_.h / 2.0;
-	} else {
-		rect_.y += delta_y;
+	if (vertical_scroll_ != VerticalScrollRule::NONE && capture_bounds_.h >= 0 && (target_->y < inner_bound.Top() || target_->y > inner_bound.Bottom())) {
+		UpdatePosY(delta_time, inner_bound);
 	}
 	return 0;
+}
+
+void Camera::UpdatePosX(double delta_time, const Rectangle& inner_bound) {
+	if (interp_ratio_ == 1.0f) {
+		rect_.x += inner_bound.DistanceToPoint(target_->x, target_->y)[0];
+	} else {
+		double dt_ratio = delta_time / (1000.0 / 60.0);
+		double center_x = rect_.x + rect_.w / 2.0;
+		double delta_x = inner_bound.DistanceToPoint(target_->x, target_->y)[0] * interp_ratio_ * dt_ratio;
+		rect_.x += delta_x;
+	}
+
+	// Bound camera position
+	if (bounds_.w > 0) {
+		if (rect_.Left() < bounds_.Left()) {
+			rect_.x = bounds_.Left();
+		}
+		if (rect_.Right() > bounds_.Right()) {
+			rect_.x = bounds_.Right() - rect_.w;
+		}
+	}
+}
+
+void Camera::UpdatePosY(double delta_time, const Rectangle& inner_bound) {
+	double delta_y = 0;
+	switch (vertical_scroll_) {
+	case (VerticalScrollRule::NONE):
+		delta_y = 0;
+		break;
+	case (VerticalScrollRule::ALWAYS):
+		delta_y = inner_bound.DistanceToPoint(target_->x, target_->y)[1];
+		break;
+	case (VerticalScrollRule::SELECTIVE):
+		delta_y = std::max(0.0, inner_bound.DistanceToPoint(target_->x, target_->y)[1]);
+		break;
+	}
+		
+	if (interp_ratio_ == 1.0f) {
+		rect_.y += delta_y;
+	} else {
+		double dt_ratio = delta_time / (1000.0 / 60.0);
+		double center_y = rect_.y + rect_.y / 2.0;
+		rect_.y += delta_y * interp_ratio_ * dt_ratio;
+	}
+
+	// Bound camera position
+	if (bounds_.h > 0) {
+		if (rect_.Top() < bounds_.Top()) {
+			rect_.y = bounds_.Top();
+		}
+		if (rect_.Bottom() > bounds_.Bottom()) {
+			rect_.y = bounds_.Bottom() - rect_.h;
+		}
+	}
 }
