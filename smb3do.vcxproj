@@ -216,7 +216,7 @@ echo Post-Build Event completed!</Command>
     <ResourceCompile Include="smb3do.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="content\bin\icon.ico" />
+    <Image Include="assets\bin\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

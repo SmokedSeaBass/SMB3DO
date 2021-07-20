@@ -147,7 +147,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="content\bin\icon.ico">
+    <Image Include="assets\bin\icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
