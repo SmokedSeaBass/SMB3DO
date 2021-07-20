@@ -97,13 +97,14 @@ unsigned int Tilemap::GetTileId(int x, int y) const{
 }
 
 const Tileset* Tilemap::GetTileset(unsigned int tile_id, unsigned int* tile_index) const {
-	unsigned int counter = 0;
+	unsigned int tileset_end_tile_id = 0;
+	unsigned int index = 0;
 	for (std::shared_ptr<Tileset> tileset : tilesets_) {
-		tile_id -= counter;
-		counter += tileset->GetTileCount();
-		if (tile_id < counter) {
+		index = tile_id - tileset_end_tile_id;
+		tileset_end_tile_id += tileset->GetTileCount();
+		if (tileset_end_tile_id > tile_id) {
 			if (tile_index != nullptr) {
-				*tile_index = tile_id;
+				*tile_index = index;
 			}
 			return tileset.get();
 		}
@@ -154,7 +155,7 @@ void Tilemap::Update(double delta_time) {
 int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop) {
 	if (crop.w < 0) crop.w = graphics.GetViewport().w;
 	if (crop.h < 0) crop.h = graphics.GetViewport().h;
-	crop.x -= offset_x;
+	crop.x -= offset_x; 
 	crop.y -= offset_y;
 
 	unsigned int tile_id = 0;

@@ -71,7 +71,7 @@ int Game::Run() {
 	// Tileset
 	//Tileset debug_tileset(graphics_, "assets/tilesets/debug.tsx");
 	// Tilemap
-	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test2.tmx");
+	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test2a.tmx");
 	//test_tilemap.AddTileset(&debug_tileset);
 
 	// Bitmap font
@@ -84,7 +84,7 @@ int Game::Run() {
 	camera.SetPosition(0, 12 * 16);
 	camera.SetBounds(Rectangle(0, 0, test_tilemap.GetDimensions()[0] * TILESIZE_NES, test_tilemap.GetDimensions()[1] * TILESIZE_NES));
 	camera.SetCaptureBounds(Rectangle(-8, 0, 16, 0));
-	camera.SetVerticalScrollRule(Camera::VerticalScrollRule::SELECTIVE);
+	camera.SetVerticalScrollRule(Camera::VerticalScrollRule::ALWAYS);
 	camera.SetInterpRatio(1.0f);
 	
 	// Main game loop
