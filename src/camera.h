@@ -38,7 +38,7 @@ private:
 	Rectangle rect_;
 	Rectangle bounds_;
 	Rectangle capture_bounds_;
-	CameraTarget* target_;
+	CameraTarget target_;
 	VerticalScrollRule vertical_scroll_;
 	float interp_ratio_;
 
