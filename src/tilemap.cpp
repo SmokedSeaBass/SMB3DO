@@ -81,7 +81,7 @@ Tile Tilemap::GetTile(int x, int y) const {
 		return Tile(tile_id);
 	}
 	unsigned int tile_index = tile_id;
-	const Tileset* tileset = GetTileset(tile_id, &tile_index);
+	const Tileset* tileset = GetTilesetFromTileID(tile_id, &tile_index);
 	if (tileset == nullptr) {
 		return Tile(tile_id);
 	}
@@ -96,7 +96,7 @@ unsigned int Tilemap::GetTileId(int x, int y) const{
 	return tilemap_[y][x];
 }
 
-const Tileset* Tilemap::GetTileset(unsigned int tile_id, unsigned int* tile_index) const {
+const Tileset* Tilemap::GetTilesetFromTileID(unsigned int tile_id, unsigned int* tile_index) const {
 	unsigned int tileset_end_tile_id = 0;
 	unsigned int index = 0;
 	for (std::shared_ptr<Tileset> tileset : tilesets_) {
@@ -110,6 +110,14 @@ const Tileset* Tilemap::GetTileset(unsigned int tile_id, unsigned int* tile_inde
 		}
 	}
 	return nullptr;
+}
+
+std::vector<Tileset*> Tilemap::GetTilesets() const {
+	std::vector<Tileset*> tilesets;
+	for (std::shared_ptr<Tileset> tileset : tilesets_) {
+		tilesets.push_back(tileset.get());
+	}
+	return tilesets;
 }
 
 std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& rect) const {
@@ -170,7 +178,7 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 				continue;
 			}
 			unsigned int tile_index = tile_id;
-			const Tileset* tileset = GetTileset(tile_id, &tile_index);
+			const Tileset* tileset = GetTilesetFromTileID(tile_id, &tile_index);
 			if (tileset == nullptr) {
 				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, TILESIZE_NES , TILESIZE_NES };
 				graphics.DrawTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);

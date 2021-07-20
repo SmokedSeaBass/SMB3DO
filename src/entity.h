@@ -1,5 +1,8 @@
 #pragma once
+
+#include "input.h"
 #include "sprite.h"
+#include "tilemap.h"
 
 /// <summary>
 /// A class that represents an "object" in NES terms. Can be a player, an enemy, score sprite, a projectiles, etc.
@@ -12,8 +15,7 @@ public:
 	std::vector<double> GetPosition() const;
 	std::vector<double> GetVelocity() const;
 
-	virtual void Update();
-	virtual void Update(const Uint8* keyboard_state);
+	virtual void Update(const Input& input, double delta_time, const Tilemap& tilemap);
 	virtual int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0);
 
 protected:

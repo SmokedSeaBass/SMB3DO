@@ -32,7 +32,8 @@ public:
 	/// @param tile_id The tile ID of the Tile
 	/// @param tile_index (Optional) Pointer to an unsigned integer to be set to the tile's index within its found Tileset (for use with drawing)
 	/// @return On success, a pointer to a Tileset. Otherwise, nullptr
-	const Tileset* GetTileset(unsigned int tile_id, unsigned int* tile_index = nullptr) const;
+	const Tileset* GetTilesetFromTileID(unsigned int tile_id, unsigned int* tile_index = nullptr) const;
+	std::vector<Tileset*> GetTilesets() const;
 	std::vector<CollisionTile> GetCollidingTiles(const Rectangle& rect) const;
 
 	void SetTileId(int x, int y, unsigned int tile_id);

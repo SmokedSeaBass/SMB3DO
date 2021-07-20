@@ -7,6 +7,7 @@
 #include "constants.h"
 #include "error.h"
 #include "input.h"
+#include "level.h"
 #include "player.h"
 #include "sprite.h"
 #include "tilemap.h"
@@ -66,26 +67,13 @@ int Game::Run() {
 	std::chrono::high_resolution_clock::time_point tick_start = std::chrono::high_resolution_clock::now();
 	
 	// Test creation code
-	// Mario
-	Player mario = Player(graphics_, "assets/sprite_sheets/mario.bmp", 32, 440);
-	// Tileset
-	//Tileset debug_tileset(graphics_, "assets/tilesets/debug.tsx");
-	// Tilemap
-	Tilemap test_tilemap = Tilemap(graphics_, "assets/maps/test2a.tmx");
-	//test_tilemap.AddTileset(&debug_tileset);
+	Level test_level;
+	test_level.Load(graphics_, "assets/maps/test2a.tmx");
 
 	// Bitmap font
 	SDL_Texture* test_font_texture = graphics_.LoadTextureFromImage("assets/sprite_sheets/hud_font_ascii.bmp", 0, 0);
 	BitmapFont test_font;
 	test_font.LoadBitmap(test_font_texture, 8, 8);
-	// Camera
-	Camera camera(graphics_.GetViewport());
-	camera.SetTarget(Camera::CameraTarget(mario));
-	camera.SetPosition(0, 12 * 16);
-	camera.SetBounds(Rectangle(0, 0, test_tilemap.GetDimensions()[0] * TILESIZE_NES, test_tilemap.GetDimensions()[1] * TILESIZE_NES));
-	camera.SetCaptureBounds(Rectangle(-8, 0, 16, 0));
-	camera.SetVerticalScrollRule(Camera::VerticalScrollRule::ALWAYS);
-	camera.SetInterpRatio(1.0f);
 	
 	// Main game loop
 	while (!quit_game) {
@@ -132,10 +120,7 @@ int Game::Run() {
 			input.UpdateInputs(keyboard_state);
 
 			/* Update */
-			mario.Update(input, delta_time, test_tilemap);
-			camera.SetDimensions(graphics_.GetViewport().w, graphics_.GetViewport().h);
-			camera.Update(delta_time);
-			test_tilemap.Update(delta_time);
+			test_level.Update(graphics_, input, delta_time);
 
 			tick_accumulator -= delta_time;
 		}
@@ -146,12 +131,10 @@ int Game::Run() {
 		graphics_.SetViewport(NULL);
 		graphics_.DrawColoredRect(NULL, 0x00, 0x00, 0x00, 0xFF);
 		graphics_.SetViewport(&game_view);
-		graphics_.DrawColoredRect(NULL, 0xAF, 0xE5, 0xEA, 0xFF);
-		// Draw tilemap
-		test_tilemap.Draw(graphics_, -static_cast<int>(floor(camera.GetPosition()[0])), -static_cast<int>(floor(camera.GetPosition()[1])));
-		// Draw objects
-		// Draw player
-		mario.Draw(graphics_, -static_cast<int>(floor(camera.GetPosition()[0])), -static_cast<int>(floor(camera.GetPosition()[1])));
+		
+		// Level
+		test_level.Draw(graphics_);
+
 		// UI
 		if (Game::debug_show_info) {
 			char debug_info[48] = "";
@@ -161,10 +144,6 @@ int Game::Run() {
 				snprintf(debug_info, sizeof(debug_info), "%.2f fps\n%.4f ms", 1000.0 / (tick_duration), tick_duration);
 			}
 			test_font.DrawText(graphics_, debug_info, 0, 0);
-			test_font.DrawText(graphics_, "X: " + std::to_string(mario.GetPosition()[0]), 0, 16);
-			test_font.DrawText(graphics_, "Y: " + std::to_string(mario.GetPosition()[1]), 0, 24);
-			test_font.DrawText(graphics_, "CX: " + std::to_string(camera.GetPosition()[0]), 0, 32);
-			test_font.DrawText(graphics_, "CY: " + std::to_string(camera.GetPosition()[1]), 0, 40);
 		}
 		// Flip to screen
 		graphics_.FlipRenderer();

@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <string>
+#include "camera.h"
 #include "constants.h"
 #include "entity.h"
+#include "tileset.h"
 #include "tilemap.h"
 
 // TODO 5-17-21: Decompose into sublevels.  Most definitions/members here will be translated to the sublevel class and leave the level class rather bare.
@@ -14,13 +16,14 @@
 class Level {
 public:
 	Level();
-	~Level();
 
-	std::string GetDisplayName();
+	std::string GetDisplayName() const;
+
 	void SetDisplayName(std::string name);
 
-	std::vector<Tileset> LoadLevelTilesets();
-
+	int Load(Graphics& graphics, const std::string& path_to_lvl);
+	void Update(Graphics& graphics, const Input& input, double delta_time);
+	int Draw(Graphics& graphics);
 
 protected:
 	/// <summary>
@@ -36,7 +39,8 @@ protected:
 	Uint32 uid_;
 	unsigned int timelimit_;
 	SDL_Rect bounds_;
+	Camera camera_;
 	std::vector<std::shared_ptr<Entity>> entity_list_;
-	std::vector<Sprite> tileset_list_;
+	std::vector<Tileset*> tileset_list_;
 	std::vector<Tilemap> tilemap_layers_;
 };

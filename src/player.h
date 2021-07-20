@@ -54,8 +54,8 @@ public:
 	~Player();
 
 	void HandleInputs(const Input& input);
-	void Update(const Input& input, double delta_time, const Tilemap& tilemap);
-	int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0);
+	void Update(const Input& input, double delta_time, const Tilemap& tilemap) override;
+	int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0) override;
 
 	Rectangle GetColliderAbsoluteRect();
 	Rectangle LeftCollision(double delta) const;

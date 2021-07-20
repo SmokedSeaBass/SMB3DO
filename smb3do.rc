@@ -71,7 +71,7 @@ BEGIN
             VALUE "FileDescription", "Super Mario Bros. 3-Do"
             VALUE "FileVersion", "0.2.0.0"
             VALUE "InternalName", "smb3do.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2020"
+            VALUE "LegalCopyright", "Copyright (C) 2020-2021"
             VALUE "OriginalFilename", "smb3do.exe"
             VALUE "ProductName", "Super Mario Bros. 3-Do"
             VALUE "ProductVersion", "0.2.0.0"
