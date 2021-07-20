@@ -16,10 +16,10 @@ public:
 	};
 
 	Tile();
-	Tile(unsigned int id, AnimatedSprite* sprite = nullptr, COLLISION_TYPE collision = COLLISION_TYPE::NONE);
+	Tile(unsigned int id, Sprite* sprite = nullptr, COLLISION_TYPE collision = COLLISION_TYPE::NONE);
 
 	unsigned int GetId() const;
-	const AnimatedSprite* GetSprite() const;
+	const Sprite* GetSprite() const;
 	COLLISION_TYPE GetCollision() const;
 
 	void Update(double delta_time);
@@ -27,6 +27,6 @@ public:
 
 private:
 	unsigned int id_;
-	std::shared_ptr<AnimatedSprite> sprite_;
+	std::shared_ptr<Sprite> sprite_;
 	COLLISION_TYPE collision_;
 };
