@@ -2,6 +2,9 @@
 <tileset version="1.5" tiledversion="1.7.0" name="standard" tilewidth="16" tileheight="16" tilecount="256" columns="16">
  <image source="standard.bmp" trans="e800dc" width="256" height="256"/>
  <tile id="32">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
   <animation>
    <frame tileid="32" duration="125"/>
    <frame tileid="33" duration="125"/>
@@ -10,12 +13,20 @@
   </animation>
  </tile>
  <tile id="37">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
   <animation>
    <frame tileid="37" duration="125"/>
    <frame tileid="38" duration="125"/>
    <frame tileid="39" duration="125"/>
    <frame tileid="40" duration="125"/>
   </animation>
+ </tile>
+ <tile id="42">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
  </tile>
  <tile id="44">
   <animation>
@@ -48,5 +59,45 @@
    <frame tileid="62" duration="125"/>
    <frame tileid="63" duration="125"/>
   </animation>
+ </tile>
+ <tile id="64">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="65">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="66">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="67">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="68">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="69">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="70">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="71">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="SolidCollision" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
  </tile>
 </tileset>

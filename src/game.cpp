@@ -67,7 +67,7 @@ int Game::Run() {
 	
 	// Test creation code
 	// Mario
-	Player mario = Player(graphics_, "assets/sprite_sheets/mario.bmp", 32, 32);
+	Player mario = Player(graphics_, "assets/sprite_sheets/mario.bmp", 32, 440);
 	// Tileset
 	//Tileset debug_tileset(graphics_, "assets/tilesets/debug.tsx");
 	// Tilemap
@@ -79,8 +79,12 @@ int Game::Run() {
 	BitmapFont test_font;
 	test_font.LoadBitmap(test_font_texture, 8, 8);
 	// Camera
-	Camera camera = Camera(graphics_.GetViewport());
+	Camera camera(graphics_.GetViewport());
 	camera.SetTarget(Camera::CameraTarget(mario));
+	camera.SetPosition(0, 12 * 16);
+	camera.SetBounds(Rectangle(0, 0, test_tilemap.GetDimensions()[0] * TILESIZE_NES, test_tilemap.GetDimensions()[1] * TILESIZE_NES));
+	camera.SetCaptureBounds(Rectangle(-8, 0, 16, 0));
+	camera.SetVerticalScrollRule(Camera::VerticalScrollRule::SELECTIVE);
 	camera.SetInterpRatio(1.0f);
 	
 	// Main game loop
