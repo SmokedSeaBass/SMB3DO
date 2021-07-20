@@ -24,7 +24,7 @@ Player::Player(Graphics& graphics, const std::string& path_to_bmp, double pos_x,
 	pos_y_ = pos_y;
 	// Initialize spritemap
 	// All hardcoded for now
-	// Walk speeds are 8 (crawl), 12 (walk), 16 (run)
+	// Walk animation speeds are 8 (crawl), 12 (walk), 16 (run)
 	SDL_Texture* player_texture = graphics.LoadTextureFromImage(path_to_bmp, 0, 0);
 
 	Sprite spr_stand = Sprite(graphics, player_texture, 17 + 1, 1, 16, 16);
