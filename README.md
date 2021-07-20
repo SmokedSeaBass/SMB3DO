@@ -7,6 +7,8 @@ This project is written in C++14 and runs on the SDL2 framework.
 
 <img src="docs/smb3do_v0-1-0_sample2.png"/>
 
+<img src="docs/smb3do_v0-2-0_sample.png"/>
+
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Features <img src="docs/smb3do_bullet.png" width="32px"/>
 ### Current Release (v0.1.0)
 * Keyboard input (see "How to Use")
