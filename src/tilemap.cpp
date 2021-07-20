@@ -71,9 +71,8 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 }
 
 
-void Tilemap::GetDimensions(int dimensions[]) {
-	dimensions[0] = width_;
-	dimensions[1] = height_;
+std::vector<int> Tilemap::GetDimensions() const {
+	return { static_cast<int>(width_), static_cast<int>(height_) };
 }
 
 Tile Tilemap::GetTile(int x, int y) const {
@@ -95,20 +94,6 @@ unsigned int Tilemap::GetTileId(int x, int y) const{
 		return UINT_MAX;
 	}
 	return tilemap_[y][x];
-}
-
-void Tilemap::SetTileId(int x, int y, unsigned int tile_id) {
-	if (x >= width_ || y >= height_) {
-		throw std::out_of_range("Attempted to set tile outside of tilemap");
-	}
-	tilemap_[y][x] = tile_id;
-}
-
-void Tilemap::AddTileset(Tileset* tileset) {
-	if (tileset == nullptr) {
-		return;
-	}
-	tilesets_.push_back(std::make_shared<Tileset>(*tileset));
 }
 
 const Tileset* Tilemap::GetTileset(unsigned int tile_id, unsigned int* tile_index) const {
@@ -144,6 +129,20 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 		}
 	}
 	return colliding_tiles;
+}
+
+void Tilemap::SetTileId(int x, int y, unsigned int tile_id) {
+	if (x >= width_ || y >= height_) {
+		throw std::out_of_range("Attempted to set tile outside of tilemap");
+	}
+	tilemap_[y][x] = tile_id;
+}
+
+void Tilemap::AddTileset(Tileset* tileset) {
+	if (tileset == nullptr) {
+		return;
+	}
+	tilesets_.push_back(std::make_shared<Tileset>(*tileset));
 }
 
 void Tilemap::Update(double delta_time) {

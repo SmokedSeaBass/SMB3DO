@@ -25,17 +25,19 @@ public:
 	Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset);
 	Tilemap(Graphics& graphics, std::string path_to_tmx);
 
-	void GetDimensions(int dimensions[]);
+	std::vector<int> GetDimensions() const;
 	Tile GetTile(int x, int y) const;
 	unsigned int GetTileId(int x, int y) const;
-	void SetTileId(int x, int y, unsigned int tile_id);
-	void AddTileset(Tileset* tileset);
 	/// @brief Returns a pointer to the Tileset that a Tile belongs to by tile ID
 	/// @param tile_id The tile ID of the Tile
 	/// @param tile_index (Optional) Pointer to an unsigned integer to be set to the tile's index within its found Tileset (for use with drawing)
 	/// @return On success, a pointer to a Tileset. Otherwise, nullptr
 	const Tileset* GetTileset(unsigned int tile_id, unsigned int* tile_index = nullptr) const;
 	std::vector<CollisionTile> GetCollidingTiles(const Rectangle& rect) const;
+
+	void SetTileId(int x, int y, unsigned int tile_id);
+	void AddTileset(Tileset* tileset);
+
 	void Update(double delta_time);
 	int Draw(Graphics& graphics, int offset_x = 0, int offset_y = 0, Rectangle crop = { 0, 0, -1, -1 } );
 
