@@ -16,6 +16,26 @@ public:
 	double Top() const { return y; }
 	double Bottom() const { return y + h; }
 
+	bool ContainsPoint(double x, double y) const { return x >= Left() && x <= Right() && y >= Top() && y <= Bottom(); }
+	std::vector<double> DistanceToPoint(double x, double y) const {
+		double delta_x = 0;
+		double delta_y = 0;
+		if (ContainsPoint(x, y)) {
+			return { delta_x, delta_y };
+		}
+		if (x < Left()) {
+			delta_x = x - Left();
+		} else {
+			delta_x = x - Right();
+		}
+		if (y < Top()) {
+			delta_y = y - Top();
+		} else {
+			delta_y = y - Bottom();
+		}
+		return { delta_x, delta_y };
+	}
+
 	Rectangle operator+(const Rectangle& other) const {
 		return Rectangle(
 			this->x + other.x,
