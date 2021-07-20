@@ -5,9 +5,8 @@ A personal project that aims to _three_-do the classic Nintendo NES game Super M
 
 This project is written in C++14 and runs on the SDL2 framework.
 
-<img src="docs/smb3do_v0-1-0_sample2.png"/>
-
-<img src="docs/smb3do_v0-2-0_sample.png"/>
+## <img src="docs/smb3do_bullet.png" width="32px"/> Screenshots <img src="docs/smb3do_bullet.png" width="32px"/>
+<img src="docs/smb3do_v0-1-0_sample2.png" width=40%/> <img src="docs/smb3do_v0-2-0_sample.png" width=40%/><br>
 
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Features <img src="docs/smb3do_bullet.png" width="32px"/>
 ### Current Release (v0.1.0)
@@ -24,11 +23,13 @@ This project is written in C++14 and runs on the SDL2 framework.
 
 ### Coming Soon
 * [x] Basic camera
-* [ ] Basic level format
+* [x] Basic level format
 * [x] Animated Mario
 * [x] Improved variable refresh rate support
 * [x] Hitbox visualization toggle
 * [x] On-screen debug info
+* [ ] Collectable coins
+* [ ] Semi-solid platforms
 
 ### Long-Term Plans:
 * Implement all features of the original SMB3
