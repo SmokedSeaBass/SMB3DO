@@ -9,6 +9,10 @@ Graphics::Graphics() {
 	renderer_main_ = nullptr;
 	window_main_ = nullptr;
 
+	textures_ = TextureCache();
+	//bitmap_fonts_ = BMPFontCache();
+	//active_bitmap_font_ = nullptr;
+
 	is_fullscreen_ = false;
 	current_resolution_ = { 0, 0 };
 	viewport_rect_ = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES };
@@ -17,7 +21,7 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
-	for (TextureMap::iterator iter = texture_cache_.begin(); iter != texture_cache_.end(); ++iter) {
+	for (TextureCache::iterator iter = textures_.begin(); iter != textures_.end(); ++iter) {
 		SDL_DestroyTexture(iter->second);
 	}
 	SDL_DestroyRenderer(renderer_main_);
@@ -179,58 +183,62 @@ std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, S
 int Graphics::BuildDefaultTexture() {
 	SDL_Surface* missingno_surface = IMG_ReadXPMFromArray(missingno_xpm);
 	if (missingno_surface == NULL) {
-		std::string err = "Could not read XPM: " + std::string(IMG_GetError());
+		std::string err = "Graphics building default texture: Could not read XPM: " + std::string(IMG_GetError());
 		Error::PrintError(err);
 		SDL_FreeSurface(missingno_surface);
 		return -1;
 	}
-	texture_cache_[""] = CreateTextureFromSurface(missingno_surface);
+	textures_[""] = CreateTextureFromSurface(missingno_surface);
 	return 0;
 }
 
 SDL_Texture* Graphics::GetDefaultTexture() {
-	return texture_cache_[""];
+	return textures_[""];
 }
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
+	if (surface == nullptr) {
+		Error::PrintError("Graphics creating texture from surface: surface pointer is NULL");
+		return nullptr;
+	}
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_main_, surface);
 	SDL_FreeSurface(surface);
 	return texture;
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path) {
-	if (texture_cache_.count(file_path) == 0) {
+	if (textures_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
-			Error::PrintError("Could not load image: \'" + file_path + "\'");
+			Error::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		texture_cache_[file_path] = texture;
+		textures_[file_path] = texture;
 	}
-	return texture_cache_[file_path];
+	return textures_[file_path];
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint8 red, Uint8 green, Uint8 blue) {
-	if (texture_cache_.count(file_path) == 0) {
+	if (textures_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
-			Error::PrintError("Could not load image: \'" + file_path + "\'");
+			Error::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
 		Uint32 color_key = SDL_MapRGB(surface->format, red, green, blue);
 		SDL_SetColorKey(surface, SDL_TRUE, color_key);
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		texture_cache_[file_path] = texture;
+		textures_[file_path] = texture;
 	}
-	return texture_cache_[file_path];
+	return textures_[file_path];
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y) {
-	if (texture_cache_.count(file_path) == 0) {
+	if (textures_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
-			Error::PrintError("Could not load image: \'" + file_path + "\'");
+			Error::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
 		Uint32 color_key = 0x00000000;
@@ -240,20 +248,20 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int al
 			SDL_SetColorKey(surface, SDL_TRUE, alpha_pixel);
 		}
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		texture_cache_[file_path] = texture;
+		textures_[file_path] = texture;
 	}
-	return texture_cache_[file_path];
+	return textures_[file_path];
 }
 
 int Graphics::UnloadTexture(SDL_Texture* texture) {
-	for (std::pair<std::string, SDL_Texture*> entry : texture_cache_) {
+	for (std::pair<std::string, SDL_Texture*> entry : textures_) {
 		if (entry.second == texture) {
 			SDL_DestroyTexture(entry.second);
-			texture_cache_.erase(entry.first);
+			textures_.erase(entry.first);
 			return 0;
 		}
 	}
-	Error::PrintWarning("Cannot unload texture " + Error::ptr_to_string(texture) + "; not found in texture cache");
+	Error::PrintWarning("Graphics unloading texture " + Error::ptr_to_string(texture) + ": texture not found in texture cache");
 	return -1;
 }
 
@@ -337,6 +345,38 @@ int Graphics::DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, 
 
 int Graphics::DrawTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect, const SDL_RendererFlip flip) {
 	return SDL_RenderCopyEx(renderer_main_, texture, source_rect, dest_rect, 0.0, NULL, flip);
+}
+
+int Graphics::LoadBMPFont(const std::string& path_to_bmp, unsigned int glyph_width, unsigned int glyph_height, const std::string& font_name) {
+	std::string font_index = font_name;
+	if (font_index == "") {
+		font_index = path_to_bmp;
+	}
+	if (bitmap_fonts_.count(font_index) == 0) {
+		BitmapFont font = BitmapFont(*this, path_to_bmp, glyph_width, glyph_height);
+		bitmap_fonts_[font_index] = std::make_unique<BitmapFont>(font);
+		return 0;
+	}
+	Error::PrintWarning("Loading BitmapFont \'" + font_name + "\': BitmapFont already loaded");
+	return 0;
+}
+
+int Graphics::SetTextFont(const std::string& font_name) {
+	if (bitmap_fonts_.count(font_name) == 0) {
+		Error::PrintError("Setting text to BitmapFont \'" + font_name + "\': BitmapFont not loaded");
+		return -1;
+	}
+	active_bitmap_font_ = bitmap_fonts_[font_name].get();
+	return 0;
+}
+
+int Graphics::DrawText(const std::string& text, int pos_x, int pos_y) {
+	if (active_bitmap_font_ == nullptr) {
+		Error::PrintError("Drawing text: Active BitmapFont is NULL or unset");
+		return -1;
+	}
+	return active_bitmap_font_->DrawText(*this, text, pos_x, pos_y);
+	return 0;
 }
 
 int Graphics::FlipRenderer() {

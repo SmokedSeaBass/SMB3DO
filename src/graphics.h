@@ -10,10 +10,14 @@
 	#include <SDL2/SDL_ttf.h>
 #endif
 #include <map>
+#include <memory>
 #include <string>
+#include "bitmap_font.h"
 #include "constants.h"
 #include "options.h"
 #include "rectangle.h"
+
+class BitmapFont;
 
 /// @brief Handles rendering of objects, window/resolution changes and properties, and framerate.
 class Graphics {
@@ -65,13 +69,21 @@ public:
 	int DrawColoredOutline(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
 	int DrawTexture(SDL_Texture* texture, const SDL_Rect* source_rect, const SDL_Rect* dest_rect, const SDL_RendererFlip flip = SDL_FLIP_NONE);
+
+	int LoadBMPFont(const std::string& path_to_bmp, unsigned int glyph_width, unsigned int glyph_height, const std::string& font_name = "");
+	int SetTextFont(const std::string& font_name = "");
+	int DrawText(const std::string& text, int pos_x, int pos_y);
+	
 	int FlipRenderer();
 
 private:
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
-	typedef std::map<std::string, SDL_Texture*> TextureMap;
-	TextureMap texture_cache_;
+	typedef std::map<std::string, SDL_Texture*> TextureCache;
+	TextureCache textures_;
+	typedef std::map<std::string, std::unique_ptr<BitmapFont>> BMPFontCache;
+	BMPFontCache bitmap_fonts_;
+	BitmapFont* active_bitmap_font_;
 	
 	bool is_fullscreen_;
 	std::pair<float, float> current_resolution_;

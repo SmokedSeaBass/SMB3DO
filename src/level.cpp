@@ -1,6 +1,7 @@
 #include "level.h"
 
 #include "camera.h"
+#include "game.h"
 #include "player.h"
 
 Level::Level() {
@@ -76,7 +77,20 @@ int Level::Draw(Graphics& graphics) {
 		(*entity_iter)->Draw(graphics, -static_cast<int>(floor(camera_.GetPosition()[0])), -static_cast<int>(floor(camera_.GetPosition()[1])));
 	}
 
-
 	// UI
+	if (Game::debug_show_info) {
+		Player* player = dynamic_cast<Player*>(entity_list_[0].get());
+		graphics.SetTextFont("dialogue");
+		graphics.DrawText("X: " + std::to_string(player->GetPosition()[0]), 0, 16);
+		graphics.DrawText("Y: " + std::to_string(player->GetPosition()[1]), 0, 24);
+		graphics.DrawText("VX: " + std::to_string(player->GetVelocity()[0]), 0, 32);
+		graphics.DrawText("VY: " + std::to_string(player->GetVelocity()[1]), 0, 40);
+		graphics.DrawText("CX: " + std::to_string(camera_.GetPosition()[0]), 0, 48);
+		graphics.DrawText("CY: " + std::to_string(camera_.GetPosition()[1]), 0, 56);
+		graphics.DrawText("\"DIALOGUE\" can be <UPPERCASE'd>\n and {lowercase'd}!?", 0, 80);
+		graphics.SetTextFont("hud");
+		graphics.DrawText("Hide me with [U]", 0, 104);
+	}
+
 	return 0;
 }

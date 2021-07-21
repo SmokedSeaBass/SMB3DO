@@ -2,7 +2,7 @@
 
 #include <chrono>
 #include "animated_sprite.h"
-#include "bitmap_font.h"
+//#include "bitmap_font.h"
 #include "camera.h"
 #include "constants.h"
 #include "error.h"
@@ -71,9 +71,8 @@ int Game::Run() {
 	test_level.Load(graphics_, "assets/maps/test2a.tmx");
 
 	// Bitmap font
-	SDL_Texture* test_font_texture = graphics_.LoadTextureFromImage("assets/sprite_sheets/hud_font_ascii.bmp", 0, 0);
-	BitmapFont test_font;
-	test_font.LoadBitmap(test_font_texture, 8, 8);
+	graphics_.LoadBMPFont("assets/sprite_sheets/hud_font_ascii.bmp", 8, 8, "hud");
+	graphics_.LoadBMPFont("assets/sprite_sheets/dialogue_font_ascii.bmp", 8, 8, "dialogue");
 	
 	// Main game loop
 	while (!quit_game) {
@@ -143,7 +142,8 @@ int Game::Run() {
 			} else {
 				snprintf(debug_info, sizeof(debug_info), "%.2f fps\n%.4f ms", 1000.0 / (tick_duration), tick_duration);
 			}
-			test_font.DrawText(graphics_, debug_info, 0, 0);
+			graphics_.SetTextFont("hud");
+			graphics_.DrawText(debug_info, 0, 0);
 		}
 		// Flip to screen
 		graphics_.FlipRenderer();

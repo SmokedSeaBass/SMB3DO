@@ -13,14 +13,16 @@ BitmapFont::BitmapFont(Graphics& graphics, const std::string& path_to_bmp, int g
 	LoadBitmap(graphics, path_to_bmp, glyph_width, glyph_height);
 }
 
-BitmapFont::~BitmapFont() { }
-
 int BitmapFont::LoadBitmap(Graphics& graphics, const std::string& path_to_bmp, int glyph_width, int glyph_height) {
 	if (texture_ != nullptr) {
-		Error::PrintError("Cannt load BMP \'" + path_to_bmp + "\' to BitmapFont with BMP already loaded");
+		Error::PrintError("Loading BMP \'" + path_to_bmp + "\' for BitmapFont: BMP already loaded fro BitmapFont");
 		return -1;
 	}
-	texture_ = graphics.LoadTextureFromImage(path_to_bmp);
+	texture_ = graphics.LoadTextureFromImage(path_to_bmp, 0, 0);
+	if (texture_ == nullptr) {
+		Error::PrintError("Loading texture from BMP \'" + path_to_bmp + "\' for BitmapFont: could not load texture from image");
+		return -1;
+	}
 	SDL_QueryTexture(texture_, NULL, NULL, &texture_width_, NULL);
 	glyph_width_ = glyph_width;
 	glyph_height_ = glyph_height;

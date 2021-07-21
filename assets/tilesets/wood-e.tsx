@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.0" name="wood-e" tilewidth="16" tileheight="16" spacing="2" margin="1" tilecount="256" columns="16">
+<tileset version="1.5" tiledversion="1.7.0" name="wood-e" tilewidth="16" tileheight="16" spacing="2" margin="1" tilecount="256" columns="16" objectalignment="topleft">
  <image source="wood_extrude.bmp" trans="e800dc" width="288" height="288"/>
  <tile id="1">
   <objectgroup draworder="index" id="2">
