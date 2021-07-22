@@ -12,7 +12,10 @@ class Tile {
 public:
 	enum class COLLISION_TYPE {
 		NONE,
-		SOLID
+		SOLID,
+		COIN,
+		HURT,
+		KILL
 	};
 
 	Tile();

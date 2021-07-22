@@ -132,7 +132,7 @@ void Player::Update(const Input& input, double delta_time, const Tilemap& tilema
 	}
 	if (vel_y_ > Physics::VEL_TERM * dt_ratio) vel_y_ = Physics::VEL_TERM * dt_ratio;
 
-	/* Check collisions and make corrections */
+	/* Check solid collisions and make corrections */
 	double delta_x = vel_x_;
 	double delta_y = vel_y_;
 	if (delta_x >= 0) {
@@ -302,8 +302,8 @@ Rectangle Player::BottomCollision(double delta) const {
 
 Player::CollisionInfo Player::GetCollisionInfo(const Tilemap& tilemap, const Rectangle& rectangle) {
 	CollisionInfo info = { false, 0, 0 };
-	std::vector<Tilemap::CollisionTile> tiles = tilemap.GetCollidingTiles(rectangle);
-	for (Tilemap::CollisionTile ctile : tiles) {
+	std::vector<Tilemap::CollisionTile> intersecting_tiles = tilemap.GetCollidingTiles(rectangle);
+	for (Tilemap::CollisionTile ctile : intersecting_tiles) {
 		if (ctile.tile.GetCollision() == Tile::COLLISION_TYPE::SOLID) {
 			info = { true, ctile.row, ctile.col };
 			break;

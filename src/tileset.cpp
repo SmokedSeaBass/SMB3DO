@@ -56,22 +56,39 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 	// Properties to extract from each node include collision type, hitbox, animation, etc.
 	tinyxml2::XMLElement* tile_node = image_node->NextSiblingElement("tile");
 	while (tile_node != nullptr) {
+		// Tile ID
 		unsigned int tile_id = tile_node->FindAttribute("id")->IntValue();
 		SDL_Rect tile_rect = TileIndexToRect(tile_id);
 
-		/* Object/tile collisions */
+		// Tile/collision type
 		Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
-		tinyxml2::XMLElement* objgrp_node = tile_node->FirstChildElement("objectgroup");
-		if (objgrp_node != nullptr) {
-			tinyxml2::XMLElement* obj_node = objgrp_node->FirstChildElement("object");
-			while (obj_node != nullptr) {
-				std::string obj_type = obj_node->FindAttribute("type")->Value();
-				if (obj_type == "SolidCollision") {
-					tile_collision = Tile::COLLISION_TYPE::SOLID;
-				}
-				obj_node = obj_node->NextSiblingElement("object");
+		const tinyxml2::XMLAttribute* tile_type_attr = tile_node->FindAttribute("type");
+		if (tile_type_attr != nullptr) {
+			const std::string tile_type = tile_type_attr->Value();
+			if (tile_type == "Solid") {
+				tile_collision = Tile::COLLISION_TYPE::SOLID;
+			} else if (tile_type == "Coin") {
+				tile_collision = Tile::COLLISION_TYPE::COIN;
+			} else if (tile_type == "Hurt") {
+				tile_collision = Tile::COLLISION_TYPE::HURT;
+			} else if (tile_type == "Kill") {
+				tile_collision = Tile::COLLISION_TYPE::KILL;
 			}
 		}
+
+		///* Object/tile collisions */
+		//Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
+		//tinyxml2::XMLElement* objgrp_node = tile_node->FirstChildElement("objectgroup");
+		//if (objgrp_node != nullptr) {
+		//	tinyxml2::XMLElement* obj_node = objgrp_node->FirstChildElement("object");
+		//	while (obj_node != nullptr) {
+		//		std::string obj_type = obj_node->FindAttribute("type")->Value();
+		//		if (obj_type == "Solid") {
+		//			tile_collision = Tile::COLLISION_TYPE::SOLID;
+		//		}
+		//		obj_node = obj_node->NextSiblingElement("object");
+		//	}
+		//}
 
 		/* Animation */
 		AnimatedSprite* tile_sprite = nullptr;
