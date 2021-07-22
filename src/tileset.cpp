@@ -73,6 +73,8 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 				tile_collision = Tile::COLLISION_TYPE::HURT;
 			} else if (tile_type == "Kill") {
 				tile_collision = Tile::COLLISION_TYPE::KILL;
+			} else if (tile_type == "Hittable") {
+				tile_collision = Tile::COLLISION_TYPE::HITTABLE;
 			}
 		}
 

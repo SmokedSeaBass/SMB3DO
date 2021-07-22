@@ -9,13 +9,18 @@
 /// </summary>
 class Entity {
 public:
+	struct CollisionInfo {
+		int row, col;
+		Tile::COLLISION_TYPE type;
+	};
+
 	Entity();
 	~Entity();
 
 	std::vector<double> GetPosition() const;
 	std::vector<double> GetVelocity() const;
 
-	virtual void Update(const Input& input, double delta_time, const Tilemap& tilemap);
+	virtual void Update(const Input& input, double delta_time, Tilemap& tilemap);
 	virtual int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0);
 
 protected:

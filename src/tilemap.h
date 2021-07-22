@@ -26,6 +26,7 @@ public:
 	Tilemap(Graphics& graphics, std::string path_to_tmx);
 
 	std::vector<int> GetDimensions() const;
+	SDL_Color GetBackgroundColor() const;
 	Tile GetTile(int x, int y) const;
 	unsigned int GetTileId(int x, int y) const;
 	/// @brief Returns a pointer to the Tileset that a Tile belongs to by tile ID
@@ -46,5 +47,6 @@ private:
 	std::vector<std::shared_ptr<Tileset>> tilesets_;
 	unsigned int width_, height_;
 	int pos_x_, pos_y_;
+	SDL_Color background_color_;
 	std::vector<std::vector<unsigned int>> tilemap_;
 };

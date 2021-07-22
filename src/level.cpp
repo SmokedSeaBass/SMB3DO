@@ -7,6 +7,7 @@
 Level::Level() {
 	display_name_ = std::string("Test Level");
 	timelimit_ = 999;
+	background_color_ = { 0, 0, 0, 0 };
 	bounds_ = {0, 0, 0, 0};
 	entity_list_ = std::vector<std::shared_ptr<Entity>>();
 	tileset_list_ = std::vector<Tileset*>();
@@ -24,6 +25,7 @@ void Level::SetDisplayName(std::string display_name) {
 int Level::Load(Graphics& graphics, const std::string& path_to_lvl) {
 	// Load Tilemaps and Tilesets
 	Tilemap tilemap = Tilemap(graphics, path_to_lvl);
+	background_color_ = tilemap.GetBackgroundColor();
 	bounds_ = { 0, 0, tilemap.GetDimensions()[0], tilemap.GetDimensions()[1] };
 	for (Tileset* tileset : tilemap.GetTilesets()) {
 		tileset_list_.push_back(tileset);
@@ -31,11 +33,11 @@ int Level::Load(Graphics& graphics, const std::string& path_to_lvl) {
 	tilemap_layers_.push_back(tilemap);
 
 	// Create actors
-	Player* mario = new Player(graphics, "assets/sprite_sheets/mario.bmp", 32, 440);
-	entity_list_.push_back(std::shared_ptr<Player>(mario));
+	Player* player = new Player(graphics, "assets/sprite_sheets/mario.bmp", 32, 440);
+	entity_list_.push_back(std::shared_ptr<Player>(player));
 
 	camera_ = Camera(graphics.GetViewport());
-	camera_.SetTarget(Camera::CameraTarget(*mario));
+	camera_.SetTarget(Camera::CameraTarget(*player));
 	camera_.SetPosition(0, 12 * 16);
 	camera_.SetBounds(Rectangle(bounds_.x * TILESIZE_NES, bounds_.y * TILESIZE_NES, bounds_.w * TILESIZE_NES, bounds_.h * TILESIZE_NES));
 	camera_.SetCaptureBounds(Rectangle(-8, 0, 16, 0));
@@ -64,7 +66,9 @@ void Level::Update(Graphics& graphics, const Input& input, double delta_time) {
 
 int Level::Draw(Graphics& graphics) {
 	// Draw background color
-	graphics.DrawColoredRect(NULL, 0xAF, 0xE5, 0xEA, 0xFF);
+	if (background_color_.a > 0x00) {
+		graphics.DrawColoredRect(NULL, background_color_.r, background_color_.g, background_color_.b, background_color_.a);
+	}
 
 	// Draw tilemaps
 	for (Tilemap tilemap : tilemap_layers_) {
@@ -87,6 +91,9 @@ int Level::Draw(Graphics& graphics) {
 		graphics.DrawText("VY: " + std::to_string(player->GetVelocity()[1]), 0, 40);
 		graphics.DrawText("CX: " + std::to_string(camera_.GetPosition()[0]), 0, 48);
 		graphics.DrawText("CY: " + std::to_string(camera_.GetPosition()[1]), 0, 56);
+		graphics.SetTextFont("hud");
+		graphics.DrawText("$" + std::to_string(player->coin_count_), 0, 64);
+		graphics.SetTextFont("dialogue");
 		graphics.DrawText("\"DIALOGUE\" can be <UPPERCASE'd>\n and {lowercase'd}!?", 0, 80);
 		graphics.SetTextFont("hud");
 		graphics.DrawText("Hide me with [U]", 0, 104);

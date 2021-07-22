@@ -13,6 +13,7 @@ Tilemap::Tilemap() :
 	height_(0),
 	pos_x_(0),
 	pos_y_(0) {
+	background_color_ = { 0, 0, 0, 0 };
 }
 
 Tilemap::Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset) : Tilemap::Tilemap() {
@@ -34,6 +35,14 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 		return;
 	}
 	tinyxml2::XMLElement* map_node = tmx.FirstChildElement("map");
+	const tinyxml2::XMLAttribute* backgroundcolor_attr = map_node->FindAttribute("backgroundcolor");
+	if (backgroundcolor_attr != nullptr) {
+		const std::string backgroundcolor = backgroundcolor_attr->Value();
+		background_color_.r = std::stoul(backgroundcolor.substr(1, 2), nullptr, 16);
+		background_color_.g = std::stoul(backgroundcolor.substr(3, 2), nullptr, 16);
+		background_color_.b = std::stoul(backgroundcolor.substr(5, 2), nullptr, 16);
+		background_color_.a = 0xFF;
+	}
 	tinyxml2::XMLElement* layer_node = map_node->FirstChildElement("layer");
 	width_ = layer_node->FindAttribute("width")->IntValue();
 	height_ = layer_node->FindAttribute("height")->IntValue();
@@ -73,6 +82,10 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 
 std::vector<int> Tilemap::GetDimensions() const {
 	return { static_cast<int>(width_), static_cast<int>(height_) };
+}
+
+SDL_Color Tilemap::GetBackgroundColor() const {
+	return background_color_;
 }
 
 Tile Tilemap::GetTile(int x, int y) const {

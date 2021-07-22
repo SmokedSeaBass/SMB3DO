@@ -15,7 +15,8 @@ public:
 		SOLID,
 		COIN,
 		HURT,
-		KILL
+		KILL,
+		HITTABLE
 	};
 
 	Tile();

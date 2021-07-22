@@ -38,6 +38,7 @@ protected:
 	/// </summary>
 	Uint32 uid_;
 	unsigned int timelimit_;
+	SDL_Color background_color_;
 	SDL_Rect bounds_;
 	Camera camera_;
 	std::vector<std::shared_ptr<Entity>> entity_list_;

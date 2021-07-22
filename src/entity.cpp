@@ -21,5 +21,5 @@ std::vector<double> Entity::GetVelocity() const {
 	return velocity;
 }
 
-void Entity::Update(const Input& input, double delta_time, const Tilemap& tilemap) { }
+void Entity::Update(const Input& input, double delta_time, Tilemap& tilemap) { }
 int Entity::Draw(Graphics& graphics, double offset_x, double offset_y) { return 0; }

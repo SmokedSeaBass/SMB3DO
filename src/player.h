@@ -42,11 +42,10 @@ public:
 		static constexpr double VEL_TERM = (double)0x0450 / 0x100;
 		static constexpr double ACCEL_AIR = ACCEL_GROUND;
 		static constexpr double SKID_AIR = (double)0x0020 / 0x100;
+		/* Misc physics */
+		static constexpr double BONK_SPEED = (double)0x0200 / 0x100;
 	};
-	struct CollisionInfo {
-		bool collided;
-		int row, col;
-	};
+	unsigned int coin_count_;
 
 	Player();
 	Player(Graphics& graphics, const std::string& path_to_bmp, double pos_x = 0, double pos_y = 0);
@@ -54,7 +53,7 @@ public:
 	~Player();
 
 	void HandleInputs(const Input& input);
-	void Update(const Input& input, double delta_time, const Tilemap& tilemap) override;
+	void Update(const Input& input, double delta_time, Tilemap& tilemap) override;
 	int Draw(Graphics& graphics, double offset_x = 0, double offset_y = 0) override;
 
 	Rectangle GetColliderAbsoluteRect();
@@ -62,7 +61,7 @@ public:
 	Rectangle RightCollision(double delta) const;
 	Rectangle TopCollision(double delta) const;
 	Rectangle BottomCollision(double delta) const;
-	CollisionInfo GetCollisionInfo(const Tilemap& tilemap, const Rectangle& rectangle);
+	std::vector<CollisionInfo> GetCollisionInfo(const Tilemap& tilemap, const Rectangle& rectangle);
 
 private:
 	enum class Status {
