@@ -14,12 +14,10 @@ public:
 		static constexpr double MAX_SPEED_WALK = (double)0x0180 / 0x100;
 		static constexpr double MAX_SPEED_RUN = (double)0x0280 / 0x100;
 		static constexpr double MAX_SPEED_SPRINT = (double)0x0380 / 0x100;
-		static constexpr double FORCED_SPEED = (double)0x0140 / 0x100;  // End-of-level walk
-		static constexpr double FORCED_SPEED_2 = (double)0x0200 / 0x100;  // Airship boarding cutscene
-		//static constexpr double ACCEL_GROUND = (double)0x000E / 0x100;
-		static constexpr double ACCEL_GROUND = (double)8.0 / 9.0 / 16.0;
-		//static constexpr double DECEL_GROUND_NORMAL = (double)0x0008 / 0x100;
-		static constexpr double DECEL_GROUND_NORMAL = (double)24.0 / 40.0 / 16.0;
+		static constexpr double FORCED_SPEED = (double)0x0140 / 0x100;				// End-of-level walk
+		static constexpr double FORCED_SPEED_2 = (double)0x0200 / 0x100;			// Airship boarding cutscene
+		static constexpr double ACCEL_GROUND = (double)8.0 / 9.0 / 16.0;			// Not just 0x000E / 0x100 through testing...
+		static constexpr double DECEL_GROUND_NORMAL = (double)24.0 / 40.0 / 16.0;	// Not just 0x0008 / 0x100 through testing...
 		static constexpr double DECEL_GROUND_ICE = (double)0x0003 / 0x100;
 		static constexpr double SKID_GROUND_NORMAL = (double)0x0020 / 0x100;
 		static constexpr double SKID_GROUND_ICE = (double)0x000C / 0x100;
@@ -30,14 +28,14 @@ public:
 		static constexpr double ACCEL_SLIDE_225 = (double)0x0010 / 0x100;
 		static constexpr double ACCEL_SLIDE_45 = (double)0x0020 / 0x100;
 		/* Jump physics */
-		static constexpr double JUMP_VEL_STAND = (double)0x0370 / 0x100;  // vel_x_ <= 0x01.00
-		static constexpr double JUMP_VEL_WALK = (double)0x0390 / 0x100;  // vel_x_ > 0x01.00
-		static constexpr double JUMP_VEL_RUN = (double)0x03B0 / 0x100;  // vel_x_ > 0x02.00
-		static constexpr double JUMP_VEL_SPRINT = (double)0x03F0 / 0x100;  // vel_x_ > 0x03.00
+		static constexpr double JUMP_VEL_STAND = (double)0x0370 / 0x100;			// vel_x_ <= 0x01.00
+		static constexpr double JUMP_VEL_WALK = (double)0x0390 / 0x100;				// vel_x_ > 0x01.00
+		static constexpr double JUMP_VEL_RUN = (double)0x03B0 / 0x100;				// vel_x_ > 0x02.00
+		static constexpr double JUMP_VEL_SPRINT = (double)0x03F0 / 0x100;			// vel_x_ > 0x03.00
 		static constexpr double STOMP_VEL_NORMAL = (double)0x0400 / 0x100;
 		static constexpr double STOMP_VEL_WEAK = (double)0x0300 / 0x100;
 		/* Mid-air physics */
-		static constexpr double GRAVITY_LIGHT = (double)0x0010 / 0x100;  // JUMP held and vel_y_ < -0x02.00
+		static constexpr double GRAVITY_LIGHT = (double)0x0010 / 0x100;				// JUMP held and vel_y_ < -0x02.00
 		static constexpr double GRAVITY_HEAVY = (double)0x0050 / 0x100;
 		static constexpr double VEL_TERM = (double)0x0450 / 0x100;
 		static constexpr double ACCEL_AIR = ACCEL_GROUND;
