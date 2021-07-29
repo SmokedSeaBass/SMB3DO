@@ -39,7 +39,7 @@ int Level::Load(Graphics& graphics, const std::string& path_to_lvl) {
 	camera_ = Camera(graphics.GetViewport());
 	camera_.SetTarget(Camera::CameraTarget(*player));
 	camera_.SetPosition(0, 12 * 16);
-	camera_.SetBounds(Rectangle(bounds_.x * TILESIZE_NES, bounds_.y * TILESIZE_NES, bounds_.w * TILESIZE_NES, bounds_.h * TILESIZE_NES));
+	camera_.SetBounds(Rectangle(bounds_.x * (int)TILESIZE_NES, bounds_.y * (int)TILESIZE_NES, bounds_.w * (int)TILESIZE_NES, bounds_.h * (int)TILESIZE_NES));
 	camera_.SetCaptureBounds(Rectangle(-8, 0, 16, 0));
 	camera_.SetVerticalScrollRule(Camera::VerticalScrollRule::SELECTIVE);
 	camera_.SetInterpRatio(1.0f);
@@ -60,7 +60,7 @@ void Level::Update(Graphics& graphics, const Input& input, double delta_time) {
 	}
 
 	// Update camera
-	camera_.SetDimensions(graphics.GetViewport().w, graphics.GetViewport().h);
+	camera_.SetDimensions(graphics.GetCanvasDimensions().w, graphics.GetCanvasDimensions().h);
 	camera_.Update(delta_time);
 }
 
@@ -72,7 +72,7 @@ int Level::Draw(Graphics& graphics) {
 
 	// Draw tilemaps
 	for (Tilemap tilemap : tilemap_layers_) {
-		tilemap.Draw(graphics, -static_cast<int>(floor(camera_.GetPosition()[0])), -static_cast<int>(floor(camera_.GetPosition()[1])));
+		tilemap.Draw(graphics, -(int)floor(camera_.GetPosition()[0]), -(int)floor(camera_.GetPosition()[1]), {0, 0, camera_.GetDimensions()[0], camera_.GetDimensions()[1] });
 	}
 
 	// Draw entities

@@ -8,14 +8,15 @@
 Graphics::Graphics() {
 	renderer_main_ = nullptr;
 	window_main_ = nullptr;
+	render_canvas_ = nullptr;
 
 	textures_ = TextureCache();
-	//bitmap_fonts_ = BMPFontCache();
-	//active_bitmap_font_ = nullptr;
+	bitmap_fonts_ = BMPFontCache();
+	active_bitmap_font_ = nullptr;
 
 	is_fullscreen_ = false;
 	current_resolution_ = { 0, 0 };
-	viewport_rect_ = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES };
+	viewport_rect_ = { 0, 0, (int)NES_WINDOW_WIDTH, (int)NES_WINDOW_HEIGHT };
 	viewport_scaler_ = { 1, 1 };
 	viewport_ratio_ = { 8, 7 };
 }
@@ -39,19 +40,13 @@ int Graphics::Initialize(Options& options) {
 		return -1;
 	}
 
-	// Initialize graphics variables
-	is_fullscreen_ = false;
-	current_resolution_ = options.windowed_resolution_desired;
-	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
-	viewport_scaler_ = GetWindowFitViewportScaler(options);
-	
 	// Main window
 	std::string title = "SMB3DO - v" + std::string(META_VERSION);
 	window_main_ = SDL_CreateWindow(
 		title.c_str(),
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		static_cast<int>(round(current_resolution_.first)), static_cast<int>(round(current_resolution_.second)),
-		SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
+		(int)round(options.windowed_resolution_desired.first), (int)round(options.windowed_resolution_desired.second),
+		SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI
 	);
 	if (window_main_ == nullptr) {
 		Error::PrintError("Main window could not be created: " + std::string(SDL_GetError()));
@@ -59,10 +54,10 @@ int Graphics::Initialize(Options& options) {
 	}
 
 	// Accelerated renderer
-	if (SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl") == SDL_FALSE) {
+	if (SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d") == SDL_FALSE) {
 		Error::PrintError("Render driver hint could not be set");
 	}
-	Uint32 flags = SDL_RENDERER_ACCELERATED;
+	Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE;
 	if (options.enable_vsync)
 		flags |= SDL_RENDERER_PRESENTVSYNC;
 	renderer_main_ = SDL_CreateRenderer(window_main_, -1, flags);
@@ -70,7 +65,7 @@ int Graphics::Initialize(Options& options) {
 		Error::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
 		return -1;
 	}
-	
+
 	// Set pixel uspcale, no softening or antialias
 	if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest") == SDL_FALSE) {
 		Error::PrintError("Render scale quality hint could not be set: " + std::string(SDL_GetError()));
@@ -80,16 +75,16 @@ int Graphics::Initialize(Options& options) {
 	// Allow for colored rect alpha transparency
 	SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);
 
-	if (SDL_RenderSetViewport(renderer_main_, &viewport_rect_) < 0) {
-		Error::PrintError("Main viewport could not be created: " + std::string(SDL_GetError()));
-		return -1;  
-	}
-
-	// All drawing should be scaled from a 256x224 canvas
-	if (SDL_RenderSetScale(renderer_main_, static_cast<float>(viewport_scaler_.first), static_cast<float>(viewport_scaler_.second)) < 0) {
-		Error::PrintError("Main renderer scaling could not be set: " + std::string(SDL_GetError()));
+	// Create render canvas texture
+	render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
+	if (render_canvas_ == NULL) {
+		Error::PrintError("Could not create canvas texture: " + std::string(SDL_GetError()));
 		return -1;
 	}
+	SDL_SetRenderTarget(renderer_main_, render_canvas_);
+
+	UpdateViewport(options);
+	UpdateCanvas(options);
 
 	if (BuildDefaultTexture() < 0) {
 		Error::PrintError("Could not build default texture");
@@ -147,25 +142,21 @@ void Graphics::UpdateViewport(Options& options) {
 	current_resolution_ = { window_width, window_height };
 	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
 	viewport_scaler_ = GetWindowFitViewportScaler(options);
-	SDL_RenderSetScale(renderer_main_, viewport_scaler_.first, viewport_scaler_.second);
 	if (!options.enable_widescreen) {
 		viewport_rect_ = {
-			(static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)) - static_cast<int>(WINDOW_WIDTH_NES)) / 2,
-			(static_cast<int>(round(current_resolution_.second / viewport_scaler_.second)) - static_cast<int>(WINDOW_HEIGHT_NES)) / 2,
-			static_cast<int>(WINDOW_WIDTH_NES),
-			static_cast<int>(WINDOW_HEIGHT_NES)
+			(int)round((current_resolution_.first - ((int)NES_WINDOW_WIDTH * viewport_scaler_.first)) / 2),
+			(int)round((current_resolution_.second - ((int)NES_WINDOW_HEIGHT * viewport_scaler_.second)) / 2),
+			(int)round((int)NES_WINDOW_WIDTH * viewport_scaler_.first),
+			(int)round((int)NES_WINDOW_HEIGHT * viewport_scaler_.second)
 		};
 	} else {
 		viewport_rect_ = {
 			0,
 			0,
-			static_cast<int>(round(current_resolution_.first / viewport_scaler_.first)),
-			static_cast<int>(round(current_resolution_.second / viewport_scaler_.second))
+			(int)round(current_resolution_.first),
+			(int)round(current_resolution_.second)
 		};
 	}
-	SetViewport(&viewport_rect_);
-	SDL_Rect window_draw_rect = { 0, 0, window_width, window_height };
-	SDL_RenderSetClipRect(renderer_main_, &window_draw_rect);
 	//Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
 	//Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
 }
@@ -174,10 +165,27 @@ std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, S
 	float x_stretch = ((float)viewport.h * viewport_ratio_.first) / ((float)viewport.w * viewport_ratio_.second);
 	float y_scale = (current_resolution_.second / viewport.h);
 	if (options.forceIntegerScaling) {
-		y_scale = static_cast<float>(floor(y_scale));
+		y_scale = floor(y_scale);
 	}
 	float x_scale = y_scale * x_stretch;
 	return std::pair<float, float>(x_scale, y_scale);
+}
+
+void Graphics::UpdateCanvas(Options& options) {
+	SDL_DestroyTexture(render_canvas_);
+	if (options.enable_widescreen) {
+		float extended_width = NES_WINDOW_HEIGHT * (current_resolution_.first / current_resolution_.second) * (8.0 / 7.0) * ((float)viewport_ratio_.second / (float)viewport_ratio_.first);
+		render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, extended_width, NES_WINDOW_HEIGHT);
+	} else {
+		render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
+	}
+	SDL_SetRenderTarget(renderer_main_, render_canvas_);
+}
+
+SDL_Rect Graphics::GetCanvasDimensions() {
+	int width, height;
+	SDL_QueryTexture(render_canvas_, NULL, NULL, &width, &height);
+	return { 0, 0, width, height };
 }
 
 int Graphics::BuildDefaultTexture() {
@@ -304,10 +312,10 @@ int Graphics::DrawColoredRect(const SDL_Rect* rect, Uint8 red, Uint8 green, Uint
 }
 
 int Graphics::DrawColoredRect(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	int x = static_cast<int>(floor(rect.x));
-	int y = static_cast<int>(floor(rect.y));
-	int w = static_cast<int>(ceil(rect.x + rect.w)) - x;
-	int h = static_cast<int>(ceil(rect.y + rect.h)) - y;
+	int x = (int)floor(rect.x);
+	int y = (int)floor(rect.y);
+	int w = (int)ceil(rect.x + rect.w) - x;
+	int h = (int)ceil(rect.y + rect.h) - y;
 	SDL_Rect sdl_rect = {
 		x, y, w, h
 	};
@@ -379,7 +387,14 @@ int Graphics::DrawText(const std::string& text, int pos_x, int pos_y) {
 	return 0;
 }
 
-int Graphics::FlipRenderer() {
+void Graphics::PresentRender() {
+	// Set render target to main window
+	SDL_SetRenderTarget(renderer_main_, NULL);
+	DrawColoredRect(NULL, 0x00, 0x00, 0x00, 0xFF);
+	// Copy canvas to new render target
+	SDL_RenderCopy(renderer_main_, render_canvas_, NULL, &viewport_rect_);
+	// Present render
 	SDL_RenderPresent(renderer_main_);
-	return 0;
+	// Set render target back to canvas
+	SDL_SetRenderTarget(renderer_main_, render_canvas_);
 }

@@ -5,12 +5,15 @@
 */
 
 #pragma once
+
 #if defined(_WIN32)
 	#include <SDL.h>
 #elif __linux__
 	#include <SDL2/SDL.h>
 #endif
+
 #include <math.h>
+#include "units.h"
 
 /* Console ANSI color codes */
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -32,9 +35,9 @@ constexpr char* META_VERSION = "0.2.0";
 //const double DELTA_TIME = 60.0 / FPS_LIMIT;
 
 /* NES screen dimensions */
-const unsigned int WINDOW_WIDTH_NES = 256;	// \ Original NES's typical output resolution.
-const unsigned int WINDOW_HEIGHT_NES = 224;	// / Note its 8:7 aspect ratio.
-const short TILESIZE_NES = 16;		// In NES pixels
+constexpr Units::Game NES_WINDOW_WIDTH = 256;	// \ Original NES's typical output resolution.
+constexpr Units::Game NES_WINDOW_HEIGHT = 224;	// / Note its 8:7 aspect ratio.
+constexpr Units::Game TILESIZE_NES = 16;		// In NES pixels
 
 /* Scaling for the NES to fit output window, but stretched to 4:3 to emulate CRT stretching*/
 // TODO: Fix for output resolutions smaller than 4:3 by conditionally adapting horizontal size first instead of vertical

@@ -57,8 +57,8 @@ void Camera::SetInterpRatio(float interp_ratio) {
 
 int Camera::Update(double delta_time) {
 	if (target_.entity != nullptr) {
-		target_.x = static_cast<int>(floor(target_.entity->GetPosition()[0]));
-		target_.y = static_cast<int>(floor(target_.entity->GetPosition()[1]));
+		target_.x = (int)(floor(target_.entity->GetPosition()[0]));
+		target_.y = (int)(floor(target_.entity->GetPosition()[1]));
 	}
 
 	// Only move if target exits capture bounds

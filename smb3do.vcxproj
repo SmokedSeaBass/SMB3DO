@@ -194,6 +194,7 @@ echo Post-Build Event completed!</Command>
     <ClInclude Include="src\tilemap.h" />
     <ClInclude Include="src\tileset.h" />
     <ClInclude Include="src\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="src\units.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\animated_sprite.cpp" />

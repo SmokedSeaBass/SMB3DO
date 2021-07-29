@@ -137,10 +137,10 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 	std::vector<CollisionTile> colliding_tiles;
 	// TODO 6-21-21: Account for offset tilemap/tilemap position
 	Rectangle collision_rect = rect + Rectangle(pos_x_, pos_y_, 0, 0);
-	int top_row = static_cast<int>(floor(rect.Top() / TILESIZE_NES));
-	int bottom_row = static_cast<int>(ceil(rect.Bottom() / TILESIZE_NES) - 1);
-	int left_col = static_cast<int>(floor(rect.Left() / TILESIZE_NES));
-	int right_col = static_cast<int>(ceil(rect.Right() / TILESIZE_NES) - 1);
+	int top_row = (int)(floor(rect.Top() / (int)TILESIZE_NES));
+	int bottom_row = (int)(ceil(rect.Bottom() / (int)TILESIZE_NES) - 1);
+	int left_col = (int)(floor(rect.Left() / (int)TILESIZE_NES));
+	int right_col = (int)(ceil(rect.Right() / (int)TILESIZE_NES) - 1);
 	for (int y = top_row; y <= bottom_row; y++) {
 		for (int x = left_col; x <= right_col; x++) {
 			CollisionTile col_tile;
@@ -174,16 +174,16 @@ void Tilemap::Update(double delta_time) {
 }
 
 int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop) {
-	if (crop.w < 0) crop.w = graphics.GetViewport().w;
-	if (crop.h < 0) crop.h = graphics.GetViewport().h;
+	if (crop.w < 0) crop.w = graphics.GetCanvasDimensions().w;
+	if (crop.h < 0) crop.h = graphics.GetCanvasDimensions().h;
 	crop.x -= offset_x; 
 	crop.y -= offset_y;
 
 	unsigned int tile_id = 0;
-	int top_row = std::max(static_cast<int>(floor(crop.Top() / TILESIZE_NES)), 0);
-	int bottom_row = std::min(static_cast<int>(floor(crop.Bottom() / TILESIZE_NES)), static_cast<int>(height_) + 1);
-	int left_col = std::max(static_cast<int>(floor(crop.Left() / TILESIZE_NES)), 0);
-	int right_col = std::min(static_cast<int>(floor(crop.Right() / TILESIZE_NES)), static_cast<int>(width_) + 1);
+	int top_row = std::max((int)(floor(crop.Top() / (int)TILESIZE_NES)), 0);
+	int bottom_row = std::min((int)(floor(crop.Bottom() / (int)TILESIZE_NES)), (int)height_ + 1);
+	int left_col = std::max((int)(floor(crop.Left() / (int)TILESIZE_NES)), 0);
+	int right_col = std::min((int)(floor(crop.Right() / (int)TILESIZE_NES)), (int)width_ + 1);
 	for (int y = top_row; y <= bottom_row; y++) {
 		for (int x = left_col; x <= right_col; x++) {
 			unsigned int tile_id = GetTileId(x, y);
@@ -193,10 +193,10 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 			unsigned int tile_index = tile_id;
 			const Tileset* tileset = GetTilesetFromTileID(tile_id, &tile_index);
 			if (tileset == nullptr) {
-				SDL_Rect dest_rect = { x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, TILESIZE_NES , TILESIZE_NES };
+				SDL_Rect dest_rect = { x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, (int)TILESIZE_NES , (int)TILESIZE_NES };
 				graphics.DrawTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
 			} else {
-				tileset->Draw(graphics, x * TILESIZE_NES + pos_x_ + offset_x, y * TILESIZE_NES + pos_y_ + offset_y, tile_index);
+				tileset->Draw(graphics, x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, tile_index);
 			}
 		}
 	}

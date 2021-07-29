@@ -19,7 +19,7 @@ public:
 		NONE, ALWAYS, SELECTIVE
 	};
 
-	Camera(const SDL_Rect& rect = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES });
+	Camera(const SDL_Rect& rect = { 0, 0, (int)NES_WINDOW_WIDTH, (int)NES_WINDOW_HEIGHT });
 
 	std::vector<double> GetPosition() const;
 	std::vector<double> GetDimensions() const;

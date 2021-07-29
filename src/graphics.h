@@ -30,10 +30,13 @@ public:
 	int WindowToggleFullscreen(Options& options);
 	void WindowSetTitle(const std::string& subtitle);
 	SDL_DisplayMode GetCurrentDisplayMode();
+	// Set viewport SDL_Rect in screen dimension
 	int SetViewport(const SDL_Rect* rect);
 	const SDL_Rect& GetViewport();
 	void UpdateViewport(Options& options);
-	std::pair<float, float> GetWindowFitViewportScaler(Options& options, SDL_Rect viewport = { 0, 0, WINDOW_WIDTH_NES, WINDOW_HEIGHT_NES });
+	std::pair<float, float> GetWindowFitViewportScaler(Options& options, SDL_Rect viewport = { 0, 0, (int)NES_WINDOW_WIDTH, (int)NES_WINDOW_HEIGHT });
+	void UpdateCanvas(Options& options);
+	SDL_Rect GetCanvasDimensions();
 
 	int BuildDefaultTexture();
 	SDL_Texture* GetDefaultTexture();
@@ -74,11 +77,17 @@ public:
 	int SetTextFont(const std::string& font_name = "");
 	int DrawText(const std::string& text, int pos_x, int pos_y);
 	
-	int FlipRenderer();
+	/// @brief Copies the render canvas to the main window, and then presents the render to the screen
+	void PresentRender();
 
 private:
 	SDL_Window* window_main_;
 	SDL_Renderer* renderer_main_;
+	SDL_Texture* render_canvas_;
+	SDL_Rect viewport_rect_;
+	std::pair<unsigned short, unsigned short> viewport_ratio_;
+	std::pair<float, float> viewport_scaler_;
+
 	typedef std::map<std::string, SDL_Texture*> TextureCache;
 	TextureCache textures_;
 	typedef std::map<std::string, std::unique_ptr<BitmapFont>> BMPFontCache;
@@ -87,7 +96,4 @@ private:
 	
 	bool is_fullscreen_;
 	std::pair<float, float> current_resolution_;
-	SDL_Rect viewport_rect_;
-	std::pair<float, float> viewport_scaler_;
-	std::pair<unsigned short, unsigned short> viewport_ratio_;
 };

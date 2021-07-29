@@ -58,9 +58,9 @@ int Game::Run() {
 	double tick_accumulator = 0.0;
 	if (options_.interp_factor == 0) {
 		if (fps_limit != 0) {
-			options_.interp_factor = static_cast<int>(ceil(Game::fps_limit / 60.0));
+			options_.interp_factor = (int)ceil(Game::fps_limit / 60.0);
 		} else {
-			options_.interp_factor = static_cast<int>(ceil(graphics_.GetCurrentDisplayMode().refresh_rate / 60.0));
+			options_.interp_factor = (int)ceil(graphics_.GetCurrentDisplayMode().refresh_rate / 60.0);
 		}
 	}
 	double delta_time = 1000.0 / (60.0 * options_.interp_factor);
@@ -92,16 +92,19 @@ int Game::Run() {
 					if (event.key.keysym.scancode == SDL_SCANCODE_P && !event.key.repeat) {
 						options_.TogglePixelRatio();
 						graphics_.UpdateViewport(options_);
+						graphics_.UpdateCanvas(options_);
 					};
 					if (event.key.keysym.scancode == SDL_SCANCODE_O && !event.key.repeat) {
 						options_.enable_widescreen = !options_.enable_widescreen;
 						options_.forceIntegerScaling = false;
 						graphics_.UpdateViewport(options_);
+						graphics_.UpdateCanvas(options_);
 					};
 					if (event.key.keysym.scancode == SDL_SCANCODE_I && !event.key.repeat) {
 						options_.forceIntegerScaling = !options_.forceIntegerScaling;
 						options_.enable_widescreen = false;
 						graphics_.UpdateViewport(options_);
+						graphics_.UpdateCanvas(options_);
 					};
 					if (event.key.keysym.scancode == SDL_SCANCODE_H && !event.key.repeat) {
 						Game::debug_show_hitboxes = !Game::debug_show_hitboxes;
@@ -113,6 +116,7 @@ int Game::Run() {
 				if (event.type == SDL_WINDOWEVENT) {
 					if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 						graphics_.UpdateViewport(options_);
+						graphics_.UpdateCanvas(options_);
 					}
 				}
 			}
@@ -126,10 +130,10 @@ int Game::Run() {
 
 		/* Draw */
 		// Backdraw color
-		SDL_Rect game_view = graphics_.GetViewport();
-		graphics_.SetViewport(NULL);
-		graphics_.DrawColoredRect(NULL, 0x00, 0x00, 0x00, 0xFF);
-		graphics_.SetViewport(&game_view);
+		//SDL_Rect game_view = graphics_.GetViewport();
+		//graphics_.SetViewport(NULL);
+		//graphics_.DrawColoredRect(NULL, 0x00, 0x00, 0x00, 0xFF);
+		//graphics_.SetViewport(&game_view);
 		
 		// Level
 		test_level.Draw(graphics_);
@@ -146,7 +150,7 @@ int Game::Run() {
 			graphics_.DrawText(debug_info, 0, 0);
 		}
 		// Flip to screen
-		graphics_.FlipRenderer();
+		graphics_.PresentRender();
 
 		// Framerate limiter
 		if (!options_.enable_vsync) {

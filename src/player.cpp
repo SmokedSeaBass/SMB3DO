@@ -156,7 +156,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
 					solid_collision = true;
-					leftest_x = std::min(std::max(info.col * TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * dt_ratio), leftest_x);
+					leftest_x = std::min(std::max(info.col * (int)TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * dt_ratio), leftest_x);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -179,7 +179,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				switch (info.type) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
-					rightest_x = std::max(std::min((info.col + 1) * TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * dt_ratio), rightest_x);
+					rightest_x = std::max(std::min((info.col + 1) * (int)TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * dt_ratio), rightest_x);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -200,7 +200,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
 					solid_collision = true;
-					rightest_right = std::max(std::min((info.col + 1) * TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * dt_ratio), rightest_right);
+					rightest_right = std::max(std::min((info.col + 1) * (int)TILESIZE_NES - COLLIDER_LEFT.Left(), pos_x_ + 1 * dt_ratio), rightest_right);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -223,7 +223,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				switch (info.type) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
-					leftest_left = std::min(std::max(info.col * TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * dt_ratio), leftest_left);
+					leftest_left = std::min(std::max(info.col * (int)TILESIZE_NES - COLLIDER_RIGHT.Right(), pos_x_ - 1 * dt_ratio), leftest_left);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -245,7 +245,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
 					solid_collision = true;
-					highest_y = std::min(info.row * TILESIZE_NES - COLLIDER_BOTTOM.Bottom(), highest_y);
+					highest_y = std::min(info.row * (int)TILESIZE_NES - COLLIDER_BOTTOM.Bottom(), highest_y);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -271,7 +271,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 					coin_count_++;
 				case Tile::COLLISION_TYPE::SOLID:
-					lowest_y = std::max((info.row + 1) * TILESIZE_NES - COLLIDER_TOP.Top(), lowest_y);
+					lowest_y = std::max((info.row + 1) * (int)TILESIZE_NES - COLLIDER_TOP.Top(), lowest_y);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -296,7 +296,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 					tilemap.SetTileId(info.col, info.row, 36);
 				case Tile::COLLISION_TYPE::SOLID:
 					solid_collision = true;
-					lowest_y = std::max((info.row + 1) * TILESIZE_NES - COLLIDER_TOP.Top(), lowest_y);
+					lowest_y = std::max((info.row + 1) * (int)TILESIZE_NES - COLLIDER_TOP.Top(), lowest_y);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;
@@ -322,7 +322,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
 					solid_collision = true;
-					highest_y = std::min(info.row * TILESIZE_NES - COLLIDER_BOTTOM.Bottom(), highest_y);
+					highest_y = std::min(info.row * (int)TILESIZE_NES - COLLIDER_BOTTOM.Bottom(), highest_y);
 					break;
 				case Tile::COLLISION_TYPE::COIN:
 					coin_count_++;

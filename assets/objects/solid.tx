@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="solid" type="SolidCollision" width="16" height="16"/>
+ <object name="solid" type="Solid" width="16" height="16"/>
 </template>
