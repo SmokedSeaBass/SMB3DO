@@ -6,10 +6,21 @@ A personal project that aims to _three_-do the classic Nintendo NES game Super M
 This project is written in C++14 and runs on the SDL2 framework.
 
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Screenshots <img src="docs/smb3do_bullet.png" width="32px"/>
-<img src="docs/smb3do_v0-1-0_sample2.png" width=40%/> <img src="docs/smb3do_v0-2-0_sample.png" width=40%/><br>
+<img src="docs/smb3do_v0-2-0_sample4.png" width=40%/> <img src="docs/smb3do_v0-2-0_sample2.png" width=40%/>
+<img src="docs/smb3do_v0-2-0_sample3.png" width=80%/>
+<img src="docs/smb3do_v0-2-0_sample5.png" width=40%/><br>
 
-## <img src="docs/smb3do_bullet.png" width="32px"/> Features <img src="docs/smb3do_bullet.png" width="32px"/>
-### Current Release (v0.1.0)
+## <img src="docs/smb3do_bullet.png" width="32px"/> Features and Changelog <img src="docs/smb3do_bullet.png" width="32px"/>
+### Current Release (v0.2.0)
+* Basic camera
+* Basic level format
+* Animated Mario
+* Improved variable refresh rate support
+* Hitbox visualization toggle
+* On-screen debug info
+* Collectable coins
+* Semisolid platforms
+#### v0.1.0
 * Keyboard input (see "How to Use")
 * Hardware accelerated rendering
 * Support for multiple resolutions
@@ -20,16 +31,6 @@ This project is written in C++14 and runs on the SDL2 framework.
 * Tileset and tilemap rendering
 * Tile-based collision
 * Basic SMB3-accurate player physics (walking, running, and jumping)
-
-### Coming Soon
-* [x] Basic camera
-* [x] Basic level format
-* [x] Animated Mario
-* [x] Improved variable refresh rate support
-* [x] Hitbox visualization toggle
-* [x] On-screen debug info
-* [x] Collectable coins
-* [x] Semi-solid platforms
 
 ### Long-Term Plans:
 * Implement all features of the original SMB3
@@ -48,6 +49,8 @@ Download the `.zip` file for the latest relase in the Releases tab.  Unzip to a 
 
 ### Controls
 * [W][A][S][D] - Move / [K] - Run / [L] - Jump
+* [H] - Toggle hitbox visual
+* [U] - Toggle debug info
 * [I] - Toggle integer/best-fit scaling (disables widescreen mode)
 * [O] - Toggle widescreen/standard mode (disables integer scaling)
 * [P] - Toggle between 8:7 and 4:3 aspect ratios (i.e. between perfectly square and CRT-like pixels)
