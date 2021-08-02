@@ -67,6 +67,8 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 			const std::string tile_type = tile_type_attr->Value();
 			if (tile_type == "Solid") {
 				tile_collision = Tile::COLLISION_TYPE::SOLID;
+			} else if (tile_type == "Semisolid") {
+				tile_collision = Tile::COLLISION_TYPE::SEMISOLID;
 			} else if (tile_type == "Coin") {
 				tile_collision = Tile::COLLISION_TYPE::COIN;
 			} else if (tile_type == "Hurt") {

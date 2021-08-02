@@ -242,6 +242,10 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 			bool solid_collision = false;
 			for (const CollisionInfo& info : collisions) {
 				switch (info.type) {
+				case Tile::COLLISION_TYPE::SEMISOLID:
+					if (!(pos_y_ <= (double)info.row * TILESIZE_NES + 5.0)) {
+						break;
+					}
 				case Tile::COLLISION_TYPE::HITTABLE:
 				case Tile::COLLISION_TYPE::SOLID:
 					solid_collision = true;

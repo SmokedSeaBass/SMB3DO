@@ -13,6 +13,7 @@ public:
 	enum class COLLISION_TYPE {
 		NONE,
 		SOLID,
+		SEMISOLID,
 		COIN,
 		HURT,
 		KILL,

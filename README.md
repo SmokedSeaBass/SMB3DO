@@ -28,8 +28,8 @@ This project is written in C++14 and runs on the SDL2 framework.
 * [x] Improved variable refresh rate support
 * [x] Hitbox visualization toggle
 * [x] On-screen debug info
-* [ ] Collectable coins
-* [ ] Semi-solid platforms
+* [x] Collectable coins
+* [x] Semi-solid platforms
 
 ### Long-Term Plans:
 * Implement all features of the original SMB3

@@ -40,4 +40,67 @@
  <tile id="20" type="Solid"/>
  <tile id="21" type="Solid"/>
  <tile id="22" type="Solid"/>
+ <tile id="32" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="33" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="34" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="2" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="36" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="37" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="38" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="80" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="81" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="82" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="84" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="2" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="85" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="86" type="Semisolid">
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Semisolid" x="0" y="0" width="16" height="16"/>
+  </objectgroup>
+ </tile>
+ <tile id="128" type="Semisolid"/>
+ <tile id="129" type="Semisolid"/>
+ <tile id="130" type="Semisolid"/>
 </tileset>

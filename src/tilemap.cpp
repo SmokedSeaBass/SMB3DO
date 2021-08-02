@@ -81,7 +81,7 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 
 
 std::vector<int> Tilemap::GetDimensions() const {
-	return { static_cast<int>(width_), static_cast<int>(height_) };
+	return { (int)width_, (int)height_ };
 }
 
 SDL_Color Tilemap::GetBackgroundColor() const {
