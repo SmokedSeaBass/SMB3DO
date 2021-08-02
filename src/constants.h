@@ -26,7 +26,7 @@
 
 /* Debugging */
 constexpr bool META_DEBUG = true;
-constexpr char* META_VERSION = "0.2.0";
+constexpr char* META_VERSION = "0.3.0";
 
 /* Render window attributes */
 //const unsigned int WINDOW_WIDTH = 1280;  // \ Actual output resolution
