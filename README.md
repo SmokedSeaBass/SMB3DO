@@ -70,10 +70,10 @@ The Visual Studio solution file `smb3do.sln` is included for your convenience.  
 * [Visual Studio Community 2019](https://visualstudio.microsoft.com/) (v16)
 
 ## <img src="docs/smb3do_bullet.png" width="32px"/> Credits <img src="docs/smb3do_bullet.png" width="32px"/>
-* SmokedSeaBass - Core Programmer/Designer
+* SmokedSeaBass - Core Programmer and Designer
+### Special Thanks
 * Jdaster64 - SMB3 player physics breakdown
 * Southbird - SMB3 disassembly
-* Nintendo - Developer/Publisher of Super Mario Bros. 3
-### Special Thanks
 * Christopher Hebert - ["Reconstructing Cave Story" YouTube series](https://www.youtube.com/watch?v=IufkC1IRY2Q&list=PL006xsVEsbKjSKBmLu1clo85yLrwjY67X)
 * Lazy Foo' Productions - [Beginning Game Programming v2.0](https://lazyfoo.net/tutorials/SDL/index.php) (SDL2 Tutorials)
+* Nintendo - Developer/Publisher of Super Mario Bros. 3
