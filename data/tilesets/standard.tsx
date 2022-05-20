@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.1" name="standard" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+<tileset version="1.8" tiledversion="1.8.5" name="standard" tilewidth="16" tileheight="16" tilecount="256" columns="16" objectalignment="topleft">
  <image source="standard.bmp" trans="e800dc" width="256" height="256"/>
  <tile id="32" type="Hittable">
+  <properties>
+   <property name="containedItem" value="coin"/>
+  </properties>
   <animation>
    <frame tileid="32" duration="125"/>
    <frame tileid="33" duration="125"/>

@@ -68,11 +68,11 @@ int Game::Run() {
 	
 	// Test creation code
 	Level test_level;
-	test_level.Load(graphics_, "assets/maps/test2a.tmx");
+	test_level.Load(graphics_, "data/maps/test2a.tmx");
 
 	// Bitmap font
-	graphics_.LoadBMPFont("assets/sprite_sheets/hud_font_ascii.bmp", 8, 8, "hud");
-	graphics_.LoadBMPFont("assets/sprite_sheets/dialogue_font_ascii.bmp", 8, 8, "dialogue");
+	graphics_.LoadBMPFont("data/sprite_sheets/hud_font_ascii.bmp", 8, 8, "hud");
+	graphics_.LoadBMPFont("data/sprite_sheets/dialogue_font_ascii.bmp", 8, 8, "dialogue");
 	
 	// Main game loop
 	while (!quit_game) {

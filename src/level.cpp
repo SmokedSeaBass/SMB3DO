@@ -33,7 +33,7 @@ int Level::Load(Graphics& graphics, const std::string& path_to_lvl) {
 	tilemap_layers_.push_back(tilemap);
 
 	// Create actors
-	Player* player = new Player(graphics, "assets/sprite_sheets/mario.bmp", 32, 440);
+	Player* player = new Player(graphics, "data/sprite_sheets/mario.bmp", 32, 440);
 	entity_list_.push_back(std::shared_ptr<Player>(player));
 
 	camera_ = Camera(graphics.GetViewport());

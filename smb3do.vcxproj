@@ -28,22 +28,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -65,33 +65,33 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2_ttf-2.0.15\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programming\libraries\SDL2_ttf-2.0.15\lib\x86;D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
-    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
-    <SourcePath>$(SourcePath)</SourcePath>
+    <IncludePath>$(SolutionDir)external\sdl2\include;$(SolutionDir)external\sdl2-image\include;$(SolutionDir)external\sdl2-ttf\include</IncludePath>
+    <LibraryPath>$(SolutionDir)external\sdl2\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-image\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-ttf\lib\$(PlatformShortName);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>build\$(Platform)\$(Configuration)\obj\</IntDir>
+    <ExternalIncludePath>$(SolutionDir)\external;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Programming\libraries\SDL2_image-2.0.5\include;D:\Programming\libraries\SDL2_ttf-2.0.15\include;D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programming\libraries\SDL2_ttf-2.0.15\lib\x86;D:\Programming\libraries\SDL2_image-2.0.5\lib\x86;D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
-    <CopyLocalDeploymentContent>false</CopyLocalDeploymentContent>
-    <SourcePath>$(SourcePath)</SourcePath>
+    <IncludePath>$(SolutionDir)external\sdl2\include;$(SolutionDir)external\sdl2-image\include;$(SolutionDir)external\sdl2-ttf\include</IncludePath>
+    <LibraryPath>$(SolutionDir)external\sdl2\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-image\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-ttf\lib\$(PlatformShortName);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>build\$(Platform)\$(Configuration)\obj\</IntDir>
+    <ExternalIncludePath>$(SolutionDir)\external;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
+    <IncludePath>$(SolutionDir)external\sdl2\include;$(SolutionDir)external\sdl2-image\include;$(SolutionDir)external\sdl2-ttf\include</IncludePath>
+    <LibraryPath>$(SolutionDir)external\sdl2\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-image\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-ttf\lib\$(PlatformShortName)</LibraryPath>
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>build\$(Platform)\$(Configuration)\obj\</IntDir>
+    <ExternalIncludePath>$(SolutionDir)\external;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\Programming\libraries\SDL2\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Programming\libraries\SDL2\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>bin\$(Platform)\$(Configuration)\obj\</IntDir>
+    <IncludePath>$(SolutionDir)external\sdl2\include;$(SolutionDir)external\sdl2-image\include;$(SolutionDir)external\sdl2-ttf\include</IncludePath>
+    <LibraryPath>$(SolutionDir)external\sdl2\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-image\lib\$(PlatformShortName);$(SolutionDir)external\sdl2-ttf\lib\$(PlatformShortName)</LibraryPath>
+    <OutDir>$(SolutionDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>build\$(Platform)\$(Configuration)\obj\</IntDir>
+    <ExternalIncludePath>$(SolutionDir)\external;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,7 +99,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
     </ClCompile>
@@ -110,23 +110,27 @@
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>echo ...Starting Post-Build Event
-echo Copying assets to $(ConfigurationName)...
-xcopy $(ProjectDir)assets\maps $(OutDir)assets\maps /y /s /i /D
-xcopy $(ProjectDir)assets\objects $(OutDir)assets\objects /y /s /i /D
-xcopy $(ProjectDir)assets\sprite_sheets $(OutDir)assets\sprite_sheets /y /s /i /D
-xcopy $(ProjectDir)assets\tilesets $(OutDir)assets\tilesets /y /s /i /D
-echo Done!
+      <Command>echo Starting Post-Build Event!
+echo Copying assets...
+xcopy "$(ProjectDir)data\maps" "$(OutDir)data\maps" /y /s /i /D
+xcopy "$(ProjectDir)data\objects" "$(OutDir)data\objects" /y /s /i /D
+xcopy "$(ProjectDir)data\sprite_sheets" "$(OutDir)data\sprite_sheets" /y /s /i /D
+xcopy "$(ProjectDir)data\tilesets" "$(OutDir)data\tilesets" /y /s /i /D
+echo ...Done!
+echo Copying dll files...
+xcopy "$(ProjectDir)external\sdl2\lib\$(PlatformShortName)\SDL2.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-image\lib\$(PlatformShortName)\SDL2_image.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-ttf\lib\$(PlatformShortName)\SDL2_ttf.dll" "$(OutDir)" /y
+echo ...Done!
 echo Post-Build Event completed!</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>Default</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -142,39 +146,77 @@ echo Post-Build Event completed!</Command>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>echo ...Starting Post-Build Event
-echo Copying assets to $(ConfigurationName)...
-xcopy $(ProjectDir)assets\maps $(OutDir)assets\maps /y /s /i /D
-xcopy $(ProjectDir)assets\objects $(OutDir)assets\objects /y /s /i /D
-xcopy $(ProjectDir)assets\sprite_sheets $(OutDir)assets\sprite_sheets /y /s /i /D
-xcopy $(ProjectDir)assets\tilesets $(OutDir)assets\tilesets /y /s /i /D
-echo Done!
+      <Command>echo Starting Post-Build Event!
+echo Copying assets...
+xcopy "$(ProjectDir)data\maps" "$(OutDir)data\maps" /y /s /i /D
+xcopy "$(ProjectDir)data\objects" "$(OutDir)data\objects" /y /s /i /D
+xcopy "$(ProjectDir)data\sprite_sheets" "$(OutDir)data\sprite_sheets" /y /s /i /D
+xcopy "$(ProjectDir)data\tilesets" "$(OutDir)data\tilesets" /y /s /i /D
+echo ...Done!
+echo Copying dll files...
+xcopy "$(ProjectDir)external\sdl2\lib\$(PlatformShortName)\SDL2.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-image\lib\$(PlatformShortName)\SDL2_image.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-ttf\lib\$(PlatformShortName)\SDL2_ttf.dll" "$(OutDir)" /y
+echo ...Done!
 echo Post-Build Event completed!</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <ClCompile>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>Level3</WarningLevel>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>echo Starting Post-Build Event!
+echo Copying assets...
+xcopy "$(ProjectDir)data\maps" "$(OutDir)data\maps" /y /s /i /D
+xcopy "$(ProjectDir)data\objects" "$(OutDir)data\objects" /y /s /i /D
+xcopy "$(ProjectDir)data\sprite_sheets" "$(OutDir)data\sprite_sheets" /y /s /i /D
+xcopy "$(ProjectDir)data\tilesets" "$(OutDir)data\tilesets" /y /s /i /D
+echo ...Done!
+echo Copying dll files...
+xcopy "$(ProjectDir)external\sdl2\lib\$(PlatformShortName)\SDL2.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-image\lib\$(PlatformShortName)\SDL2_image.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-ttf\lib\$(PlatformShortName)\SDL2_ttf.dll" "$(OutDir)" /y
+echo ...Done!
+echo Post-Build Event completed!</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
     <ClCompile>
       <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>echo Starting Post-Build Event!
+echo Copying assets...
+xcopy "$(ProjectDir)data\maps" "$(OutDir)data\maps" /y /s /i /D
+xcopy "$(ProjectDir)data\objects" "$(OutDir)data\objects" /y /s /i /D
+xcopy "$(ProjectDir)data\sprite_sheets" "$(OutDir)data\sprite_sheets" /y /s /i /D
+xcopy "$(ProjectDir)data\tilesets" "$(OutDir)data\tilesets" /y /s /i /D
+echo ...Done!
+echo Copying dll files...
+xcopy "$(ProjectDir)external\sdl2\lib\$(PlatformShortName)\SDL2.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-image\lib\$(PlatformShortName)\SDL2_image.dll" "$(OutDir)" /y
+xcopy "$(ProjectDir)external\sdl2-ttf\lib\$(PlatformShortName)\SDL2_ttf.dll" "$(OutDir)" /y
+echo ...Done!
+echo Post-Build Event completed!</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include="src\graphics\missingno.xpm" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="external\tinyxml2\tinyxml2.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\constants.h" />
@@ -193,10 +235,10 @@ echo Post-Build Event completed!</Command>
     <ClInclude Include="src\tile.h" />
     <ClInclude Include="src\tilemap.h" />
     <ClInclude Include="src\tileset.h" />
-    <ClInclude Include="src\tinyxml2\tinyxml2.h" />
     <ClInclude Include="src\units.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="external\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="src\animated_sprite.cpp" />
     <ClCompile Include="src\bitmap_font.cpp" />
     <ClCompile Include="src\camera.cpp" />
@@ -213,7 +255,6 @@ echo Post-Build Event completed!</Command>
     <ClCompile Include="src\tile.cpp" />
     <ClCompile Include="src\tilemap.cpp" />
     <ClCompile Include="src\tileset.cpp" />
-    <ClCompile Include="src\tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="smb3do.rc" />
