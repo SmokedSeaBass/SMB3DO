@@ -1,0 +1,22 @@
+body {
+    background-color: rgb(23, 28, 68);
+    color: whitesmoke;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+    margin: 0;
+}
+
+h2 {
+    margin-top: 20px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid white;
+}
+
+.heading {
+    text-align: center;
+/*    color: darkred;*/
+    background-color: slategray;
+    padding: 1px;
+}

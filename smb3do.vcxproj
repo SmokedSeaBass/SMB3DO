@@ -212,6 +212,8 @@ echo Post-Build Event completed!</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="docs\index.html" />
+    <None Include="docs\styles.css" />
     <None Include="README.md" />
     <None Include="src\graphics\missingno.xpm" />
   </ItemGroup>

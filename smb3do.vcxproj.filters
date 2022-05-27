@@ -22,11 +22,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Documentation">
+      <UniqueIdentifier>{33364eb2-31cb-4c9c-ba07-5dd4fd505f60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
     <None Include="src\graphics\missingno.xpm">
       <Filter>Source Files\Embedded Files</Filter>
+    </None>
+    <None Include="docs\index.html">
+      <Filter>Documentation</Filter>
+    </None>
+    <None Include="docs\styles.css">
+      <Filter>Documentation</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
