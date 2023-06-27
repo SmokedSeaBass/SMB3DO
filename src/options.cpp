@@ -3,7 +3,7 @@
 
 Options::Options() {
 	fps_limit = 0;
-	enable_vsync = false;
+	enable_vsync = true;
 	interp_factor = 1;
 	fullscreen_resolution_desired = { 2560, 1440 };
 	windowed_resolution_desired = { 640, 480 };

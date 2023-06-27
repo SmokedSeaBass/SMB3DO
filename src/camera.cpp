@@ -31,7 +31,7 @@ void Camera::SetDimensions(double w, double h) {
 	rect_.h = h;
 }
 
-void Camera::SetTarget(CameraTarget& target) {
+void Camera::SetTarget(const CameraTarget& target) {
 	target_ = target;
 }
 

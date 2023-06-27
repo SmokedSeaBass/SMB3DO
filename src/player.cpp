@@ -147,7 +147,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 	double delta_y = vel_y_;
 	if (delta_x > 0) {
 		// React to collision RIGHT
-		std::vector<CollisionInfo>& collisions = GetCollisionInfo(tilemap, RightCollision(std::max(0.0, delta_x)));
+		std::vector<CollisionInfo> collisions = GetCollisionInfo(tilemap, RightCollision(std::max(0.0, delta_x)));
 		if (!collisions.empty()) {
 			double leftest_x = pos_x_ + delta_x;
 			bool solid_collision = false;
@@ -191,7 +191,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 		}
 	} else {
 		// React to collision LEFT
-		std::vector<CollisionInfo>& collisions = GetCollisionInfo(tilemap, LeftCollision(std::min(0.0, delta_x)));
+		std::vector<CollisionInfo> collisions = GetCollisionInfo(tilemap, LeftCollision(std::min(0.0, delta_x)));
 		if (!collisions.empty()) {
 			double rightest_right = pos_x_ + delta_x;
 			bool solid_collision = false;
@@ -236,7 +236,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 	}
 	if (delta_y > 0) {
 		// React to collision DOWN
-		std::vector<CollisionInfo>& collisions = GetCollisionInfo(tilemap, BottomCollision(delta_y));
+		std::vector<CollisionInfo> collisions = GetCollisionInfo(tilemap, BottomCollision(delta_y));
 		if (!collisions.empty()) {
 			double highest_y = pos_y_ + delta_y;
 			bool solid_collision = false;
@@ -287,7 +287,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 		}
 	} else {
 		// React to collision UP
-		std::vector<CollisionInfo>& collisions = GetCollisionInfo(tilemap, TopCollision(delta_y));
+		std::vector<CollisionInfo> collisions = GetCollisionInfo(tilemap, TopCollision(delta_y));
 		if (!collisions.empty()) {
 			double lowest_y = pos_y_ + delta_y;
 			bool solid_collision = false;

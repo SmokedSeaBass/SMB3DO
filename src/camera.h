@@ -27,7 +27,7 @@ public:
 	void SetRect(const Rectangle& rect);
 	void SetPosition(double x, double y);
 	void SetDimensions(double w, double h);
-	void SetTarget(CameraTarget& target);
+	void SetTarget(const CameraTarget& target);
 	void SetBounds(const Rectangle& rect);
 	void SetCaptureBounds(const Rectangle& rect);
 	void SetVerticalScrollRule(VerticalScrollRule rule);

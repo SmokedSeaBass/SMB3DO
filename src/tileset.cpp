@@ -110,10 +110,14 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 			double frame_speed = 1000.0 / animation_tiles[0].second;
 			int frame_count = animation_tiles.size();
 			tile_rect = TileIndexToRect(animation_tiles[0].first);
-			tile_sprite = &AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
+			// g++ just HAD to be picky about getting addresses of rvalues
+			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
+			tile_sprite = &temp;
 		} else {
 			// TODO 7-19-21: Replace with Sprite polymorphism
-			tile_sprite = &AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h);
+			// g++ just HAD to be picky about getting addresses of rvalues
+			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h);
+			tile_sprite = &temp;
 		}
 
 		/* Store the tile in the TileList */
