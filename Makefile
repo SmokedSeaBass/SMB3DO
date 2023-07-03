@@ -18,7 +18,7 @@ MINGW_DIRECTORY    := D:/msys64/mingw32
 #           COMPILER OPTIONS            #
 #=======================================#
 SOURCES := $(wildcard $(SOURCE_DIRECTORY)/*.cpp) $(EXTERNAL_DIRECTORY)/tinyxml2/tinyxml2.cpp
-OBJECTS := $(patsubst $(SOURCE_DIRECTORY)/%.cpp,$(OBJECT_DIRECTORY)/%.o,$(SOURCES))
+OBJECTS := $(patsubst $(SOURCE_DIRECTORY)/%.cpp,$(OBJECT_DIRECTORY)/%.o,$(SOURCES)) $(OBJECT_DIRECTORY)/smb3do.res
 
 CXX := $(MINGW_DIRECTORY)/bin/g++
 CXXFLAGS := -std=c++14 -w -mwindows -mconsole 
@@ -55,7 +55,12 @@ $(OBJECTS): $(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.cpp
 	@echo "Compiling..."
 	$(CXX) -c $(CXXFLAGS) $(INCLUDES) $< -o $@
 
+$(OBJECT_DIRECTORY)/smb3do.res: smb3do.rc
+	@echo "Building resource file..."
+	windres smb3do.rc -O coff -o $(OBJECT_DIRECTORY)/smb3do.res
+
 build:
+	@echo "Building workspace..."
 	@mkdir -p $(APP_DIRECTORY)
 	@mkdir -p $(OBJECT_DIRECTORY)
 	@mkdir -p $(DOCUMENT_DIRECTORY)
