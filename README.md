@@ -57,12 +57,13 @@ Download the `.zip` file for the latest relase in the Releases tab.  Unzip to a 
 * <img src="docs/images/keys/f11.png" style="display:inline-block;height:24px;margin-bottom:-6px"/> - Toggle fullscreen/windowed mode
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Building From Source <img src="docs/images/bullet_point.png" width="32px"/>
-The Visual Studio solution file `smb3do.sln` is included for your convenience.  However, there is a small amount of setup required:
-1. Download and install [Visual Studio Community](https://visualstudio.microsoft.com/free-developer-offers/).
-2. Download and install [Simple Directmedia Layer 2.0](https://www.libsdl.org/download-2.0.php) for **Visual C++ on Windows**.
-3. Download/clone this repository to a location of your choice.
-4. Open `smb3do.sln` from the root of the repository in Visual Studio. Follow the instructions here: [Lazy Foo' Productions - Hello SDL](https://lazyfoo.net/tutorials/SDL/01_hello_SDL/index.php) to properly link the SDL2 libraries to the project.
-5. Build and run!
+Visual Studio solution and project files have been removed for now as part of streamlining the build process.  The project instead includes a Makefile and now compiles using `g++` on MinGW32.  Detailed build instructions to follow.
+~~The Visual Studio solution file `smb3do.sln` is included for your convenience.  However, there is a small amount of setup required:~~
+1. ~~Download and install [Visual Studio Community](https://visualstudio.microsoft.com/free-developer-offers/).~~
+2. ~~Download and install [Simple Directmedia Layer 2.0](https://www.libsdl.org/download-2.0.php) for **Visual C++ on Windows**.~~
+3. ~~Download/clone this repository to a location of your choice.~~
+4. ~~Open `smb3do.sln` from the root of the repository in Visual Studio. Follow the instructions here: [Lazy Foo' Productions - Hello SDL](https://lazyfoo.net/tutorials/SDL/01_hello_SDL/index.php) to properly link the SDL2 libraries to the project.~~
+5. ~~Build and run!~~
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Dependencies and Utilities <img src="docs/images/bullet_point.png" width="32px"/>
 * [Simple Directmedia Layer 2.0](https://www.libsdl.org/) (v2.0.14)
