@@ -3,7 +3,7 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
-#include <tinyxml2/tinyxml2.h>
+#include "tinyxml2.h"
 #include "error.h"
 
 Tileset::Tileset() :

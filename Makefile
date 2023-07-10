@@ -1,82 +1,78 @@
 TARGET := smb3do.exe
+TARGET_ARCHITECTURE := $(MSYSTEM_CARCH)
 
 #=======================================#
 #          PROJECT DIRECTORIES          #
 #=======================================#
+ROOT_DIRECTORY     := $(MSYSTEM_PREFIX)
 PROJECT_DIRECTORY  := .
-APP_DIRECTORY      := build/Win32/Debug
-OBJECT_DIRECTORY   := build/Win32/Debug/obj
+APP_DIRECTORY      := bin/$(TARGET_ARCHITECTURE)
+OBJECT_DIRECTORY   := build/$(TARGET_ARCHITECTURE)
 DOCUMENT_DIRECTORY := docs
 EXTERNAL_DIRECTORY := external
-LIBRARY_DIRECTORY  := lib
+INCLUDE_DIRECTORY  := include
 RESOURCE_DIRECTORY := data
 SOURCE_DIRECTORY   := src
-
-MINGW_DIRECTORY    := D:/msys64/mingw32
 
 #=======================================#
 #           COMPILER OPTIONS            #
 #=======================================#
-SOURCES := $(wildcard $(SOURCE_DIRECTORY)/*.cpp) $(EXTERNAL_DIRECTORY)/tinyxml2/tinyxml2.cpp
+SOURCES := $(wildcard $(SOURCE_DIRECTORY)/*.cpp) $(wildcard $(EXTERNAL_DIRECTORY)/*/src/*.cpp)
 OBJECTS := $(patsubst $(SOURCE_DIRECTORY)/%.cpp,$(OBJECT_DIRECTORY)/%.o,$(SOURCES)) $(OBJECT_DIRECTORY)/smb3do.res
+INCLUDES := -I$(INCLUDE_DIRECTORY) $(addprefix -I,$(wildcard $(EXTERNAL_DIRECTORY)/*/include))
 
-CXX := $(MINGW_DIRECTORY)/bin/g++
-CXXFLAGS := -std=c++14 -w -mwindows -mconsole 
+CXX := g++
+CXXFLAGS := -std=c++14 -w $(shell pkg-config --cflags sdl2 sdl2_image sdl2_ttf)
 
 #=======================================#
 #            LINKER OPTIONS             #
 #=======================================#
-LDFLAGS := -L$(MINGW_DIRECTORY)/lib
-LDLIBS := -lSDL2_image -lSDL2_ttf -lmingw32 -lSDL2main -lSDL2 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
+# LDFLAGS :=
+LDLIBS := $(shell pkg-config --libs sdl2 sdl2_image sdl2_mixer sdl2_ttf) -mconsole -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread
 
-INCLUDES := -I$(EXTERNAL_DIRECTORY) -I$(MINGW_DIRECTORY)/include/SDL2
+#=======================================#
+#                 COLOR                 #
+#=======================================#
+ANSI_LBLUE = \x1b[38;5;12m
+ANSI_RESET = \x1b[0m
 
 #=======================================#
 #                TARGETS                #
 #=======================================#
-.PHONY: all build clean
+.PHONY: all build debug clean
 
 all: build $(APP_DIRECTORY)/$(TARGET)
 
 $(APP_DIRECTORY)/$(TARGET): $(OBJECTS)
-	@echo "Linking..."
+	@echo -e "$(ANSI_LBLUE):: Linking...$(ANSI_RESET)"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
-	@echo "Copying .dll files..."
-	cp $(EXTERNAL_DIRECTORY)/sdl2/lib/x86/SDL2.dll $(APP_DIRECTORY)/SDL2.dll
-	cp $(EXTERNAL_DIRECTORY)/sdl2-image/lib/x86/SDL2_image.dll $(APP_DIRECTORY)/SDL2_image.dll
-	cp $(EXTERNAL_DIRECTORY)/sdl2-ttf/lib/x86/SDL2_ttf.dll $(APP_DIRECTORY)/SDL2_ttf.dll
-	@echo "Copying target to project directory..."
-	cp $(APP_DIRECTORY)/$(TARGET) $(PROJECT_DIRECTORY)/$(TARGET)
-	cp $(EXTERNAL_DIRECTORY)/sdl2/lib/x86/SDL2.dll $(PROJECT_DIRECTORY)/SDL2.dll
-	cp $(EXTERNAL_DIRECTORY)/sdl2-image/lib/x86/SDL2_image.dll $(PROJECT_DIRECTORY)/SDL2_image.dll
-	cp $(EXTERNAL_DIRECTORY)/sdl2-ttf/lib/x86/SDL2_ttf.dll $(PROJECT_DIRECTORY)/SDL2_ttf.dll
+	@echo -e "$(ANSI_LBLUE):: Copying .dll files...$(ANSI_RESET)"
+	$(foreach lib,$(wildcard $(EXTERNAL_DIRECTORY)/*/lib/$(TARGET_ARCHITECTURE)/*.dll),cp $(lib) $(APP_DIRECTORY)/$(notdir $(lib);))
+	@echo -e "$(ANSI_LBLUE):: Copying data files...$(ANSI_RESET)"
+	cp -r $(RESOURCE_DIRECTORY) $(APP_DIRECTORY)/data
 
 $(OBJECTS): $(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.cpp
-	@echo "Compiling..."
-	$(CXX) -c $(CXXFLAGS) $(INCLUDES) $< -o $@
+	@echo -e "$(ANSI_LBLUE):: Compiling $<...$(ANSI_RESET)"
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJECT_DIRECTORY)/smb3do.res: smb3do.rc
-	@echo "Building resource file..."
+	@echo -e "$(ANSI_LBLUE):: Building resource file...$(ANSI_RESET)"
 	windres smb3do.rc -O coff -o $(OBJECT_DIRECTORY)/smb3do.res
 
+debug: CXXFLAGS += -DDEBUG -g
+debug: all
+
 build:
-	@echo "Building workspace..."
 	@mkdir -p $(APP_DIRECTORY)
 	@mkdir -p $(OBJECT_DIRECTORY)
 	@mkdir -p $(DOCUMENT_DIRECTORY)
 	@mkdir -p $(EXTERNAL_DIRECTORY)
-	@mkdir -p $(LIBRARY_DIRECTORY)
 	@mkdir -p $(RESOURCE_DIRECTORY)
 	@mkdir -p $(SOURCE_DIRECTORY)
 
 clean:
-	@echo "Cleaning..."
+	@echo -e "$(ANSI_LBLUE):: Cleaning...$(ANSI_RESET)"
 	@rm -rvf $(OBJECT_DIRECTORY)
-	@rm -rvf $(APP_DIRECTORY)/$(TARGET)
-	@rm -rvf $(APP_DIRECTORY)/SDL2.dll
-	@rm -rvf $(APP_DIRECTORY)/SDL2_image.dll
-	@rm -rvf $(APP_DIRECTORY)/SDL2_ttf.dll
+	@rm -rvf $(APP_DIRECTORY)/*
 	@rm -rvf $(TARGET)
-	@rm -rvf SDL2.dll
-	@rm -rvf SDL2_image.dll
-	@rm -rvf SDL2_ttf.dll
+	@rm -rvf *.dll
