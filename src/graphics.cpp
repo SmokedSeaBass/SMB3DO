@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 #include "constants.h"
-#include "error.h"
+#include "logger.h"
 #include "graphics/missingno.xpm"
 
 Graphics::Graphics() {
@@ -31,12 +31,12 @@ Graphics::~Graphics() {
 
 int Graphics::Initialize(Options& options) {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		Error::PrintError("SDL could not initialize: " + std::string(SDL_GetError()));
+		Logger::PrintError("SDL could not initialize: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
 	if (TTF_Init() < 0) {
-		Error::PrintError("SDL_TTF could not initialize: " + std::string(TTF_GetError()));
+		Logger::PrintError("SDL_TTF could not initialize: " + std::string(TTF_GetError()));
 		return -1;
 	}
 
@@ -49,26 +49,26 @@ int Graphics::Initialize(Options& options) {
 		SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI
 	);
 	if (window_main_ == nullptr) {
-		Error::PrintError("Main window could not be created: " + std::string(SDL_GetError()));
+		Logger::PrintError("Main window could not be created: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
 	// Accelerated renderer
 	if (SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d") == SDL_FALSE) {
-		Error::PrintError("Render driver hint could not be set");
+		Logger::PrintError("Render driver hint could not be set");
 	}
 	Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE;
 	if (options.enable_vsync)
 		flags |= SDL_RENDERER_PRESENTVSYNC;
 	renderer_main_ = SDL_CreateRenderer(window_main_, -1, flags);
 	if (renderer_main_ == nullptr) {
-		Error::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
+		Logger::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
 	// Set pixel uspcale, no softening or antialias
 	if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest") == SDL_FALSE) {
-		Error::PrintError("Render scale quality hint could not be set: " + std::string(SDL_GetError()));
+		Logger::PrintError("Render scale quality hint could not be set: " + std::string(SDL_GetError()));
 		return -1;
 	}
 
@@ -78,7 +78,7 @@ int Graphics::Initialize(Options& options) {
 	// Create render canvas texture
 	render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
 	if (render_canvas_ == NULL) {
-		Error::PrintError("Could not create canvas texture: " + std::string(SDL_GetError()));
+		Logger::PrintError("Could not create canvas texture: " + std::string(SDL_GetError()));
 		return -1;
 	}
 	SDL_SetRenderTarget(renderer_main_, render_canvas_);
@@ -87,7 +87,7 @@ int Graphics::Initialize(Options& options) {
 	UpdateCanvas(options);
 
 	if (BuildDefaultTexture() < 0) {
-		Error::PrintError("Could not build default texture");
+		Logger::PrintError("Could not build default texture");
 		return -1;
 	}
 
@@ -99,13 +99,13 @@ int Graphics::WindowToggleFullscreen(Options& options) {
 		SDL_MaximizeWindow(window_main_);
 		SDL_SetWindowSize(window_main_, options.fullscreen_resolution_desired.first, options.fullscreen_resolution_desired.second);
 		if (SDL_SetWindowFullscreen(window_main_, SDL_WINDOW_FULLSCREEN) < 0) {
-			Error::PrintError("Could not switch to fullscreen mode: " + std::string(SDL_GetError()));
+			Logger::PrintError("Could not switch to fullscreen mode: " + std::string(SDL_GetError()));
 			return -1;
 		}
 	} else {  
 		SDL_SetWindowSize(window_main_, options.windowed_resolution_desired.first, options.windowed_resolution_desired.second);
 		if (SDL_SetWindowFullscreen(window_main_, 0) < 0) {
-			Error::PrintError("Could not switch to windowed mode: " + std::string(SDL_GetError()));
+			Logger::PrintError("Could not switch to windowed mode: " + std::string(SDL_GetError()));
 			return -1;
 		}
 	}
@@ -157,8 +157,8 @@ void Graphics::UpdateViewport(Options& options) {
 			(int)round(current_resolution_.second)
 		};
 	}
-	//Error::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
-	//Error::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
+	//Logger::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
+	//Logger::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
 }
 
 std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, SDL_Rect viewport) {
@@ -192,7 +192,7 @@ int Graphics::BuildDefaultTexture() {
 	SDL_Surface* missingno_surface = IMG_ReadXPMFromArray(missingno_xpm);
 	if (missingno_surface == NULL) {
 		std::string err = "Graphics building default texture: Could not read XPM: " + std::string(IMG_GetError());
-		Error::PrintError(err);
+		Logger::PrintError(err);
 		SDL_FreeSurface(missingno_surface);
 		return -1;
 	}
@@ -206,7 +206,7 @@ SDL_Texture* Graphics::GetDefaultTexture() {
 
 SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
 	if (surface == nullptr) {
-		Error::PrintError("Graphics creating texture from surface: surface pointer is NULL");
+		Logger::PrintError("Graphics creating texture from surface: surface pointer is NULL");
 		return nullptr;
 	}
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_main_, surface);
@@ -218,7 +218,7 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path) {
 	if (textures_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
-			Error::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
+			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
@@ -231,7 +231,7 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint8 
 	if (textures_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
-			Error::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
+			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
 		Uint32 color_key = SDL_MapRGB(surface->format, red, green, blue);
@@ -246,7 +246,7 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int al
 	if (textures_.count(file_path) == 0) {
 		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
 		if (surface == NULL) {
-			Error::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
+			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
 		Uint32 color_key = 0x00000000;
@@ -269,7 +269,7 @@ int Graphics::UnloadTexture(SDL_Texture* texture) {
 			return 0;
 		}
 	}
-	Error::PrintWarning("Graphics unloading texture " + Error::ptr_to_string(texture) + ": texture not found in texture cache");
+	Logger::PrintWarning("Graphics unloading texture " + Logger::ptr_to_string(texture) + ": texture not found in texture cache");
 	return -1;
 }
 
@@ -365,13 +365,13 @@ int Graphics::LoadBMPFont(const std::string& path_to_bmp, unsigned int glyph_wid
 		bitmap_fonts_[font_index] = std::make_unique<BitmapFont>(font);
 		return 0;
 	}
-	Error::PrintWarning("Loading BitmapFont \'" + font_name + "\': BitmapFont already loaded");
+	Logger::PrintWarning("Loading BitmapFont \'" + font_name + "\': BitmapFont already loaded");
 	return 0;
 }
 
 int Graphics::SetTextFont(const std::string& font_name) {
 	if (bitmap_fonts_.count(font_name) == 0) {
-		Error::PrintError("Setting text to BitmapFont \'" + font_name + "\': BitmapFont not loaded");
+		Logger::PrintError("Setting text to BitmapFont \'" + font_name + "\': BitmapFont not loaded");
 		return -1;
 	}
 	active_bitmap_font_ = bitmap_fonts_[font_name].get();
@@ -380,7 +380,7 @@ int Graphics::SetTextFont(const std::string& font_name) {
 
 int Graphics::DrawText(const std::string& text, int pos_x, int pos_y) {
 	if (active_bitmap_font_ == nullptr) {
-		Error::PrintError("Drawing text: Active BitmapFont is NULL or unset");
+		Logger::PrintError("Drawing text: Active BitmapFont is NULL or unset");
 		return -1;
 	}
 	return active_bitmap_font_->DrawText(*this, text, pos_x, pos_y);

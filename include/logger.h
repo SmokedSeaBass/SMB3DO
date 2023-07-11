@@ -3,7 +3,7 @@
 #include <string>
 #include <stdexcept>
 
-struct Error {
+struct Logger {
 public:
 	static void PrintError(const std::string& message);
 	static void PrintError(const std::exception exception);

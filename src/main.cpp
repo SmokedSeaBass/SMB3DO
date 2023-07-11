@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string>
 #include "game.h"
-#include "error.h"
+#include "logger.h"
 
 /*
   Super Mario Bros. 3-Do
@@ -17,16 +17,16 @@
 */
 
 int main(int argc, char* args[]) {
-	printf("Initializng game...\n");
+	Logger::PrintDebug("Initializng game...\n");
 	Game smb3do;
 
-	printf("Starting main game loop...\n");
+	Logger::PrintDebug("Starting main game loop...\n");
 	if (smb3do.Run() < 0) {
-		Error::PrintWarning(std::string("Game was terminated early"));
+		Logger::PrintWarning("Game was terminated early");
 		return -1;
 	}
 
-	printf("Closing game...\n");
+	Logger::PrintDebug("Closing game...\n");
 
 	return 0;
 }

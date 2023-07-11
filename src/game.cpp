@@ -1,13 +1,14 @@
 #include "game.h"
 
 #include <chrono>
+#include <stdexcept>
 #include "animated_sprite.h"
 //#include "bitmap_font.h"
 #include "camera.h"
 #include "constants.h"
-#include "error.h"
 #include "input.h"
 #include "level.h"
+#include "logger.h"
 #include "player.h"
 #include "sprite.h"
 #include "tilemap.h"
@@ -44,7 +45,7 @@ int Game::Render(Graphics& graphics) {
 
 int Game::Run() {
 	if (graphics_.Initialize(options_) < 0) {
-		Error::PrintError(std::runtime_error("Could not initialize graphics"));
+		Logger::PrintError(std::runtime_error("Could not initialize graphics"));
 		return -1;
 	}
 	Input input;

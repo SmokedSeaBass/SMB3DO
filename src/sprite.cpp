@@ -1,7 +1,7 @@
 #include "sprite.h"
 
 #include <stdexcept>
-#include "error.h"
+#include "logger.h"
 #include "graphics/missingno.xpm"
 
 Sprite::Sprite() : 
@@ -18,7 +18,7 @@ Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, in
 
 Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int source_y, int source_w, int source_h) : Sprite() {
 	if (texture == nullptr) {
-		Error::PrintWarning("Sprite initialized with null texture");
+		Logger::PrintWarning("Sprite initialized with null texture");
 		return;
 	}
 	source_rect_ = { source_x, source_y, source_w, source_h };

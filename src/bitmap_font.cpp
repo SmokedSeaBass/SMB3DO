@@ -1,6 +1,6 @@
 #include "bitmap_font.h"
 
-#include "error.h"
+#include "logger.h"
 
 BitmapFont::BitmapFont() :
 	texture_(nullptr),
@@ -15,12 +15,12 @@ BitmapFont::BitmapFont(Graphics& graphics, const std::string& path_to_bmp, int g
 
 int BitmapFont::LoadBitmap(Graphics& graphics, const std::string& path_to_bmp, int glyph_width, int glyph_height) {
 	if (texture_ != nullptr) {
-		Error::PrintError("Loading BMP \'" + path_to_bmp + "\' for BitmapFont: BMP already loaded fro BitmapFont");
+		Logger::PrintError("Loading BMP \'" + path_to_bmp + "\' for BitmapFont: BMP already loaded fro BitmapFont");
 		return -1;
 	}
 	texture_ = graphics.LoadTextureFromImage(path_to_bmp, 0, 0);
 	if (texture_ == nullptr) {
-		Error::PrintError("Loading texture from BMP \'" + path_to_bmp + "\' for BitmapFont: could not load texture from image");
+		Logger::PrintError("Loading texture from BMP \'" + path_to_bmp + "\' for BitmapFont: could not load texture from image");
 		return -1;
 	}
 	SDL_QueryTexture(texture_, NULL, NULL, &texture_width_, NULL);
@@ -31,7 +31,7 @@ int BitmapFont::LoadBitmap(Graphics& graphics, const std::string& path_to_bmp, i
 
 int BitmapFont::LoadBitmap(SDL_Texture* texture, int glyph_width, int glyph_height) {
 	if (texture_ != nullptr) {
-		Error::PrintError("Cannt load texture \'" + Error::ptr_to_string(texture) + "\' to BitmapFont with BMP already loaded");
+		Logger::PrintError("Cannt load texture \'" + Logger::ptr_to_string(texture) + "\' to BitmapFont with BMP already loaded");
 		return -1;
 	}
 	texture_ = texture;

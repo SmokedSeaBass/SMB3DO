@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 #include "tinyxml2.h"
-#include "error.h"
+#include "logger.h"
 #include "constants.h"
 #include "tileset.h"
 
@@ -31,7 +31,7 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 	// Get tile id csv data from .tmx
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tmx.c_str()) != tinyxml2::XML_SUCCESS) {
-		Error::PrintError("Could not load TMX file: '" + path_to_tmx + "'");
+		Logger::PrintError("Could not load TMX file: '" + path_to_tmx + "'");
 		return;
 	}
 	tinyxml2::XMLElement* map_node = tmx.FirstChildElement("map");
@@ -72,7 +72,7 @@ Tilemap::Tilemap(Graphics& graphics, std::string path_to_tmx) : Tilemap::Tilemap
 		path_to_tsx = path_to_tmx + "/../" + tileset_node->FindAttribute("source")->Value();
 		Tileset tileset = Tileset(graphics, path_to_tsx);
 		if (tileset.GetTilesetSprite() == nullptr) {
-			Error::PrintWarning("Tileset '" + path_to_tsx + "' extracted from TMX file '" + path_to_tmx +  "'  has null Sprite");
+			Logger::PrintWarning("Tileset '" + path_to_tsx + "' extracted from TMX file '" + path_to_tmx +  "'  has null Sprite");
 		}
 		tilesets_.push_back(std::make_shared<Tileset>(tileset));
 		tileset_node = tileset_node->NextSiblingElement("tileset");
