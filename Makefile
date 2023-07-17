@@ -52,10 +52,7 @@ EXTERNAL_LIBRARIES := $(strip $(foreach D, $(EXTERNAL_LIBRARY_DIRECTORIES), $(wi
 #           COMPILER OPTIONS            #
 #=======================================#
 CXX := g++
-CXXFLAGS := -std=c++14 -w $(shell pkg-config --cflags sdl2 SDL2_image SDL2_mixer SDL2_ttf)
-ifeq ($(TARGET_ENV), win32)
-	CXXFLAGS += -m32
-endif
+CXXFLAGS = -std=c++17 -w $(shell pkg-config --cflags sdl2 SDL2_image SDL2_mixer SDL2_ttf)
 
 #=======================================#
 #            LINKER OPTIONS             #
@@ -111,9 +108,8 @@ build:
 	@mkdir -p $(RESOURCE_DIRECTORY)
 	@mkdir -p $(SOURCE_DIRECTORY)
 
-debug:
-	$(eval CXXFLAGS += -DDEBUG -g)
-	@$(MAKE) release
+debug: CXXFLAGS += -DDEBUG -g
+debug: release
 
 release: | build $(APP_DIRECTORY)/$(TARGET)
 

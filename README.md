@@ -6,7 +6,7 @@
 
 A personal project that aims to _three_-do the classic Nintendo NES game Super Mario Bros. 3.  This project arose out of my dissatisfaction of Super Mario Maker and Super Mario Maker 2's shortcomings and limitations, particularly in the SMB3 style.  While ROM hacking is always an option, SMB3's compression makes it somewhat tricky to mod (last time I checked).  Plus, creating my own rendition would allow me to add new features and tweak anything to my liking.  So, here we are.
 
-This project is written in C++14 and runs on the SDL2 framework.
+This project is written in C++17 and runs on the SDL2 framework.
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Screenshots <img src="docs/images/bullet_point.png" width="32px"/>
 
