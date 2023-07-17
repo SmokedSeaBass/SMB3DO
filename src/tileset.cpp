@@ -1,5 +1,6 @@
 #include "tileset.h"
 
+#include <filesystem>
 #include <memory>
 #include <stdexcept>
 #include <vector>
@@ -16,11 +17,12 @@ Tileset::Tileset() :
 	tile_count_(0) {
 }
 
-Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tileset::Tileset() {
+Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : Tileset::Tileset() {
 
 	tinyxml2::XMLDocument tmx;
 	if (tmx.LoadFile(path_to_tsx_file.c_str()) != tinyxml2::XML_SUCCESS) {
-		Logger::PrintError("Could not load TSX file: '" + path_to_tsx_file + "'");
+		Logger::PrintError(tmx.ErrorStr());
+		Logger::PrintError("Could not load TSX file: '" + path_to_tsx_file.string() + "'");
 		return;
 	}
 
@@ -40,7 +42,7 @@ Tileset::Tileset(Graphics& graphics, const std::string& path_to_tsx_file) : Tile
 	}
 
 	tinyxml2::XMLElement* image_node = tileset_node->FirstChildElement("image");
-	std::string source_image_path = path_to_tsx_file + "/../" + image_node->FindAttribute("source")->Value();
+	std::filesystem::path source_image_path = path_to_tsx_file.remove_filename().concat(image_node->FindAttribute("source")->Value());
 	std::string color_key = "";
  	const tinyxml2::XMLAttribute* trans_param = image_node->FindAttribute("trans");
 	if (trans_param != nullptr) {

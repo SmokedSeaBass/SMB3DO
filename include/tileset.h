@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <map>
 #include "sprite.h"
 #include "tile.h"
@@ -12,8 +13,8 @@ public:
 	Tileset();
 	/// @brief Constructs a Tileset object using a Tiled .tsx file as a base
 	/// @param graphics Graphics rendering context to use.
-	/// @param path_to_tsx_file Path tp the .tsx file to load the tileset from
-	Tileset(Graphics& graphics, const std::string& path_to_tsx_file);
+	/// @param path_to_tsx_file Path to the .tsx file to load the tileset from
+	Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file);
 	/// @brief Constructs a Tileset object using a Sprite as a base
 	/// @param tileset_sprite Base tilset Sprite
 	/// @param tile_width Width of a tile, in pixels, when treating the sprite as a tileset. Defaults to 16.

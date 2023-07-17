@@ -17,16 +17,13 @@
 */
 
 int main(int argc, char* args[]) {
-	Logger::PrintDebug("Initializng game...\n");
+	Logger::PrintDebug("Initializng game...");
 	Game smb3do;
-
-	Logger::PrintDebug("Starting main game loop...\n");
+	Logger::PrintDebug("Starting main game loop...");
 	if (smb3do.Run() < 0) {
 		Logger::PrintWarning("Game was terminated early");
 		return -1;
 	}
-
-	Logger::PrintDebug("Closing game...\n");
-
+	Logger::PrintDebug("Closing game...");
 	return 0;
 }

@@ -1,6 +1,10 @@
 #pragma once
 
-#include <SDL_rect.h>
+#if defined(_WIN32)
+	#include <SDL.h>
+#elif __linux__
+	#include <SDL2/SDL.h>
+#endif
 
 class Rectangle {
 public:

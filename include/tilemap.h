@@ -1,4 +1,6 @@
 #pragma once
+
+#include <filesystem>
 #include <vector>
 #include "graphics.h"
 #include "rectangle.h"
@@ -23,7 +25,7 @@ public:
 
 	Tilemap();
 	Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset);
-	Tilemap(Graphics& graphics, std::string path_to_tmx);
+	Tilemap(Graphics& graphics, std::filesystem::path path_to_tmx);
 
 	std::vector<int> GetDimensions() const;
 	SDL_Color GetBackgroundColor() const;
