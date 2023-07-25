@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(_WIN32 )
+#if defined(_WIN32)
 	#include <SDL.h>
 	#include <SDL_image.h>
 	#include <SDL_ttf.h>

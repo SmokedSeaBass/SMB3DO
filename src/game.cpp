@@ -3,7 +3,6 @@
 #include <chrono>
 #include <stdexcept>
 #include "animated_sprite.h"
-//#include "bitmap_font.h"
 #include "camera.h"
 #include "constants.h"
 #include "input.h"
