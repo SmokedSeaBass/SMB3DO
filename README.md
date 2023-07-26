@@ -1,6 +1,6 @@
 # Super Mario Bros.  3-Do (SMB3DO)
 
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/SmokedSeaBass/SMB3DO?include_prereleases)](https://github.com/SmokedSeaBass/SMB3DO/releases) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/SmokedSeaBass/SMB3DO)](https://github.com/SmokedSeaBass/SMB3DO/commits)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/SmokedSeaBass/SMB3DO?include_prereleases)](https://github.com/SmokedSeaBass/SMB3DO/releases) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/SmokedSeaBass/SMB3DO/dev?logo=github)](https://github.com/SmokedSeaBass/SMB3DO/commits/dev)
 
 ### A Super Mario Bros. 3 Fangame
 
