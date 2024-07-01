@@ -53,14 +53,16 @@ int Game::Run() {
 	const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
 	if (options_.enable_vsync) {
-		Game::fps_limit = graphics_.GetCurrentDisplayMode().refresh_rate;
+		// TODO: Broken by SDL3; dynamically grab value
+		// Game::fps_limit = SDL_GetCurrentDisplayMode(0)->refresh_rate;
+		Game::fps_limit = 144.0f;
 	}
 	double tick_accumulator = 0.0;
 	if (options_.interp_factor == 0) {
 		if (fps_limit != 0) {
 			options_.interp_factor = (int)ceil(Game::fps_limit / 60.0);
 		} else {
-			options_.interp_factor = (int)ceil(graphics_.GetCurrentDisplayMode().refresh_rate / 60.0);
+			options_.interp_factor = (int)ceil(SDL_GetCurrentDisplayMode(0)->refresh_rate / 60.0);
 		}
 	}
 	double delta_time = 1000.0 / (60.0 * options_.interp_factor);
@@ -84,37 +86,37 @@ int Game::Run() {
 		while (tick_accumulator >= delta_time) {
 			/* Get Input */
 			while (SDL_PollEvent(&event) != 0) {
-				if (event.type == SDL_QUIT) quit_game = true;
-				if (event.type == SDL_KEYDOWN) {
-					if (event.key.keysym.scancode == SDL_SCANCODE_END) return -1;		// Force crash
-					if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) quit_game = true;
-					if (event.key.keysym.scancode == SDL_SCANCODE_F11 && !event.key.repeat) graphics_.WindowToggleFullscreen(options_);
-					if (event.key.keysym.scancode == SDL_SCANCODE_P && !event.key.repeat) {
+				if (event.type == SDL_EVENT_QUIT) quit_game = true;
+				if (event.type == SDL_EVENT_KEY_DOWN) {
+					if (event.key.scancode == SDL_SCANCODE_END) return -1;		// Force crash
+					if (event.key.scancode == SDL_SCANCODE_ESCAPE) quit_game = true;
+					if (event.key.scancode == SDL_SCANCODE_F11 && !event.key.repeat) graphics_.WindowToggleFullscreen(options_);
+					if (event.key.scancode == SDL_SCANCODE_P && !event.key.repeat) {
 						options_.TogglePixelRatio();
 						graphics_.UpdateViewport(options_);
 						graphics_.UpdateCanvas(options_);
 					};
-					if (event.key.keysym.scancode == SDL_SCANCODE_O && !event.key.repeat) {
+					if (event.key.scancode == SDL_SCANCODE_O && !event.key.repeat) {
 						options_.enable_widescreen = !options_.enable_widescreen;
 						options_.forceIntegerScaling = false;
 						graphics_.UpdateViewport(options_);
 						graphics_.UpdateCanvas(options_);
 					};
-					if (event.key.keysym.scancode == SDL_SCANCODE_I && !event.key.repeat) {
+					if (event.key.scancode == SDL_SCANCODE_I && !event.key.repeat) {
 						options_.forceIntegerScaling = !options_.forceIntegerScaling;
 						options_.enable_widescreen = false;
 						graphics_.UpdateViewport(options_);
 						graphics_.UpdateCanvas(options_);
 					};
-					if (event.key.keysym.scancode == SDL_SCANCODE_H && !event.key.repeat) {
+					if (event.key.scancode == SDL_SCANCODE_H && !event.key.repeat) {
 						Game::debug_show_hitboxes = !Game::debug_show_hitboxes;
 					};
-					if (event.key.keysym.scancode == SDL_SCANCODE_U && !event.key.repeat) {
+					if (event.key.scancode == SDL_SCANCODE_U && !event.key.repeat) {
 						Game::debug_show_info = !Game::debug_show_info;
 					};
 				}
-				if (event.type == SDL_WINDOWEVENT) {
-					if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+				if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST) {
+					if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
 						graphics_.UpdateViewport(options_);
 						graphics_.UpdateCanvas(options_);
 					}

@@ -20,7 +20,7 @@ Tileset::Tileset() :
 Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : Tileset::Tileset() {
 
 	tinyxml2::XMLDocument tmx;
-	if (tmx.LoadFile(path_to_tsx_file.c_str()) != tinyxml2::XML_SUCCESS) {
+	if (tmx.LoadFile(path_to_tsx_file.string().c_str()) != tinyxml2::XML_SUCCESS) {
 		Logger::PrintError(tmx.ErrorStr());
 		Logger::PrintError("Could not load TSX file: '" + path_to_tsx_file.string() + "'");
 		return;
@@ -50,9 +50,9 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
 		unsigned int alpha_red = std::stoul(color_key.substr(0, 2), nullptr, 16);
 		unsigned int alpha_green = std::stoul(color_key.substr(2, 2), nullptr, 16);
 		unsigned int alpha_blue = std::stoul(color_key.substr(4, 2), nullptr, 16);
-		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path, { -1, -1, -1, -1 }, alpha_red, alpha_green, alpha_blue));
+		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string(), { -1, -1, -1, -1 }, alpha_red, alpha_green, alpha_blue));
 	} else {
-		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path));
+		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string()));
 	}
 
 	// Properties to extract from each node include collision type, hitbox, animation, etc.
@@ -177,7 +177,8 @@ int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id
 		}
 	}
 	SDL_Rect tile_rect = TileIndexToRect(tile_id);
-	return tileset_sprite_->Draw(graphics, pos_x, pos_y, tile_rect);
+	SDL_FRect tile_frect = { tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h };
+	return tileset_sprite_->Draw(graphics, pos_x, pos_y, tile_frect);
 }
 
 

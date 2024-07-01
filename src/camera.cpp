@@ -1,6 +1,6 @@
 #include "camera.h"
 
-Camera::Camera(const SDL_Rect& rect) {
+Camera::Camera(const SDL_FRect& rect) {
 	rect_ = rect;
 	target_ = CameraTarget();
 	bounds_ = Rectangle(0, 0, -1, -1);

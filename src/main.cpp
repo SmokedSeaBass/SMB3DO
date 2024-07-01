@@ -5,15 +5,13 @@
 
 /*
 	Super Mario Bros. 3-Do
-	Copyright (C) 2019-2023 Sebastien Blazej <smokedseabass@tutanota.com>
+	Copyright (C) 2019-2024 Sebastien Blazej <smokedseabass@tutanota.com>
 
 	This is a non-profit fan-game created out of passion for Nintendo's classic NES game,
 	Super Mario Bros. 3.  This fangame is NOT affiliated with or endorsed by Nintendo in
 	any way. I do NOT claim any assets which are trademarked by Nintendo or their
 	respective owners as my own, including but not limited to: the Super Mario trademark,
 	the original game assets, fan artwork, or reference materials.
-
-	If you like this game, please consider supporting Nintendo and buying the original game.
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

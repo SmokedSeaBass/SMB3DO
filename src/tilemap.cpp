@@ -31,7 +31,7 @@ Tilemap::Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tilese
 Tilemap::Tilemap(Graphics& graphics, std::filesystem::path path_to_tmx) : Tilemap::Tilemap() {
 	// Get tile id csv data from .tmx
 	tinyxml2::XMLDocument tmx;
-	if (tmx.LoadFile(path_to_tmx.c_str()) != tinyxml2::XML_SUCCESS) {
+	if (tmx.LoadFile(path_to_tmx.string().c_str()) != tinyxml2::XML_SUCCESS) {
 		Logger::PrintError(tmx.ErrorStr());
 		Logger::PrintError("Could not load TMX file: '" + path_to_tmx.string() + "'");
 		return;
@@ -194,7 +194,7 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 			unsigned int tile_index = tile_id;
 			const Tileset* tileset = GetTilesetFromTileID(tile_id, &tile_index);
 			if (tileset == nullptr) {
-				SDL_Rect dest_rect = { x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, (int)TILESIZE_NES , (int)TILESIZE_NES };
+				SDL_FRect dest_rect = { x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, (int)TILESIZE_NES , (int)TILESIZE_NES };
 				graphics.DrawTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
 			} else {
 				tileset->Draw(graphics, x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, tile_index);

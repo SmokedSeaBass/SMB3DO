@@ -23,13 +23,11 @@ APP_DIRECTORY      := bin/$(TARGET_ENV)
 OBJECT_DIRECTORY   := build/$(TARGET_ENV)
 DOCUMENT_DIRECTORY := docs
 EXTERNAL_DIRECTORY := external
-INCLUDE_DIRECTORY  := include
 RESOURCE_DIRECTORY := data
 SOURCE_DIRECTORY   := src
 
 EXTERNAL_PACKAGES := $(notdir $(shell find $(EXTERNAL_DIRECTORY) -mindepth 1 -maxdepth 1 -type d))
 EXTERNAL_ROOT_DIRECTORIES := $(addprefix $(EXTERNAL_DIRECTORY)/, $(EXTERNAL_PACKAGES))
-EXTERNAL_INCLUDE_DIRECTORIES := $(addsuffix /include, $(EXTERNAL_ROOT_DIRECTORIES))
 EXTERNAL_SOURCE_DIRECTORIES := $(addsuffix /src, $(EXTERNAL_ROOT_DIRECTORIES))
 EXTERNAL_LIBRARY_DIRECTORIES := $(addsuffix /lib/$(TARGET_ENV), $(EXTERNAL_ROOT_DIRECTORIES))
 EXTERNAL_OBJECT_DIRECTORIES := $(addsuffix /build/$(TARGET_ENV), $(EXTERNAL_ROOT_DIRECTORIES))
@@ -43,7 +41,6 @@ ifeq ($(findstring win, $(TARGET_ENV)), win)
 	OBJECTS += $(strip $(patsubst %, $(OBJECT_DIRECTORY)/%.res, $(basename $(notdir $(filter $(SOURCE_DIRECTORY)/%.rc, $(SOURCES))))))
 endif
 
-
 EXTERNAL_SOURCES := $(strip $(foreach D, $(EXTERNAL_SOURCE_DIRECTORIES), $(wildcard $(D)/*.cpp)))
 EXTERNAL_OBJECTS := $(strip $(foreach P, $(EXTERNAL_PACKAGES), $(patsubst %.cpp, $(EXTERNAL_DIRECTORY)/$(P)/build/$(TARGET_ENV)/%.o, $(notdir $(filter $(EXTERNAL_DIRECTORY)/$(P)/src/%, $(EXTERNAL_SOURCES))))))
 EXTERNAL_LIBRARIES := $(strip $(foreach D, $(EXTERNAL_LIBRARY_DIRECTORIES), $(wildcard $(D)/*.dll)))
@@ -52,13 +49,13 @@ EXTERNAL_LIBRARIES := $(strip $(foreach D, $(EXTERNAL_LIBRARY_DIRECTORIES), $(wi
 #           COMPILER OPTIONS            #
 #=======================================#
 CXX := g++
-CXXFLAGS = -std=c++17 -w $(shell pkg-config --cflags sdl2 SDL2_image SDL2_mixer SDL2_ttf)
+CXXFLAGS = -std=c++17 -w $(shell pkg-config --cflags sdl3 sdl3-image sdl3-ttf)
 
 #=======================================#
 #            LINKER OPTIONS             #
 #=======================================#
 LDFLAGS := 
-LDFLAGS := $(shell pkg-config --libs sdl2 SDL2_image SDL2_mixer SDL2_ttf)
+LDFLAGS := $(shell pkg-config --libs sdl3 sdl3-image sdl3-ttf)
 ifeq ($(findstring win,$(TARGET_ENV)), win)
 	LDFLAGS += -mconsole
 endif
@@ -87,15 +84,15 @@ $(APP_DIRECTORY)/$(TARGET): $(OBJECTS) $(EXTERNAL_OBJECTS)
 
 $(OBJECT_DIRECTORY)/%.o: $(SOURCE_DIRECTORY)/%.cpp
 	@printf "$(ANSI_LBLUE)[?] Compiling source file $<... [?]$(ANSI_RESET)\n"
-	$(CXX) $(CXXFLAGS) $(addprefix -I,$(INCLUDE_DIRECTORY)) $(addprefix -I,$(EXTERNAL_INCLUDE_DIRECTORIES)) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(addprefix -I,$(SOURCE_DIRECTORY)) $(addprefix -I,$(EXTERNAL_SOURCE_DIRECTORIES)) -c $< -o $@
 
 $(OBJECT_DIRECTORY)/%.res: $(SOURCE_DIRECTORY)/%.rc
 	@printf "$(ANSI_LBLUE)[?] Compiling resource file $<... [?]$(ANSI_RESET)\n"
-	windres -i $< -o $@ -O coff $(addprefix -I,$(INCLUDE_DIRECTORY))
+	windres -i $< -o $@ -O coff $(addprefix -I,$(SOURCE_DIRECTORY))
 
 $(EXTERNAL_DIRECTORY)/tinyxml2/build/$(TARGET_ENV)/%.o: $(EXTERNAL_DIRECTORY)/tinyxml2/src/%.cpp
 	@printf "$(ANSI_LBLUE)[?] Compiling external source file $<... [?]$(ANSI_RESET)\n"
-	$(CXX) $(CXXFLAGS) $(addprefix -I,$(EXTERNAL_INCLUDE_DIRECTORIES)) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(addprefix -I,$(EXTERNAL_SOURCE_DIRECTORIES)) -c $< -o $@
 
 build:
 	@printf "$(ANSI_LBLUE)[?] Building for environment: $(TARGET_ENV) [?]$(ANSI_RESET)\n"
@@ -104,7 +101,6 @@ build:
 	@mkdir -p $(DOCUMENT_DIRECTORY)
 	@mkdir -p $(EXTERNAL_DIRECTORY)
 	@mkdir -p $(foreach P, $(EXTERNAL_PACKAGES), $(EXTERNAL_DIRECTORY)/$(P)/build/$(TARGET_ENV))
-	@mkdir -p $(INCLUDE_DIRECTORY)
 	@mkdir -p $(RESOURCE_DIRECTORY)
 	@mkdir -p $(SOURCE_DIRECTORY)
 

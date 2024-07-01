@@ -381,7 +381,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap) {
 }
 
 int Player::Draw(Graphics& graphics, double offset_x, double offset_y) {
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	SDL_FlipMode flip = SDL_FLIP_NONE;
 	if (dir_facing_ == -1) {
 		flip = SDL_FLIP_HORIZONTAL;
 	}
