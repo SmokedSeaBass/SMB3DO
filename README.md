@@ -1,12 +1,12 @@
-# Super Mario Bros.  3-Do (SMB3DO)
+# Super Mario Bros. 3-Do (SMB3DO)
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/SmokedSeaBass/SMB3DO?include_prereleases)](https://github.com/SmokedSeaBass/SMB3DO/releases) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/SmokedSeaBass/SMB3DO/dev?logo=github)](https://github.com/SmokedSeaBass/SMB3DO/commits/dev)
 
-### A Super Mario Bros. 3 Fangame
+### A Super Mario Bros. 3 fangame
 
-A personal project that aims to _three_-do the classic Nintendo NES game Super Mario Bros. 3.  This project arose out of my dissatisfaction of Super Mario Maker and Super Mario Maker 2's shortcomings and limitations, particularly in the SMB3 style.  While ROM hacking is always an option, SMB3's compression makes it somewhat tricky to mod (last time I checked).  Plus, creating my own rendition would allow me to add new features and tweak anything to my liking.  So, here we are.
+A personal project that aims to th**re**e-**do** the classic Nintendo NES game Super Mario Bros. 3.  This project arose out of my dissatisfaction of Super Mario Maker and Super Mario Maker 2's shortcomings and limitations, particularly in the SMB3 style.  While ROM hacking is always an option, SMB3's compression makes it somewhat tricky to mod (last time I checked).  Plus, creating my own rendition would allow me to add new features and tweak anything to my liking.  So, here we are.
 
-This project is written in C++17 and runs on the SDL2 framework.
+This project is written in C++17 and uses the [SDL3](https://github.com/libsdl-org/SDL) framework.
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Screenshots <img src="docs/images/bullet_point.png" width="32px"/>
 
@@ -43,19 +43,19 @@ This project is written in C++17 and runs on the SDL2 framework.
 ### Long-Term Plans
 
 * Implement all features of the original SMB3
-* Create my own SMB3 'sequel'
+* Create my own SMB3 'sequel' game
 * User-friendly level/map/game editor
 * Support for NES, All-Stars, and custom assets
 * "Retro" and "Modern" video options
 * Controller support
-* Linux support
-* Variable refresh rate (e.g. 120 Hz) support
+* Proper Linux support
+* Comprehensive variable refresh rate support
 
 [Detailed development roadmap](https://docs.google.com/spreadsheets/d/1Y0XjZVZ6z5f_Yi8HuqKNcNB47MKjdfytgAIx97y7Uow/edit?usp=sharing)
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> How to Use <img src="docs/images/bullet_point.png" width="32px"/>
 
-Download the `.zip` file for the latest relase in the Releases tab.  Unzip to a location of your choice and then simply run `smb3do.exe`!  If you want to try out the latest features (and bugs), you can optionally build your own executable directly from the source code (see "Building From Source" below).
+Download the `.zip` file for the latest relase in the Releases tab.  Unzip to a location of your choice and then simply run `smb3do.exe`!  If you want to try out the latest features (and bugs), you can build your own executable directly from the source code (see "Building From Source" below).
 
 ### Controls
 
@@ -74,29 +74,28 @@ Visual Studio solution and project files have been removed for now as part of st
 ### Windows
 
 1. Install [MSYS2](https://www.msys2.org/)
-2. Install `SDL2`, `SDL2_image`, `SDL2_mixer`, and `SDL2_ttf`
-    * MinGW32: `pacman -S mingw-w64-i686-SDL2 mingw-w64-i686-SDL2_image mingw-w64-i686-SDL2_mixer mingw-w64-i686-SDL2_ttf`
-    * MinGW64: `pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_ttf`
-3. Clone repo
-4. Run `make release` from project root
+2. Install `SDL3`, `SDL3_image`, `SDL3_mixer`, and `SDL3_ttf`
+    * At the moment SDL3 prebuilt binaries are unavailable for MSYS2 environments.  You will have to [compile SDL3](https://wiki.libsdl.org/SDL3/Installation) yourself.
+3. Clone this repo
+4. Run `make release` from the project root
 5. Run `./bin/{win32|win64}/smb3do.exe`
 
 ### Linux (Debian)
 
-1. Install `SDL2`, `SDL2_image`, `SDL2_mixer`, and `SDL2_ttf`
-    * `sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev`
-2. Clone repo
-3. Run `make release` from project root
+1. Install `SDL3`, `SDL3_image`, `SDL3_mixer`, and `SDL3_ttf`
+    * `sudo apt-get install libsdl3-dev libsdl3-image-dev libsdl3-mixer-dev libsdl3-ttf-dev`
+2. Clone this repo
+3. Run `make release` from the project root
 4. Run `./bin/linux/smb3do`
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Dependencies <img src="docs/images/bullet_point.png" width="32px"/>
 
-* [Simple Directmedia Layer 2.0](https://www.libsdl.org/) (v2.28.1)
-* [TinyXML2](https://github.com/leethomason/tinyxml2) (v8.1.0)
+* [Simple Directmedia Layer 3.0](https://www.libsdl.org/) (v3.1.0)
+* [TinyXML2](https://github.com/leethomason/tinyxml2) (v10.0.0)
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Credits <img src="docs/images/bullet_point.png" width="32px"/>
 
-* SmokedSeaBass - Core Programmer and Designer
+* SmokedSeaBass - Designer and Core Programmer
 
 ### Special Thanks
 
