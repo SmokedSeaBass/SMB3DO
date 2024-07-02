@@ -48,18 +48,16 @@ EXTERNAL_LIBRARIES := $(strip $(foreach D, $(EXTERNAL_LIBRARY_DIRECTORIES), $(wi
 #=======================================#
 #           COMPILER OPTIONS            #
 #=======================================#
-CXX := g++
+CXX := gcc
 CXXFLAGS = -std=c++17 -w $(shell pkg-config --cflags sdl3 sdl3-image sdl3-ttf)
 
 #=======================================#
 #            LINKER OPTIONS             #
 #=======================================#
-LDFLAGS := 
-LDFLAGS := $(shell pkg-config --libs sdl3 sdl3-image sdl3-ttf)
+LDFLAGS := -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic $(shell pkg-config --libs sdl3 sdl3-image sdl3-ttf) 
 ifeq ($(findstring win,$(TARGET_ENV)), win)
 	LDFLAGS += -mconsole
 endif
-LDFLAGS += -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
 
 #=======================================#
 #                 COLOR                 #
