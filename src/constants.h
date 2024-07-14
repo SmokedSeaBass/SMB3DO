@@ -31,8 +31,8 @@ constexpr char* META_VERSION = "0.3.0";
 //const double DELTA_TIME = 60.0 / FPS_LIMIT;
 
 /* NES screen dimensions */
-constexpr Units::Game NES_WINDOW_WIDTH = 256;	// \ Original NES's typical output resolution.
-constexpr Units::Game NES_WINDOW_HEIGHT = 224;	// / Note its 8:7 aspect ratio.
+constexpr Units::Pixels NES_WINDOW_WIDTH = 256;	// \ Original NES's typical output resolution.
+constexpr Units::Pixels NES_WINDOW_HEIGHT = 224;	// / Note its 8:7 aspect ratio.
 constexpr Units::Game TILESIZE_NES = 16;		// In NES pixels
 
 /* Scaling for the NES to fit output window, but stretched to 4:3 to emulate CRT stretching*/

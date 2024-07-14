@@ -220,7 +220,7 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint8 
 			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
 			return nullptr;
 		}
-		Uint32 color_key = SDL_MapRGB(surface->format, red, green, blue);
+		Uint32 color_key = SDL_MapRGB(SDL_GetPixelFormatDetails(surface->format), nullptr, red, green, blue);
 		SDL_SetSurfaceColorKey(surface, SDL_TRUE, color_key);
 		SDL_Texture* texture = CreateTextureFromSurface(surface);
 		textures_[file_path] = texture;
@@ -237,7 +237,6 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int al
 		}
 		Uint32 color_key = 0x00000000;
 		if (alpha_x >= 0 && alpha_y >= 0) {
-			Uint8 r = 0x00, g = 0x00, b = 0x00;
 			Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);
 			SDL_SetSurfaceColorKey(surface, SDL_TRUE, alpha_pixel);
 		}
@@ -262,7 +261,7 @@ int Graphics::UnloadTexture(SDL_Texture* texture) {
 // From StackOverflow: https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface
 Uint32 Graphics::GetSurfacePixel(SDL_Surface* surface, int x, int y) {
 	SDL_LockSurface(surface);
-	int bpp = surface->format->bytes_per_pixel;
+	int bpp = SDL_GetPixelFormatDetails(surface->format)->bytes_per_pixel;
 	// Get address of the pixel we want to retrieve
 	Uint8* ptr = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
 	Uint32 pixel = 0x00000000;
@@ -287,7 +286,6 @@ Uint32 Graphics::GetSurfacePixel(SDL_Surface* surface, int x, int y) {
 	default:
 		break;
 	}
-
 	SDL_UnlockSurface(surface);
 	return pixel;
 }
