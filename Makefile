@@ -48,7 +48,7 @@ EXTERNAL_LIBRARIES := $(strip $(foreach D, $(EXTERNAL_LIBRARY_DIRECTORIES), $(wi
 #=======================================#
 #           COMPILER OPTIONS            #
 #=======================================#
-CXX := gcc
+CXX := g++
 CXXFLAGS = -std=c++17 -w $(shell pkg-config --cflags sdl3 sdl3-image sdl3-ttf)
 
 #=======================================#
