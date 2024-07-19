@@ -1,9 +1,8 @@
-﻿#include "player.h"
+﻿#include "player.hpp"
 
 #include <assert.h>
-#include "constants.h"
-#include "error.h"
-#include "game.h"	 
+#include "constants.hpp"
+#include "game.hpp"
 
 const Rectangle COLLIDER_TOP(-1, -13, 2, 1);		// Special collider that's skinnier and causes easier sideways "sliding"
 const Rectangle COLLIDER_BOTTOM(-4, -2, 8, 1);

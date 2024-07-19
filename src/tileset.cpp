@@ -1,11 +1,11 @@
-#include "tileset.h"
+#include "tileset.hpp"
 
 #include <filesystem>
 #include <memory>
 #include <stdexcept>
 #include <vector>
 #include "tinyxml2.h"
-#include "logger.h"
+#include "logger.hpp"
 
 Tileset::Tileset() :
 	tileset_sprite_(nullptr),

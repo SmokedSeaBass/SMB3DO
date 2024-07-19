@@ -1,12 +1,12 @@
-#include "tilemap.h"
+#include "tilemap.hpp"
 
 #include <filesystem>
 #include <stdexcept>
 #include <sstream>
 #include "tinyxml2.h"
-#include "logger.h"
-#include "constants.h"
-#include "tileset.h"
+#include "logger.hpp"
+#include "constants.hpp"
+#include "tileset.hpp"
 
 Tilemap::Tilemap() : 
 	tilemap_(std::vector<std::vector<unsigned int>>()),

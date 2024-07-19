@@ -2,11 +2,11 @@
 
 #include <filesystem>
 #include <vector>
-#include "graphics.h"
-#include "rectangle.h"
-#include "sprite.h"
-#include "tile.h"
-#include "tileset.h"
+#include "graphics.hpp"
+#include "rectangle.hpp"
+#include "sprite.hpp"
+#include "tile.hpp"
+#include "tileset.hpp"
 
 ///	<summary>
 /// Handles the tile grid routines.

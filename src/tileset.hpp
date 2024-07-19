@@ -2,8 +2,8 @@
 
 #include <filesystem>
 #include <map>
-#include "sprite.h"
-#include "tile.h"
+#include "sprite.hpp"
+#include "tile.hpp"
 
 /// @brief Tileset class that stores some more info than the standard Sprite, for use with Tilemaps
 ///        Uses a Sprite as a base image and can optionally constructed from a Tiled .tsx file.

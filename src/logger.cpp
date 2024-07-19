@@ -1,9 +1,9 @@
-#include "logger.h"
+#include "logger.hpp"
 
 
 #include <iostream>
 #include <sstream>
-#include "constants.h"
+#include "constants.hpp"
 
 void Logger::PrintError(const std::string& message) {
 	std::cout << ANSI_COLOR_RED << "[ERROR] " << ANSI_COLOR_RESET << message << std::endl;

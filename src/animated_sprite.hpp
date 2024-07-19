@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sprite.h"
+#include "sprite.hpp"
 
 /// @brief Animated Sprite class that extends the standard Sprite class.
 ///        Animates between source-rect sized subimages from left-to-right.

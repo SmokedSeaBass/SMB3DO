@@ -1,7 +1,7 @@
-#include "sprite.h"
+#include "sprite.hpp"
 
 #include <stdexcept>
-#include "logger.h"
+#include "logger.hpp"
 
 Sprite::Sprite() : 
 	texture_ (nullptr),

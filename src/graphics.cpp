@@ -1,8 +1,8 @@
-#include "graphics.h"
+#include "graphics.hpp"
 
 #include <stdexcept>
-#include "constants.h"
-#include "logger.h"
+#include "constants.hpp"
+#include "logger.hpp"
 
 Graphics::Graphics() {
 	renderer_main_ = nullptr;
@@ -141,7 +141,7 @@ void Graphics::UpdateViewport(Options& options) {
 		};
 	}
 	//Logger::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
-	//Logger::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.h * viewport_scaler_.second));
+	//Logger::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.hpp * viewport_scaler_.second));
 }
 
 std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, SDL_Rect viewport) {

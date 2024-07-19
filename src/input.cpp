@@ -1,4 +1,4 @@
-#include "input.h"
+#include "input.hpp"
 
 Input::Input(Mode mode) {
 	input_mode_ = mode;

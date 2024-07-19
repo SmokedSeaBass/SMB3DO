@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "graphics.h"
+#include "graphics.hpp"
 
 /// @brief Stores a sprite sheet image and can draw a rectangular section of it.  Stores a sprite sheet (or any image really) as a SDL_Texture.
 /// Contains a gettable / settable SDL_Rect that specifies what part of theS DL_Texture to draw when Draw() is called.

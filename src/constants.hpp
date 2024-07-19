@@ -1,5 +1,5 @@
 /**
- *  \file constants.h
+ *  \file constants.hpp
  *
  *  Include file for global constants and defines.
 */
@@ -9,7 +9,7 @@
 #include <SDL3/SDL.h>
 
 #include <math.h>
-#include "units.h"
+#include "units.hpp"
 
 /* Console ANSI color codes */
 #define ANSI_COLOR_RED     "\x1b[31m"

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string>
-#include "game.h"
-#include "logger.h"
+#include "game.hpp"
+#include "logger.hpp"
 
 /*
 	Super Mario Bros. 3-Do

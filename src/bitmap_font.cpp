@@ -1,6 +1,6 @@
-#include "bitmap_font.h"
+#include "bitmap_font.hpp"
 
-#include "logger.h"
+#include "logger.hpp"
 
 BitmapFont::BitmapFont() :
 	texture_(nullptr),

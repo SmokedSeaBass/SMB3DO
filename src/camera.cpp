@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "camera.hpp"
 
 Camera::Camera(const SDL_FRect& rect) {
 	rect_ = rect;

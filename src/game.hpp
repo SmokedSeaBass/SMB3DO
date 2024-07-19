@@ -1,10 +1,10 @@
 #pragma once
-#include "graphics.h"
-#include "input.h"
-#include "options.h"
+#include "graphics.hpp"
+#include "input.hpp"
+#include "options.hpp"
 
 /**
- *  \file game.h
+ *  \file game.hpp
  *
  *  Include file for the Game class
  */

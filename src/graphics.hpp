@@ -6,10 +6,10 @@
 #include <map>
 #include <memory>
 #include <string>
-#include "bitmap_font.h"
-#include "constants.h"
-#include "options.h"
-#include "rectangle.h"
+#include "bitmap_font.hpp"
+#include "constants.hpp"
+#include "options.hpp"
+#include "rectangle.hpp"
 
 class BitmapFont;
 

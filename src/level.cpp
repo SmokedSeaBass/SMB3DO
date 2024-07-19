@@ -1,8 +1,8 @@
-#include "level.h"
+#include "level.hpp"
 
-#include "camera.h"
-#include "game.h"
-#include "player.h"
+#include "camera.hpp"
+#include "game.hpp"
+#include "player.hpp"
 
 Level::Level() {
 	display_name_ = std::string("Test Level");

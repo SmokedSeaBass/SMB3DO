@@ -1,6 +1,4 @@
-#include "tile.h"
-
-#include "error.h"
+#include "tile.hpp"
 
 Tile::Tile() : 
 	id_(0),

@@ -1,16 +1,16 @@
-#include "game.h"
+#include "game.hpp"
 
 #include <chrono>
 #include <stdexcept>
-#include "animated_sprite.h"
-#include "camera.h"
-#include "constants.h"
-#include "input.h"
-#include "level.h"
-#include "logger.h"
-#include "player.h"
-#include "sprite.h"
-#include "tilemap.h"
+#include "animated_sprite.hpp"
+#include "camera.hpp"
+#include "constants.hpp"
+#include "input.hpp"
+#include "level.hpp"
+#include "logger.hpp"
+#include "player.hpp"
+#include "sprite.hpp"
+#include "tilemap.hpp"
 
 double Game::fps_limit = 0;
 float Game::time_multiplier = 1;	// Unused

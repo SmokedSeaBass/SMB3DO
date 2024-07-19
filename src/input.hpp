@@ -2,7 +2,7 @@
 
 #include <map>
 #include <vector>
-#include "constants.h"
+#include "constants.hpp"
 
 class Input {
 public:

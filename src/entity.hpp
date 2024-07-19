@@ -1,8 +1,8 @@
 #pragma once
 
-#include "input.h"
-#include "sprite.h"
-#include "tilemap.h"
+#include "input.hpp"
+#include "sprite.hpp"
+#include "tilemap.hpp"
 
 /// <summary>
 /// A class that represents an "object" in NES terms. Can be a player, an enemy, score sprite, a projectiles, etc.

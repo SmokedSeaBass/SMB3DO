@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <string>
-#include "graphics.h"
-#include "animated_sprite.h"
+#include "graphics.hpp"
+#include "animated_sprite.hpp"
 
 /// @brief A class that holds detailed information about a tile from a tileset.
 ///        Usually generated from a .tsx file and store in a tileset. Includes info such as

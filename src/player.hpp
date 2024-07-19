@@ -1,11 +1,11 @@
 #pragma once
-#include "entity.h"
+#include "entity.hpp"
 
 #include <memory>
 #include <vector>
-#include "input.h"
-#include "rectangle.h"
-#include "tilemap.h"
+#include "input.hpp"
+#include "rectangle.hpp"
+#include "tilemap.hpp"
 
 class Player : public Entity {
 public:

@@ -2,11 +2,11 @@
 
 #include <memory>
 #include <string>
-#include "camera.h"
-#include "constants.h"
-#include "entity.h"
-#include "tileset.h"
-#include "tilemap.h"
+#include "camera.hpp"
+#include "constants.hpp"
+#include "entity.hpp"
+#include "tileset.hpp"
+#include "tilemap.hpp"
 
 // TODO 5-17-21: Decompose into sublevels.  Most definitions/members here will be translated to the sublevel class and leave the level class rather bare.
 

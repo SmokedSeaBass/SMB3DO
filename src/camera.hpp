@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "entity.h"
-#include "rectangle.h"
+#include "entity.hpp"
+#include "rectangle.hpp"
 
 class Camera {
 public:
