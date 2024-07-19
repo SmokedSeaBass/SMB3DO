@@ -44,7 +44,7 @@ int Game::Render(Graphics& graphics) {
 
 int Game::Run() {
 	if (graphics_.Initialize(options_) < 0) {
-		Logger::PrintError(std::runtime_error("Could not initialize graphics"));
+		Logger::PrintError("Could not initialize graphics");
 		return -1;
 	}
 	Input input;
@@ -116,7 +116,7 @@ int Game::Run() {
 					};
 				}
 				if (event.type >= SDL_EVENT_WINDOW_FIRST && event.type <= SDL_EVENT_WINDOW_LAST) {
-					if (event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+					if (event.window.type == SDL_EVENT_WINDOW_RESIZED) {
 						graphics_.UpdateViewport(options_);
 						graphics_.UpdateCanvas(options_);
 					}

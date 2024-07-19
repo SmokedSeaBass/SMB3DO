@@ -50,18 +50,14 @@ int Graphics::Initialize(Options& options) {
 		Logger::PrintError("Main window could not be created: " + std::string(SDL_GetError()));
 		return -1;
 	}
-
-	// Accelerated renderer
-	if (SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d") == SDL_FALSE) {
-		Logger::PrintError("Render driver hint could not be set");
-	}
-	renderer_main_ = SDL_CreateRenderer(window_main_, NULL);
-	if (options.enable_vsync) {
-		SDL_SetRenderVSync(renderer_main_, 1);
-	}
+	
+	renderer_main_ = SDL_CreateRenderer(window_main_, nullptr);
 	if (renderer_main_ == nullptr) {
 		Logger::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
 		return -1;
+	}
+	if (options.enable_vsync) {
+		SDL_SetRenderVSync(renderer_main_, 1);
 	}
 
 	// Allow for colored rect alpha transparency
@@ -88,18 +84,19 @@ int Graphics::Initialize(Options& options) {
 
 int Graphics::WindowToggleFullscreen(Options& options) {
 	if (!is_fullscreen_) {
-		SDL_MaximizeWindow(window_main_);
 		SDL_SetWindowSize(window_main_, options.fullscreen_resolution_desired.first, options.fullscreen_resolution_desired.second);
-		if (SDL_SetWindowFullscreen(window_main_, SDL_WINDOW_FULLSCREEN) < 0) {
+		SDL_SyncWindow(window_main_);
+		if (SDL_SetWindowFullscreen(window_main_, SDL_TRUE) < 0) {
 			Logger::PrintError("Could not switch to fullscreen mode: " + std::string(SDL_GetError()));
 			return -1;
 		}
-	} else {  
-		SDL_SetWindowSize(window_main_, options.windowed_resolution_desired.first, options.windowed_resolution_desired.second);
-		if (SDL_SetWindowFullscreen(window_main_, 0) < 0) {
+	} else {
+		if (SDL_SetWindowFullscreen(window_main_, SDL_FALSE) < 0) {
 			Logger::PrintError("Could not switch to windowed mode: " + std::string(SDL_GetError()));
 			return -1;
 		}
+		SDL_SyncWindow(window_main_);
+		SDL_SetWindowSize(window_main_, options.windowed_resolution_desired.first, options.windowed_resolution_desired.second);
 	}
 	is_fullscreen_ = !is_fullscreen_;
 	return 0;
