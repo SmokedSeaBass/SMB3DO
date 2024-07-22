@@ -195,7 +195,7 @@ int Tilemap::Draw(Graphics& graphics, int offset_x, int offset_y, Rectangle crop
 			const Tileset* tileset = GetTilesetFromTileID(tile_id, &tile_index);
 			if (tileset == nullptr) {
 				SDL_FRect dest_rect = { x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, (int)TILESIZE_NES , (int)TILESIZE_NES };
-				graphics.DrawTexture(graphics.GetDefaultTexture(), nullptr, &dest_rect);
+				graphics.DrawTexture(graphics.LoadDefaultTexture(), nullptr, &dest_rect);
 			} else {
 				tileset->Draw(graphics, x * (int)TILESIZE_NES + pos_x_ + offset_x, y * (int)TILESIZE_NES + pos_y_ + offset_y, tile_index);
 			}

@@ -2,7 +2,8 @@
 
 #include <SDL3/SDL.h>
 
-class Rectangle {
+class Rectangle
+{
 public:
 	Rectangle() :
 		x(0), y(0), w(0), h(0) {}

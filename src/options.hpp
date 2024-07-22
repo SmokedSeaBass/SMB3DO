@@ -28,7 +28,7 @@ struct Options {
 	/// @brief Target framerate
 	double fps_limit;
 	bool enable_vsync;
-	int interp_factor;
+	float interp_factor;
 
 	Options();
 

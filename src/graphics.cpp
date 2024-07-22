@@ -4,77 +4,91 @@
 #include "constants.hpp"
 #include "logger.hpp"
 
-Graphics::Graphics() {
-	renderer_main_ = nullptr;
-	window_main_ = nullptr;
-	render_canvas_ = nullptr;
-
-	textures_ = TextureCache();
-	bitmap_fonts_ = BMPFontCache();
-	active_bitmap_font_ = nullptr;
-
-	is_fullscreen_ = false;
-	current_resolution_ = { 0, 0 };
-	viewport_rect_ = { 0, 0, (int)NES_WINDOW_WIDTH, (int)NES_WINDOW_HEIGHT };
-	viewport_scaler_ = { 1, 1 };
-	viewport_ratio_ = { 8, 7 };
+Graphics::Graphics()
+  : renderer_(nullptr),
+	window_(nullptr),
+	render_canvas_(nullptr),
+	textures_(TextureCache()),
+	bitmap_fonts_(BitmapFontCache()),
+	active_bitmap_font_(nullptr),
+	is_fullscreen_(false),
+	current_resolution_({0, 0}),
+	viewport_({0.0, 0.0, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT}),
+	viewport_scaler_({1.0, 1.0}),
+	viewport_ratio_({8, 7})
+{
 }
 
-Graphics::~Graphics() {
-	for (TextureCache::iterator iter = textures_.begin(); iter != textures_.end(); ++iter) {
+Graphics::~Graphics()
+{
+	for (TextureCache::iterator iter = textures_.begin(); iter != textures_.end(); ++iter)
+	{
 		SDL_DestroyTexture(iter->second);
 	}
-	SDL_DestroyRenderer(renderer_main_);
-	SDL_DestroyWindow(window_main_);
+	SDL_DestroyRenderer(renderer_);
+	SDL_DestroyWindow(window_);
 }
 
-int Graphics::Initialize(Options& options) {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		Logger::PrintError("SDL could not initialize: " + std::string(SDL_GetError()));
+int Graphics::Initialize(Options& options)
+{
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
+	{
+		Logger::PrintError(
+			"SDL video subsystem could not initialize: " + std::string(SDL_GetError()));
 		return -1;
 	}
-
-	if (TTF_Init() < 0) {
+	if (TTF_Init() < 0)
+	{
 		Logger::PrintError("SDL_TTF could not initialize: " + std::string(TTF_GetError()));
 		return -1;
 	}
 
 	// Main window
 	std::string title = "SMB3DO - v" + std::string(META_VERSION);
-	window_main_ = SDL_CreateWindow(
+	window_ = SDL_CreateWindow(
 		title.c_str(),
-		(int)round(options.windowed_resolution_desired.first), (int)round(options.windowed_resolution_desired.second),
-		SDL_WINDOW_HIGH_PIXEL_DENSITY
-	);
-	if (window_main_ == nullptr) {
-		Logger::PrintError("Main window could not be created: " + std::string(SDL_GetError()));
+		options.windowed_resolution_desired.first,
+		options.windowed_resolution_desired.second,
+		SDL_WINDOW_HIGH_PIXEL_DENSITY);
+	if (window_ == nullptr)
+	{
+		Logger::PrintError("Main window could not be created: "
+			+ std::string(SDL_GetError()));
 		return -1;
 	}
+	SDL_SetWindowIcon(window_, nullptr);
 	
-	renderer_main_ = SDL_CreateRenderer(window_main_, nullptr);
-	if (renderer_main_ == nullptr) {
-		Logger::PrintError("Main renderer could not be created: " + std::string(SDL_GetError()));
+	renderer_ = SDL_CreateRenderer(window_, nullptr);
+	if (renderer_ == nullptr)
+	{
+		Logger::PrintError("Main renderer could not be created: "
+			+ std::string(SDL_GetError()));
 		return -1;
 	}
-	if (options.enable_vsync) {
-		SDL_SetRenderVSync(renderer_main_, 1);
+	if (options.enable_vsync)
+	{
+		SDL_SetRenderVSync(renderer_, 1);
 	}
 
 	// Allow for colored rect alpha transparency
-	SDL_SetRenderDrawBlendMode(renderer_main_, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
 
 	// Create render canvas texture
-	render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
-	if (render_canvas_ == NULL) {
-		Logger::PrintError("Could not create canvas texture: " + std::string(SDL_GetError()));
+	render_canvas_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
+		SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
+	if (render_canvas_ == nullptr)
+	{
+		Logger::PrintError("Could not create canvas texture: "
+			+ std::string(SDL_GetError()));
 		return -1;
 	}
-	SDL_SetRenderTarget(renderer_main_, render_canvas_);
+	SDL_SetRenderTarget(renderer_, render_canvas_);
 
 	UpdateViewport(options);
 	UpdateCanvas(options);
 
-	if (BuildDefaultTexture() < 0) {
+	if (CreateDefaultTexture() < 0)
+	{
 		Logger::PrintError("Could not build default texture");
 		return -1;
 	}
@@ -83,167 +97,171 @@ int Graphics::Initialize(Options& options) {
 }
 
 int Graphics::WindowToggleFullscreen(Options& options) {
-	if (!is_fullscreen_) {
-		SDL_SetWindowSize(window_main_, options.fullscreen_resolution_desired.first, options.fullscreen_resolution_desired.second);
-		SDL_SyncWindow(window_main_);
-		if (SDL_SetWindowFullscreen(window_main_, SDL_TRUE) < 0) {
-			Logger::PrintError("Could not switch to fullscreen mode: " + std::string(SDL_GetError()));
+	if (!is_fullscreen_)
+	{
+		SDL_SetWindowSize(window_, options.fullscreen_resolution_desired.first,
+			options.fullscreen_resolution_desired.second);
+		SDL_SyncWindow(window_);
+		if (SDL_SetWindowFullscreen(window_, SDL_TRUE) < 0)
+		{
+			Logger::PrintError("Could not switch to fullscreen mode: "
+				+ std::string(SDL_GetError()));
 			return -1;
 		}
-	} else {
-		if (SDL_SetWindowFullscreen(window_main_, SDL_FALSE) < 0) {
-			Logger::PrintError("Could not switch to windowed mode: " + std::string(SDL_GetError()));
+	}
+	else
+	{
+		if (SDL_SetWindowFullscreen(window_, SDL_FALSE) < 0)
+		{
+			Logger::PrintError("Could not switch to windowed mode: "
+				+ std::string(SDL_GetError()));
 			return -1;
 		}
-		SDL_SyncWindow(window_main_);
-		SDL_SetWindowSize(window_main_, options.windowed_resolution_desired.first, options.windowed_resolution_desired.second);
+		SDL_SyncWindow(window_);
+		SDL_SetWindowSize(window_, options.windowed_resolution_desired.first,
+			options.windowed_resolution_desired.second);
 	}
 	is_fullscreen_ = !is_fullscreen_;
 	return 0;
 }
 
-void Graphics::WindowSetTitle(const std::string& subtitle) {
-	auto title = "SMB3DO - v" + std::string(META_VERSION);
-	SDL_SetWindowTitle(window_main_, (title + " | " + subtitle).c_str());
+void Graphics::WindowSetTitle(const std::string& subtitle)
+{
+	std::string title = "SMB3DO - v" + std::string(META_VERSION);
+	SDL_SetWindowTitle(window_, (title + " | " + subtitle).c_str());
 }
 
-int Graphics::SetViewport(const SDL_Rect* rect) {
-	if (rect == NULL) {
-		SDL_Rect window_rect = {0, 0, current_resolution_.first, current_resolution_.second };
-		return SDL_SetRenderViewport(renderer_main_, &window_rect);
+int Graphics::SetViewport(const SDL_Rect* rect)
+{
+	if (rect == nullptr)
+	{
+		SDL_Rect window_rect = {0, 0, current_resolution_.first, current_resolution_.second};
+		return SDL_SetRenderViewport(renderer_, &window_rect);
 	}
-	return SDL_SetRenderViewport(renderer_main_, rect);
+	return SDL_SetRenderViewport(renderer_, rect);
 }
 
-const SDL_FRect& Graphics::GetViewport() {
-	return viewport_rect_;
+const SDL_FRect& Graphics::GetViewport()
+{
+	return viewport_;
 }
 
-void Graphics::UpdateViewport(Options& options) {
+void Graphics::UpdateViewport(Options& options)
+{
 	int window_width, window_height;
-	SDL_GetWindowSizeInPixels(window_main_, &window_width, &window_height);
+	SDL_GetWindowSizeInPixels(window_, &window_width, &window_height);
 	current_resolution_ = { window_width, window_height };
 	viewport_ratio_ = options.GetViewportRatioFromPixelRatio(options.pixel_ratio);
 	viewport_scaler_ = GetWindowFitViewportScaler(options);
-	if (!options.enable_widescreen) {
-		viewport_rect_ = {
-			round((current_resolution_.first - ((int)NES_WINDOW_WIDTH * viewport_scaler_.first)) / 2),
-			round((current_resolution_.second - ((int)NES_WINDOW_HEIGHT * viewport_scaler_.second)) / 2),
-			round((int)NES_WINDOW_WIDTH * viewport_scaler_.first),
-			round((int)NES_WINDOW_HEIGHT * viewport_scaler_.second)
-		};
-	} else {
-		viewport_rect_ = {
-			0,
-			0,
-			round(current_resolution_.first),
-			round(current_resolution_.second)
-		};
+	if (!options.enable_widescreen)
+	{
+		viewport_ = {
+			round((current_resolution_.first
+				- (NES_WINDOW_WIDTH * viewport_scaler_.first)) / 2),
+			round((current_resolution_.second
+				- (NES_WINDOW_HEIGHT * viewport_scaler_.second)) / 2),
+			round(NES_WINDOW_WIDTH * viewport_scaler_.first),
+			round(NES_WINDOW_HEIGHT * viewport_scaler_.second)};
 	}
-	//Logger::PrintDebug("Window Absolute Dimensions: " + std::to_string(current_resolution_.first) + " x " + std::to_string(current_resolution_.second));
-	//Logger::PrintDebug("Viewport Absolute Dimensions: " + std::to_string(viewport_rect_.w * viewport_scaler_.first) + " x " + std::to_string(viewport_rect_.hpp * viewport_scaler_.second));
+	else
+	{
+		viewport_ = {
+			0.0,
+			0.0,
+			static_cast<float>(current_resolution_.first),
+			static_cast<float>(current_resolution_.second)};
+	}
 }
 
-std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, SDL_Rect viewport) {
-	float x_stretch = ((float)viewport.h * viewport_ratio_.first) / ((float)viewport.w * viewport_ratio_.second);
+std::pair<float, float> Graphics::GetWindowFitViewportScaler(Options& options, SDL_Rect viewport)
+{
+	float x_stretch = ((float)viewport.h * viewport_ratio_.first)
+		/ ((float)viewport.w * viewport_ratio_.second);
 	float y_scale = (current_resolution_.second / viewport.h);
-	if (options.forceIntegerScaling) {
+	if (options.forceIntegerScaling)
+	{
 		y_scale = floor(y_scale);
 	}
 	float x_scale = y_scale * x_stretch;
 	return std::pair<float, float>(x_scale, y_scale);
 }
 
-void Graphics::UpdateCanvas(Options& options) {
+void Graphics::UpdateCanvas(Options& options)
+{
 	SDL_DestroyTexture(render_canvas_);
-	if (options.enable_widescreen) {
-		float extended_width = NES_WINDOW_HEIGHT * (current_resolution_.first / current_resolution_.second) * (8.0 / 7.0) * ((float)viewport_ratio_.second / (float)viewport_ratio_.first);
-		render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, extended_width, NES_WINDOW_HEIGHT);
-	} else {
-		render_canvas_ = SDL_CreateTexture(renderer_main_, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
+	if (options.enable_widescreen)
+	{
+		float extended_width = NES_WINDOW_HEIGHT
+			* (current_resolution_.first/ current_resolution_.second)
+			* (8.0 / 7.0) * ((float)viewport_ratio_.second / (float)viewport_ratio_.first);
+		render_canvas_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
+			SDL_TEXTUREACCESS_TARGET, extended_width, NES_WINDOW_HEIGHT);
 	}
-	SDL_SetRenderTarget(renderer_main_, render_canvas_);
+	else
+	{
+		render_canvas_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
+			SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
+	}
+	SDL_SetRenderTarget(renderer_, render_canvas_);
 }
 
-SDL_Rect Graphics::GetCanvasDimensions() {
+SDL_Rect Graphics::GetCanvasDimensions()
+{
 	float width, height;
 	SDL_GetTextureSize(render_canvas_, &width, &height);
-	return { 0, 0, static_cast<int>(width), static_cast<int>(height) };
+	return {0, 0, static_cast<int>(width), static_cast<int>(height)};
 }
 
-int Graphics::BuildDefaultTexture() {
-	SDL_Surface* missingno_surface = IMG_ReadXPMFromArray(missingno_xpm);
-	if (missingno_surface == NULL) {
-		std::string err = "Graphics building default texture: Could not read XPM: " + std::string(IMG_GetError());
-		Logger::PrintError(err);
-		SDL_DestroySurface(missingno_surface);
-		return -1;
-	}
-	textures_[""] = CreateTextureFromSurface(missingno_surface);
-	return 0;
-}
-
-SDL_Texture* Graphics::GetDefaultTexture() {
+SDL_Texture* Graphics::LoadDefaultTexture()
+{
 	return textures_[""];
 }
 
-SDL_Texture* Graphics::CreateTextureFromSurface(SDL_Surface* surface) {
-	if (surface == nullptr) {
-		Logger::PrintError("Graphics creating texture from surface: surface pointer is NULL");
-		return nullptr;
+SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& path_to_image)
+{
+	if (textures_.count(path_to_image.generic_string()) == 0)
+	{
+		SDL_Surface* surface = CreateSurfaceFromImage(path_to_image);
+		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
+		textures_[path_to_image.generic_string()] = texture;
 	}
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_main_, surface);
-	SDL_DestroySurface(surface);
-	return texture;
+	return textures_[path_to_image];
 }
 
-SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path) {
-	if (textures_.count(file_path) == 0) {
-		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
-		if (surface == NULL) {
-			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
-			return nullptr;
-		}
-		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		textures_[file_path] = texture;
-	}
-	return textures_[file_path];
-}
-
-SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, Uint8 red, Uint8 green, Uint8 blue) {
-	if (textures_.count(file_path) == 0) {
-		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
-		if (surface == NULL) {
-			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
-			return nullptr;
-		}
-		Uint32 color_key = SDL_MapRGB(SDL_GetPixelFormatDetails(surface->format), nullptr, red, green, blue);
+SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& path_to_image,
+	SDL_Color mask_color)
+{
+	if (textures_.count(path_to_image.generic_string()) == 0)
+	{
+		SDL_Surface* surface = CreateSurfaceFromImage(path_to_image);
+		Uint32 color_key = SDL_MapRGB(SDL_GetPixelFormatDetails(surface->format), nullptr,
+			mask_color.r, mask_color.g, mask_color.b);
 		SDL_SetSurfaceColorKey(surface, SDL_TRUE, color_key);
-		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		textures_[file_path] = texture;
+		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
+		textures_[path_to_image.generic_string()] = texture;
 	}
-	return textures_[file_path];
+	return textures_[path_to_image.generic_string()];
 }
 
-SDL_Texture* Graphics::LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y) {
-	if (textures_.count(file_path) == 0) {
-		SDL_Surface* surface = SDL_LoadBMP(file_path.c_str());
-		if (surface == NULL) {
-			Logger::PrintError("Graphics loading texture from image \'" + file_path + "\': Could not load image");
-			return nullptr;
-		}
+SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& path_to_image,
+	SDL_Point mask_pixel)
+{
+	if (textures_.count(path_to_image.generic_string()) == 0)
+	{
+		SDL_Surface* surface = CreateSurfaceFromImage(path_to_image);
 		Uint32 color_key = 0x00000000;
-		if (alpha_x >= 0 && alpha_y >= 0) {
-			Uint32 alpha_pixel = GetSurfacePixel(surface, alpha_x, alpha_y);
-			SDL_SetSurfaceColorKey(surface, SDL_TRUE, alpha_pixel);
+		if (mask_pixel.x >= 0 && mask_pixel.y >= 0) {
+			Uint32 color_key = GetSurfacePixel(surface, mask_pixel);
+			SDL_SetSurfaceColorKey(surface, SDL_TRUE, color_key);
 		}
-		SDL_Texture* texture = CreateTextureFromSurface(surface);
-		textures_[file_path] = texture;
+		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
+		textures_[path_to_image.generic_string()] = texture;
 	}
-	return textures_[file_path];
+	return textures_[path_to_image.generic_string()];
 }
 
-int Graphics::UnloadTexture(SDL_Texture* texture) {
+int Graphics::UnloadTexture(SDL_Texture* texture)
+{
 	for (std::pair<std::string, SDL_Texture*> entry : textures_) {
 		if (entry.second == texture) {
 			SDL_DestroyTexture(entry.second);
@@ -251,131 +269,185 @@ int Graphics::UnloadTexture(SDL_Texture* texture) {
 			return 0;
 		}
 	}
-	Logger::PrintWarning("Graphics unloading texture " + Logger::PointerToString(texture) + ": texture not found in texture cache");
+	Logger::PrintWarning("Could not unload texture at " + Logger::PointerToString(texture)
+		+ ": texture not found in texture cache");
 	return -1;
 }
 
-// From StackOverflow: https://stackoverflow.com/questions/53033971/how-to-get-the-color-of-a-specific-pixel-from-sdl-surface
-Uint32 Graphics::GetSurfacePixel(SDL_Surface* surface, int x, int y) {
-	SDL_LockSurface(surface);
-	int bpp = SDL_GetPixelFormatDetails(surface->format)->bytes_per_pixel;
-	// Get address of the pixel we want to retrieve
-	Uint8* ptr = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
-	Uint32 pixel = 0x00000000;
-
-	switch (bpp) {
-	case 1:
-		pixel = *ptr;
-		break;
-	case 2:
-		pixel = *(Uint16*)ptr;
-		break;
-	case 3:
-		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-			pixel =  ptr[0] << 16 | ptr[1] << 8 | ptr[2];
-		} else {
-			pixel = ptr[0] | ptr[1] << 8 | ptr[2] << 16;
-		}
-		break;
-	case 4:
-		pixel = *(Uint32*)ptr;
-		break;
-	default:
-		break;
-	}
-	SDL_UnlockSurface(surface);
-	return pixel;
-}
-
-int Graphics::DrawColoredRect(const SDL_FRect* frect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
-	return SDL_RenderFillRect(renderer_main_, frect);
-}
-
-int Graphics::DrawColoredRect(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	int x = (float)floor(rect.x);
-	int y = (float)floor(rect.y);
-	int w = (float)ceil(rect.x + rect.w) - x;
-	int h = (float)ceil(rect.y + rect.h) - y;
-	SDL_FRect sdl_frect = {
-		x, y, w, h
-	};
-	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
-	return SDL_RenderFillRect(renderer_main_, &sdl_frect);
-}
-
-int Graphics::DrawColoredLine(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
-	return SDL_RenderLine(renderer_main_, point_1.first, point_1.second, point_2.first, point_2.second);
-}
-
-int Graphics::DrawColoredOutline(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
-	const SDL_FPoint points[5] = {
-		{point_1.first, point_1.second},
-		{point_2.first, point_1.second},
-		{point_2.first, point_2.second},
-		{point_1.first, point_2.second},
-		{point_1.first, point_1.second}
-	};
-	return SDL_RenderLines(renderer_main_, points, 5);
-}
-int Graphics::DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha) {
-	SDL_SetRenderDrawColor(renderer_main_, red, green, blue, alpha);
-	const SDL_FPoint points[5] = {
-		{static_cast<int>(floor(rect.Left())), static_cast<int>(floor(rect.Top()))},
-		{static_cast<int>(ceil(rect.Right())) - 1, static_cast<int>(floor(rect.Top()))},
-		{static_cast<int>(ceil(rect.Right())) - 1, static_cast<int>(ceil(rect.Bottom())) - 1},
-		{static_cast<int>(floor(rect.Left())), static_cast<int>(ceil(rect.Bottom())) - 1},
-		{static_cast<int>(floor(rect.Left())), static_cast<int>(floor(rect.Top()))}
-	};
-	return SDL_RenderLines(renderer_main_, points, 5);
-}
-
-int Graphics::DrawTexture(SDL_Texture* texture, const SDL_FRect* source_frect, const SDL_FRect* dest_frect, const SDL_FlipMode flip) {
-	return SDL_RenderTextureRotated(renderer_main_, texture, source_frect, dest_frect, 0.0, NULL, flip);
-}
-
-int Graphics::LoadBMPFont(const std::string& path_to_bmp, unsigned int glyph_width, unsigned int glyph_height, const std::string& font_name) {
-	std::string font_index = font_name;
-	if (font_index == "") {
-		font_index = path_to_bmp;
-	}
-	if (bitmap_fonts_.count(font_index) == 0) {
-		BitmapFont font = BitmapFont(*this, path_to_bmp, glyph_width, glyph_height);
-		bitmap_fonts_[font_index] = std::make_unique<BitmapFont>(font);
+int Graphics::UnloadTexture(const std::filesystem::path& path_to_image)
+{
+	try
+	{
+		SDL_Texture* texture = textures_.at(path_to_image);
 		return 0;
 	}
-	Logger::PrintWarning("Loading BitmapFont \'" + font_name + "\': BitmapFont already loaded");
-	return 0;
+	catch(const std::out_of_range& e)
+	{
+		Logger::PrintWarning("Could not unload texture for image '"
+			+ path_to_image.generic_string() + "': image not found in texture cache");
+	}
+	return -1;
 }
 
-int Graphics::SetTextFont(const std::string& font_name) {
+int Graphics::DrawColoredRect(const SDL_FRect* frect, SDL_Color color)
+{
+	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);
+	return SDL_RenderFillRect(renderer_, frect);
+}
+
+int Graphics::DrawColoredRect(const Rectangle& rectangle, SDL_Color color)
+{
+	SDL_FRect sdl_frect = {rectangle.x, rectangle.y, rectangle.w, rectangle.h};
+	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);
+	return SDL_RenderFillRect(renderer_, &sdl_frect);
+}
+
+int Graphics::DrawColoredLine(const SDL_FPoint& start, const SDL_FPoint& end, SDL_Color color)
+{
+	SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);
+	return SDL_RenderLine(renderer_, start.x, start.y, end.x, end.y);
+}
+
+int Graphics::DrawTexture(SDL_Texture* texture, const SDL_FRect* source,
+	const SDL_FRect* destination, const SDL_FlipMode flip)
+{
+	return SDL_RenderTextureRotated(renderer_, texture, source, destination, 0.0, nullptr, flip);
+}
+
+BitmapFont* Graphics::LoadBitmapFont(const std::filesystem::path& path_to_image,
+	SDL_Rect glyph_dimensions, const std::string& font_name)
+{
+	std::string font_index = font_name;
+	if (font_index == "") {
+		font_index = path_to_image;
+	}
+	if (bitmap_fonts_.count(font_index) == 0) {
+		BitmapFont font = BitmapFont(*this, path_to_image, glyph_dimensions.w, glyph_dimensions.h);
+		bitmap_fonts_[font_index] = std::make_unique<BitmapFont>(font);
+	}
+	return bitmap_fonts_[font_index].get();
+}
+
+int Graphics::SetTextFont(const std::string& font_name)
+{
 	if (bitmap_fonts_.count(font_name) == 0) {
-		Logger::PrintError("Setting text to BitmapFont \'" + font_name + "\': BitmapFont not loaded");
+		Logger::PrintError("Cannot set font to '"
+			+ font_name + "'; bitmap font not loaded");
 		return -1;
 	}
 	active_bitmap_font_ = bitmap_fonts_[font_name].get();
 	return 0;
 }
 
-int Graphics::DrawText(const std::string& text, int pos_x, int pos_y) {
+int Graphics::DrawText(const std::string& text, SDL_Point position)
+{
 	if (active_bitmap_font_ == nullptr) {
-		Logger::PrintError("Drawing text: Active BitmapFont is NULL or unset");
+		Logger::PrintError("Cannot draw text; active bitmap font is null");
 		return -1;
 	}
-	return active_bitmap_font_->DrawText(*this, text, pos_x, pos_y);
+	return active_bitmap_font_->DrawText(*this, text, position.x, position.y);
 	return 0;
 }
 
-void Graphics::PresentRender() {
+void Graphics::PresentRender()
+{
 	// Set render target to main window
-	SDL_SetRenderTarget(renderer_main_, NULL);
-	DrawColoredRect(NULL, 0x00, 0x00, 0x00, 0xFF);
+	SDL_SetRenderTarget(renderer_, nullptr);
+	DrawColoredRect(nullptr, SDL_COLOR_BLACK);
 	// Copy canvas to new render target
-	SDL_RenderTexture(renderer_main_, render_canvas_, NULL, &viewport_rect_);
+	SDL_RenderTexture(renderer_, render_canvas_, nullptr, &viewport_);
 	// Present render
-	SDL_RenderPresent(renderer_main_);
+	SDL_RenderPresent(renderer_);
 	// Set render target back to canvas
-	SDL_SetRenderTarget(renderer_main_, render_canvas_);
+	SDL_SetRenderTarget(renderer_, render_canvas_);
+}
+
+Uint32 Graphics::GetSurfacePixel(SDL_Surface* surface, SDL_Point pixel)
+{
+	SDL_LockSurface(surface);
+	int bpp = SDL_GetPixelFormatDetails(surface->format)->bytes_per_pixel;
+	// Get address of the pixel we want to retrieve
+	Uint8* ptr = (Uint8*)surface->pixels + pixel.y * surface->pitch + pixel.x * bpp;
+	Uint32 pixel_value = 0x00000000;
+	switch (bpp)
+	{
+	case 1:
+		pixel_value = *ptr;
+		break;
+	case 2:
+		pixel_value = *(Uint16*)ptr;
+		break;
+	case 3:
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+		{
+			pixel_value =  ptr[0] << 16 | ptr[1] << 8 | ptr[2];
+		}
+		else
+		{
+			pixel_value = ptr[0] | ptr[1] << 8 | ptr[2] << 16;
+		}
+		break;
+	case 4:
+		pixel_value = *(Uint32*)ptr;
+		break;
+	default:
+		break;
+	}
+	SDL_UnlockSurface(surface);
+	return pixel_value;
+}
+
+int Graphics::CreateDefaultTexture()
+{
+	SDL_Surface* missingno_surface = IMG_ReadXPMFromArray(missingno_xpm);
+	if (missingno_surface == nullptr)
+	{
+		Logger::PrintError("Could not load default surface from XPM; "
+			+ std::string(SDL_GetError()));
+		SDL_DestroySurface(missingno_surface);
+		return -1;
+	}
+	SDL_Texture* default_texture = ConvertSurfaceToTexture(missingno_surface);
+	if (default_texture == nullptr)
+	{
+		Logger::PrintError("Could not convert default surface to texture");
+		return -1;
+	}
+	if (SDL_SetTextureScaleMode(default_texture, SDL_SCALEMODE_NEAREST) < 0)
+	{
+		Logger::PrintWarning("Could not set default texture scale mode; "
+			+ std::string(SDL_GetError()));
+	}
+	textures_[""] = default_texture;
+	return 0;
+}
+
+SDL_Texture* Graphics::ConvertSurfaceToTexture(SDL_Surface* surface)
+{
+	if (surface == nullptr)
+	{
+		Logger::PrintError("Cannot convert null surface to texture");
+		return nullptr;
+	}
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
+	if (texture == nullptr)
+	{
+		Logger::PrintError("Could not create texture from surface at "
+			+ Logger::PointerToString(surface) + "; " + std::string(SDL_GetError()));
+	}
+	SDL_DestroySurface(surface);
+	return texture;
+}
+
+SDL_Surface* Graphics::CreateSurfaceFromImage(const std::filesystem::path& path_to_image)
+{
+		// TODO: load images other than just bitmaps
+		SDL_Surface* surface = SDL_LoadBMP(path_to_image.c_str());
+		if (surface == nullptr)
+		{
+			Logger::PrintError("Could not create surface from bitmap '"
+				+ path_to_image.generic_string() + "'; " + SDL_GetError());
+			return nullptr;
+		}
+		return surface;
 }

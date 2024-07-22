@@ -1,10 +1,11 @@
 #pragma once
 
+#include <filesystem>
+#include <map>
+#include <memory>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <map>
-#include <memory>
 #include <string>
 #include "bitmap_font.hpp"
 #include "constants.hpp"
@@ -14,7 +15,8 @@
 class BitmapFont;
 
 /// @brief Handles rendering of objects, window/resolution changes and properties, and framerate.
-class Graphics {
+class Graphics
+{
 public:
 	Graphics();
 	~Graphics();
@@ -27,68 +29,84 @@ public:
 	int SetViewport(const SDL_Rect* rect);
 	const SDL_FRect& GetViewport();
 	void UpdateViewport(Options& options);
-	std::pair<float, float> GetWindowFitViewportScaler(Options& options, SDL_Rect viewport = { 0, 0, (int)NES_WINDOW_WIDTH, (int)NES_WINDOW_HEIGHT });
+	std::pair<float, float> GetWindowFitViewportScaler(
+		Options& options,
+		SDL_Rect viewport = {
+			0,
+			0,
+			static_cast<int>(NES_WINDOW_WIDTH),
+			static_cast<int>(NES_WINDOW_HEIGHT)});
 	void UpdateCanvas(Options& options);
 	SDL_Rect GetCanvasDimensions();
 
-	int BuildDefaultTexture();
-	SDL_Texture* GetDefaultTexture();
-	/// @brief Creates an SDL_Texture from an SDL_Surface, and then frees the SDL_Surface.
-	/// @param surface Pointer to an SDL_Surface.
-	/// @return Pointer to an SDL_Texture on success, or NULL on error.
-	SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);
-	/// @brief Caches/recalls a cached SDL_Texture corresponding to a source BMP image.
-	/// @param file_path Path to a BMP image.
-	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
-	SDL_Texture* LoadTextureFromImage(const std::string& file_path);
-	/// @brief Caches/recalls a cached SDL_Texture corresponding to a source BMP image, using a RGB value for transparency.
-	/// @param file_path Path to a BMP image.
-	/// @param red Red byte of transparent RGB value
-	/// @param green Green byte of transparent RGB value
-	/// @param blue Blue byte of transparent RGB value
-	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
-	SDL_Texture* LoadTextureFromImage(const std::string& file_path, Uint8 red, Uint8 green, Uint8 blue);
-	/// @brief Caches/recalls a cached SDL_Texture corresponding to a source BMP image, utilizing a specific pixel for transparency.
-	/// @param file_path Path to a BMP image.
-	/// @param alpha_x Integer x-coordinate of the color mask pixel.
-	/// @param alpha_y Integer y-coordinate of the color mask pixel.
-	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
-	SDL_Texture* LoadTextureFromImage(const std::string& file_path, int alpha_x, int alpha_y);
-	/// @brief Unloads an SDL_Texture from the texture cache.
-	/// @param texture Pointer to an SDL_Texture.
-	/// @return 0 on success, or -1 if the texture is not cached.
-	int UnloadTexture(SDL_Texture* texture);
-	Uint32 GetSurfacePixel(SDL_Surface* surface, int x, int y);
-	int DrawColoredRect(const SDL_FRect* frect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	int DrawColoredRect(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	int DrawColoredLine(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	int DrawColoredOutline(const std::pair<int, int>& point_1, const std::pair<int, int>& point_2, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	int DrawColoredOutline(const Rectangle& rect, Uint8 red, Uint8 green, Uint8 blue, Uint8 alpha);
-	int DrawTexture(SDL_Texture* texture, const SDL_FRect* source_frect, const SDL_FRect* dest_frect, const SDL_FlipMode flip = SDL_FLIP_NONE);
+	SDL_Texture* LoadDefaultTexture();
 
-	int LoadBMPFont(const std::string& path_to_bmp, unsigned int glyph_width, unsigned int glyph_height, const std::string& font_name = "");
-	int SetTextFont(const std::string& font_name = "");
-	int DrawText(const std::string& text, int pos_x, int pos_y);
+	/// @brief Loads the texture of an image.
+	/// @param path_to_image the filesystem path to the image.
+	/// @return a pointer to an SDL_Texture of the image on success, or nullptr on error.
+	SDL_Texture* LoadTextureFromImage(const std::filesystem::path& path_to_image);
+
+	/// @brief Loads the texture of an image, using an RGB value for transparency.
+	/// @param file_path the filesystem path to the image.
+	/// @param mask_color the color to treat as transparent (alpha channel is ignored).
+	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
+	SDL_Texture* LoadTextureFromImage(
+		const std::filesystem::path& path_to_image,
+		SDL_Color mask_color);
 	
-	/// @brief Copies the render canvas to the main window, and then presents the render to the screen
+	/// @brief Loads the texture of an image, using a given pixel's color for transparency.
+	/// @param file_path the filesystem path to the image.
+	/// @param mask_pixel the pixel whose color should be treated as
+	/// transparent.
+	/// @return a pointer to an SDL_Texture on success, or nullptr on error.
+	SDL_Texture* LoadTextureFromImage(
+		const std::filesystem::path& path_to_image,
+		SDL_Point mask_pixel);
+
+	/// @brief Unloads an SDL_Texture from the texture cache.
+	/// @param texture the pointer to the SDL_Texture.
+	/// @return 0 on success, or -1 if the texture does not exist in the cache.
+	int UnloadTexture(SDL_Texture* texture);
+
+	/// @brief Unloads an image from the texture cache.
+	/// @param path_to_image the filesystem path to the image.
+	/// @return 0 on success, or -1 if the image texture does not exist in the cache.
+	int UnloadTexture(const std::filesystem::path& path_to_image);
+
+	int DrawColoredRect(const SDL_FRect* frect, SDL_Color color);
+	int DrawColoredRect(const Rectangle& rectangle, SDL_Color color);
+	int DrawColoredLine(const SDL_FPoint& start, const SDL_FPoint& end, SDL_Color color);
+	int DrawTexture(
+		SDL_Texture* texture,
+		const SDL_FRect* source,
+		const SDL_FRect* destination,
+		const SDL_FlipMode flip = SDL_FLIP_NONE);
+
+	BitmapFont* LoadBitmapFont(const std::filesystem::path& path_to_image,
+		SDL_Rect glyph_dimensions, const std::string& font_name = "");
+	int SetTextFont(const std::string& font_name = "");
+	int DrawText(const std::string& text, SDL_Point position);
+	
+	/// @brief Copies the render canvas to the main window,
+	/// and then presents the render to the screen
 	void PresentRender();
 
 private:
-	SDL_Window* window_main_;
-	SDL_Renderer* renderer_main_;
+	SDL_Window* window_;
+	SDL_Renderer* renderer_;
 	SDL_Texture* render_canvas_;
-	SDL_FRect viewport_rect_;
-	std::pair<unsigned short, unsigned short> viewport_ratio_;
+	SDL_FRect viewport_;
+	std::pair<unsigned int, unsigned int> viewport_ratio_;
 	std::pair<float, float> viewport_scaler_;
 
 	typedef std::map<std::string, SDL_Texture*> TextureCache;
 	TextureCache textures_;
-	typedef std::map<std::string, std::unique_ptr<BitmapFont>> BMPFontCache;
-	BMPFontCache bitmap_fonts_;
+	typedef std::map<std::string, std::unique_ptr<BitmapFont>> BitmapFontCache;
+	BitmapFontCache bitmap_fonts_;
 	BitmapFont* active_bitmap_font_;
 	
 	bool is_fullscreen_;
-	std::pair<float, float> current_resolution_;
+	std::pair<unsigned int, unsigned int> current_resolution_;
 
 	static inline char* missingno_xpm[] = {
 		"16 16 3 1",
@@ -110,6 +128,19 @@ private:
 		"      ...       ",
 		"     .+++.      ",
 		"     .+++.      ",
-		"      ....      "
-	};
+		"      ....      "};
+
+	Uint32 GetSurfacePixel(SDL_Surface* surface, SDL_Point pixel);
+
+	int CreateDefaultTexture();
+
+	/// @brief Creates an SDL_Surface from an image
+	/// @param path_to_image the filesystem path to the image
+	/// @return a pointer to an SDL_Surface on success, or nullptr on failure.
+	SDL_Surface* CreateSurfaceFromImage(const std::filesystem::path& path_to_image);
+	
+	/// @brief Creates an SDL_Texture from an SDL_Surface and then destroys the SDL_Surface.
+	/// @param surface a pointer to the SDL_Surface.
+	/// @return a pointer to an SDL_Texture on success, or nullptr on failure.
+	SDL_Texture* ConvertSurfaceToTexture(SDL_Surface* surface);
 };

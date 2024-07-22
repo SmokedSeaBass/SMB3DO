@@ -28,19 +28,19 @@ Player::Player(Graphics& graphics, const std::string& path_to_bmp, double pos_x,
 	SDL_Texture* player_texture = graphics.LoadTextureFromImage(path_to_bmp, 0, 0);
 
 	Sprite spr_stand = Sprite(graphics, player_texture, 17 + 1, 1, 16, 16);
-	spr_stand.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	spr_stand.SetOrigin(Sprite::ORIGIN_ORIENTATION::bottom_middle);
 	sprite_map_["stand"] = std::make_unique<Sprite>(spr_stand);
 
 	AnimatedSprite spr_walk = AnimatedSprite(graphics, player_texture, 1, 1, 16, 16, 12, 2, 1);
-	spr_walk.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	spr_walk.SetOrigin(Sprite::ORIGIN_ORIENTATION::bottom_middle);
 	sprite_map_["walk"] = std::make_unique<AnimatedSprite>(spr_walk);
 
 	Sprite spr_jump = Sprite(graphics, player_texture, 17*2 + 1, 1, 16, 16);
-	spr_jump.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	spr_jump.SetOrigin(Sprite::ORIGIN_ORIENTATION::bottom_middle);
 	sprite_map_["jump"] = std::make_unique<Sprite>(spr_jump);
 
 	Sprite spr_skid = Sprite(graphics, player_texture, 86, 1, 16, 16);
-	spr_skid.SetOrigin(Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE);
+	spr_skid.SetOrigin(Sprite::ORIGIN_ORIENTATION::bottom_middle);
 	sprite_map_["skid"] = std::make_unique<Sprite>(spr_skid);
 
 	sprite_ = sprite_map_["stand"].get();

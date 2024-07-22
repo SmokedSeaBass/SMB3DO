@@ -1,77 +1,94 @@
 #pragma once
 
+#include <filesystem>
+#include <optional>
 #include <string>
 #include "graphics.hpp"
 
 /// @brief Stores a sprite sheet image and can draw a rectangular section of it.  Stores a sprite sheet (or any image really) as a SDL_Texture.
 /// Contains a gettable / settable SDL_Rect that specifies what part of theS DL_Texture to draw when Draw() is called.
-class Sprite {
+class Sprite
+{
 public:
-	enum class ORIGIN_ORIENTATION {
-		CENTER,
-		TOP_LEFT,
-		TOP_MIDDLE,
-		TOP_RIGHT,
-		MIDDLE_LEFT,
-		MIDDLE_RIGHT,
-		BOTTOM_LEFT,
-		BOTTOM_MIDDLE,
-		BOTTOM_RIGHT
+	enum class ORIGIN_ORIENTATION
+	{
+		top_left,
+		top_center,
+		top_right,
+		center_left,
+		center,
+		center_right,
+		bottom_left,
+		bottom_middle,
+		bottom_right
 	};
 
+	/// @brief Constructs an empty Sprite object.
 	Sprite();
-	/// @brief Constructs a Sprite object using a BMP image source
-	/// @param graphics Graphics rendering context to use.
-	/// @param file_path File path to the BMP source image.
-	/// @param alpha_x X-coordinate of the pixel of the loaded image whose RGB value to treat as transparent. Defaults to -1 (no transparency).
-	/// @param alpha_y Y-coordinate of the pixel of the loaded image whose RGB value to treat as transparent. Defaults to -1 (no transparency).
-	/// @param source_x Initial x-coordinate of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	/// @param source_y Initial y-coordinate of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	/// @param source_w Initial width of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	/// @param source_h Initial height of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	Sprite(
-		Graphics& graphics,
-		const std::string& file_path,
-		int alpha_x = -1, int alpha_y = -1,
-		int source_x = -1, int source_y = -1, int source_w = -1, int source_h = -1
-	);
-	/// @brief Constructs a Sprite class using an SDL_Texture* source
-	/// @param graphics Graphics rendering context to use.
-	/// @param texture Pointer to an SDL_Texture to use as the sprite's source
-	/// @param source_x Initial x-coordinate of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	/// @param source_y Initial y-coordinate of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	/// @param source_w Initial width of the rect used for rendering the sprite. Defaults to -1 (will not render).
-	/// @param source_h Initial height of the rect used for rendering the sprite. Defaults to -1 (will not render).
+
+	/// @brief Constructs a Sprite object using a texture source.
+	/// @param graphics the graphics rendering context to use.
+	/// @param texture a pointer to the SDL_Texture to use as the sprite's source.
+	/// @param default_clip the default region of the sprite to render.
 	Sprite(
 		Graphics& graphics,
 		SDL_Texture* texture,
-		int source_x = -1, int source_y = -1, int source_w = -1, int source_h = -1
-	);
+		SDL_FRect default_clip);
 
-	Sprite(Graphics& graphics, const std::string& file_path, SDL_Rect source_rect, Uint8 alpha_red, Uint8 alpha_green, Uint8 alpha_blue);
+	/// @brief Constructs a Sprite object using an image source. Transparency is defined
+	/// by a given pixel's color.
+	/// @param graphics the graphics rendering context to use.
+	/// @param path_to_image the filesystem path to the source image.
+	/// @param mask_pixel the pixel whose color should be treated as transparent.
+	/// @param default_clip the default region of the sprite texture to render.
+	Sprite(
+		Graphics& graphics,
+		std::filesystem::path path_to_image,
+		SDL_Point mask_pixel,
+		SDL_FRect default_clip);
 
-	SDL_Rect GetSourceRect() const;
-	void SetSourceRect(SDL_Rect& rect);
-	void SetSourceRect(int rect_x, int rect_y, int rect_w, int rect_h);
+	/// @brief Constructs a Sprite object using an image source. Transparency is defined
+	/// by a given color.
+	/// @param graphics the graphics rendering context to use.
+	/// @param path_to_image the filesystem path to the source image.
+	/// @param mask_pixel the color that should be treated as transparent (alpha is ignored).
+	/// @param default_clip the default region of the sprite texture to render.
+	Sprite(
+		Graphics& graphics,
+		const std::string& path_to_image,
+		SDL_Color mask_color,
+		SDL_FRect default_clip);
 
-	void SetOrigin(int x, int y);
+	SDL_FRect GetDefaultClip() const;
+	void SetDefaultClip(const SDL_FRect& clip);
+
+
+	SDL_FPoint GetOrigin() const;
+	void SetOrigin(const SDL_FPoint& position);
 	void SetOrigin(ORIGIN_ORIENTATION origin_orientation);
 
 	SDL_Texture* GetTexture() const;
-	int GetTextureHeight() const;
-	int GetTextureWidth() const;
 
-	virtual void ResetAnimation() {}
-	virtual void SetAnimationSpeed(double frame_time) {}
-	virtual void Update(double delta_time) {}
+	virtual void ResetAnimation() { }
+	virtual void SetAnimationSpeed(double frame_time) { }
+	virtual void Update(double delta_time) { }
 
-	int Draw(Graphics& graphics, int pos_x, int pos_y, const SDL_FlipMode flip = SDL_FLIP_NONE) const;
-	int Draw(Graphics& graphics, int pos_x, int pos_y, SDL_FRect alt_source_rect, const SDL_FlipMode flip = SDL_FLIP_NONE) const;
+	int Draw(
+		Graphics& graphics,
+		SDL_Point position,
+		const SDL_FlipMode flip) const;
+	int Draw(
+		Graphics& graphics,
+		SDL_Point position,
+		SDL_FRect clip,
+		const SDL_FlipMode flip) const;
 
 protected:
-	SDL_FRect source_rect_;
+	SDL_FRect default_clip_;
 
 private:
 	SDL_Texture* texture_;
-	double origin_x_, origin_y_;
+	float texture_width_;
+	float texture_height_;
+	SDL_FPoint origin_;
 };

@@ -9,7 +9,7 @@ BitmapFont::BitmapFont() :
 	glyph_height_(0){
 }
 
-BitmapFont::BitmapFont(Graphics& graphics, const std::string& path_to_bmp, float glyph_width, float glyph_height) : BitmapFont::BitmapFont() {
+BitmapFont::BitmapFont(Graphics& graphics,const std::string& path_to_bmp, float glyph_width, float glyph_height) : BitmapFont::BitmapFont() {
 	LoadBitmap(graphics, path_to_bmp, glyph_width, glyph_height);
 }
 
@@ -71,7 +71,7 @@ int BitmapFont::DrawText(Graphics& graphics, const std::string& text, int pos_x,
 			graphics.DrawTexture(texture_, &src_frect, &dst_frect);
 		} else {
 			src_frect = { 0, 0, glyph_width_, glyph_height_ };
-			graphics.DrawTexture(graphics.GetDefaultTexture(), &src_frect, &dst_frect);
+			graphics.DrawTexture(graphics.LoadDefaultTexture(), &src_frect, &dst_frect);
 		}
 		x += glyph_width_;
 	}

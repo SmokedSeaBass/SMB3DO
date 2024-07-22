@@ -1,0 +1,11 @@
+=== Graphics System ===
+* Graphics are stored in texture cache
+    * If an image does not exist in the texture cache, it is loaded from disk
+    * Graphics are indexed by their filesystem path
+* Graphics drawing hierarchy:
+    * Game
+        * Level
+            * Tilemaps
+            * Entities
+                * Make explicit graphics calls
+            * HUD

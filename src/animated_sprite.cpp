@@ -1,41 +1,42 @@
 #include "animated_sprite.hpp"
 
-AnimatedSprite::AnimatedSprite() :
-	Sprite(),
-	frame_time_(0),
-	frame_count_(0),
-	frame_gap_(0),
-	current_frame_(0),
-	current_frame_time_(0) {
+AnimatedSprite::AnimatedSprite()
+	: Sprite(), frame_time_(0), frame_count_(0), frame_gap_(0),
+	  current_frame_(0), current_frame_time_(0)
+{
 }
 
 AnimatedSprite::AnimatedSprite(
-		Graphics& graphics,
-		const std::string& file_path,
-		int alpha_x, int alpha_y,
-		int source_x, int source_y,
-		int source_w, int source_h,
-		double frame_speed, int frame_count, int frame_gap) :
-	Sprite(graphics, file_path, alpha_x, alpha_y, source_x, source_y, source_w, source_h),
-	frame_time_(1000.0 / frame_speed),
-	frame_count_(frame_count),
-	frame_gap_(frame_gap),
-	current_frame_(0),
-	current_frame_time_(0) {
+	Graphics& graphics,
+	const std::string& file_path,
+	int alpha_x, int alpha_y,
+	int source_x, int source_y,
+	int source_w, int source_h,
+	double frame_speed, int frame_count, int frame_gap)
+	: Sprite(
+		graphics, file_path, alpha_x, alpha_y,
+	    source_x, source_y, source_w, source_h),
+	  frame_time_(1000.0 / frame_speed),
+	  frame_count_(frame_count),
+	  frame_gap_(frame_gap),
+	  current_frame_(0),
+	  current_frame_time_(0)
+{
 }
 
 AnimatedSprite::AnimatedSprite(
-		Graphics& graphics,
-		SDL_Texture* texture,
-		int source_x, int source_y,
-		int source_w, int source_h,
-		double frame_speed, int frame_count, int frame_gap) :
-	Sprite(graphics, texture, source_x, source_y, source_w, source_h),
-	frame_time_(1000.0 / frame_speed),
-	frame_count_(frame_count),
-	frame_gap_(frame_gap),
-	current_frame_(0),
-	current_frame_time_(0) {
+	Graphics& graphics,
+	SDL_Texture* texture,
+	int source_x, int source_y,
+	int source_w, int source_h,
+	double frame_speed, int frame_count, int frame_gap)
+	: Sprite(graphics, texture, source_x, source_y, source_w, source_h),
+	  frame_time_(1000.0 / frame_speed),
+	  frame_count_(frame_count),
+	  frame_gap_(frame_gap),
+	  current_frame_(0),
+	  current_frame_time_(0)
+{
 }
 
 AnimatedSprite::~AnimatedSprite() { }

@@ -60,9 +60,11 @@ int Game::Run() {
 	double tick_accumulator = 0.0;
 	if (options_.interp_factor == 0) {
 		if (fps_limit != 0) {
-			options_.interp_factor = (int)ceil(Game::fps_limit / 60.0);
+			options_.interp_factor = ceil(Game::fps_limit / 60.0);
 		} else {
-			options_.interp_factor = (int)ceil(SDL_GetCurrentDisplayMode(0)->refresh_rate / 60.0);
+			// TODO: Broken by SDL3; dynamically grab value
+			// Game::fps_limit = SDL_GetCurrentDisplayMode(0)->refresh_rate;
+			options_.interp_factor = (int)ceil(144.0 / 60.0);
 		}
 	}
 	double delta_time = 1000.0 / (60.0 * options_.interp_factor);
@@ -73,8 +75,8 @@ int Game::Run() {
 	test_level.Load(graphics_, "data/maps/test2a.tmx");
 
 	// Bitmap font
-	graphics_.LoadBMPFont("data/sprite_sheets/hud_font_ascii.bmp", 8, 8, "hud");
-	graphics_.LoadBMPFont("data/sprite_sheets/dialogue_font_ascii.bmp", 8, 8, "dialogue");
+	graphics_.LoadBitmapFont("data/sprite_sheets/hud_font_ascii.bmp", 8, 8, "hud");
+	graphics_.LoadBitmapFont("data/sprite_sheets/dialogue_font_ascii.bmp", 8, 8, "dialogue");
 	
 	// Main game loop
 	while (!quit_game) {
@@ -155,16 +157,16 @@ int Game::Run() {
 		graphics_.PresentRender();
 
 		// Framerate limiter
-		if (!options_.enable_vsync) {
-			const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
-			double frame_time = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_start_new - tick_end).count();
-			double tick_wait = 0.0;
-			if (Game::fps_limit > 0)
-				tick_wait = (1000.0 / (Game::fps_limit)) - frame_time;
-			if (tick_wait > 0) {
-				SDL_Delay(static_cast<Uint32>(tick_wait));
-			}
-		}
+		// if (!options_.enable_vsync) {
+		// 	const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
+		// 	double frame_time = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_start_new - tick_end).count();
+		// 	double tick_wait = 0.0;
+		// 	if (Game::fps_limit > 0)
+		// 		tick_wait = (1000.0 / (Game::fps_limit)) - frame_time;
+		// 	if (tick_wait > 0) {
+		// 		SDL_Delay(static_cast<Uint32>(tick_wait));
+		// 	}
+		// }
 	}
 	return 0;
 }

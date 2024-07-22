@@ -3,129 +3,155 @@
 #include <stdexcept>
 #include "logger.hpp"
 
-Sprite::Sprite() : 
-	texture_ (nullptr),
-	source_rect_({ 0, 0, 0, 0 }),
-	origin_x_(0),
-	origin_y_(0) {
+Sprite::Sprite() : texture_ (nullptr)
+{
 }
 
-Sprite::Sprite(Graphics& graphics, const std::string& file_path, int alpha_x, int alpha_y, int source_x, int source_y, int source_w, int source_h) : Sprite() {
-	source_rect_ = { static_cast<float>(source_x), static_cast<float>(source_y), static_cast<float>(source_w), static_cast<float>(source_h) };
-	texture_ = graphics.LoadTextureFromImage(file_path, alpha_x, alpha_y);
-	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
-}
-
-Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, int source_x, int source_y, int source_w, int source_h) : Sprite() {
+Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, SDL_FRect default_clip)
+	: texture_(texture), default_clip_(default_clip)
+{
 	if (texture == nullptr) {
 		Logger::PrintWarning("Sprite initialized with null texture");
 		return;
 	}
-	source_rect_ = { static_cast<float>(source_x), static_cast<float>(source_y), static_cast<float>(source_w), static_cast<float>(source_h) };
-	texture_ = texture;
+	SDL_GetTextureSize(texture_, &texture_width_, &texture_height_);
 	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
 }
 
-Sprite::Sprite(Graphics& graphics, const std::string& file_path, SDL_Rect source_rect, Uint8 alpha_red, Uint8 alpha_green, Uint8 alpha_blue) : Sprite() {
-	source_rect_ = { static_cast<float>(source_rect.x), static_cast<float>(source_rect.y), static_cast<float>(source_rect.w), static_cast<float>(source_rect.h) };
-	texture_ = graphics.LoadTextureFromImage(file_path, alpha_red, alpha_green, alpha_blue);
+Sprite::Sprite(Graphics& graphics, std::filesystem::path path_to_image, SDL_Point mask_pixel,
+	SDL_FRect default_clip)
+	: texture_(graphics.LoadTextureFromImage(path_to_image, mask_pixel)),
+	  default_clip_(default_clip)
+{
+	SDL_GetTextureSize(texture_, &texture_width_, &texture_height_);
 	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
 }
 
-SDL_Rect Sprite::GetSourceRect() const {
-	return { source_rect_.x, source_rect_.y, source_rect_.w, source_rect_.h } ;
+Sprite::Sprite(Graphics& graphics, const std::string& path_to_image, SDL_Color mask_color,
+	SDL_FRect default_clip)
+	: texture_(graphics.LoadTextureFromImage(path_to_image, mask_color)),
+	  default_clip_(default_clip)
+{
+	SDL_GetTextureSize(texture_, &texture_width_, &texture_height_);
+	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
 }
 
-void Sprite::SetSourceRect(SDL_Rect& rect) {
-	source_rect_.x = rect.x;
-	source_rect_.y = rect.y;
-	source_rect_.w = rect.w;
-	source_rect_.h = rect.h;
+SDL_FRect Sprite::GetDefaultClip() const
+{
+	return default_clip_;
 }
 
-void Sprite::SetSourceRect(int rect_x, int rect_y, int rect_w, int rect_h) {
-	source_rect_.x = rect_x;
-	source_rect_.y = rect_y;
-	source_rect_.w = rect_w;
-	source_rect_.h = rect_h;
+void Sprite::SetDefaultClip(const SDL_FRect& clip)
+{
+	default_clip_ = clip;
 }
 
-void Sprite::SetOrigin(int x, int y) {
-	origin_x_ = x;
-	origin_y_ = y;
+SDL_FPoint Sprite::GetOrigin() const
+{
+	return origin_;
 }
 
-void Sprite::SetOrigin(Sprite::ORIGIN_ORIENTATION origin_orientation) {
+void Sprite::SetOrigin(const SDL_FPoint& position)
+{
+	origin_ = position;
+}
+
+void Sprite::SetOrigin(Sprite::ORIGIN_ORIENTATION origin_orientation)
+{
 	// TODO: Make ORIGIN_ORIENTATION bitwise, for optimized calculations
-	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_LEFT ||
-		origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_MIDDLE ||
-		origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_RIGHT) {
-		origin_y_ = 0.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_LEFT) origin_x_ = 0.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_MIDDLE) origin_x_ = source_rect_.w / 2.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::TOP_RIGHT) origin_x_ = source_rect_.w;
+	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::top_left
+		|| origin_orientation == Sprite::ORIGIN_ORIENTATION::top_center
+		|| origin_orientation == Sprite::ORIGIN_ORIENTATION::top_right)
+	{
+		origin_.y = 0.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::top_left)
+		{
+			origin_.x = 0.0;
+		}
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::top_center)
+		{
+			origin_.x = default_clip_.w / 2.0;
+		}
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::top_right)
+		{
+			origin_.x = default_clip_.w;
+		}
 		return;
 	}
-	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_LEFT ||
-		origin_orientation == Sprite::ORIGIN_ORIENTATION::CENTER ||
-		origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_RIGHT) {
-		origin_y_ = source_rect_.h / 2.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_LEFT) origin_x_ = 0.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::CENTER) origin_x_ = source_rect_.w / 2.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::MIDDLE_RIGHT) origin_x_ = source_rect_.w;
+	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::center_left
+		|| origin_orientation == Sprite::ORIGIN_ORIENTATION::center
+		|| origin_orientation == Sprite::ORIGIN_ORIENTATION::center_right)
+	{
+		origin_.y = default_clip_.h / 2.0;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::center_left)
+		{
+			origin_.x = 0.0;
+		}
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::center)
+		{
+			origin_.x = default_clip_.w / 2.0;
+		}
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::center_right)
+		{
+			origin_.x = default_clip_.w;
+		}
 		return;
 	}
-	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_LEFT ||
-		origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE ||
-		origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_RIGHT) {
-		origin_y_ = source_rect_.h;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_LEFT) origin_x_ = 0.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_MIDDLE) origin_x_ = source_rect_.w / 2.0;
-		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::BOTTOM_RIGHT) origin_x_ = source_rect_.w;
+	if (origin_orientation == Sprite::ORIGIN_ORIENTATION::bottom_left
+		|| origin_orientation == Sprite::ORIGIN_ORIENTATION::bottom_middle
+		|| origin_orientation == Sprite::ORIGIN_ORIENTATION::bottom_right)
+	{
+		origin_.y = default_clip_.h;
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::bottom_left)
+		{
+			origin_.x = 0.0;
+		}
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::bottom_middle)
+		{
+			origin_.x = default_clip_.w / 2.0;
+		}
+		if (origin_orientation == Sprite::ORIGIN_ORIENTATION::bottom_right)
+		{
+			origin_.x = default_clip_.w;
+		}
 		return;
 	}
 }
 
-SDL_Texture* Sprite::GetTexture() const {
+SDL_Texture* Sprite::GetTexture() const
+{
 	return texture_;
 }
 
-int Sprite::GetTextureHeight() const {
-	float height;
-	SDL_GetTextureSize(texture_, NULL, &height);
-	return static_cast<int>(height);
-}
-
-int Sprite::GetTextureWidth() const {
-	float width;
-	SDL_GetTextureSize(texture_, &width, NULL);
-	return static_cast<int>(width);
-}
-
-int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, const SDL_FlipMode flip) const {
-	SDL_FRect dest_frect = {
-		round(pos_x - origin_x_),
-		round(pos_y - origin_y_),
-		source_rect_.w,
-		source_rect_.h
+int Sprite::Draw(Graphics& graphics, SDL_Point position, const SDL_FlipMode flip) const {
+	SDL_FRect destination = {
+		round(position.x - origin_.x),
+		round(position.y - origin_.y),
+		default_clip_.w,
+		default_clip_.h
 	};
-	if (texture_ == nullptr) {
-		SDL_FRect default_rect = { 0, 0, 16, 16 };
-		return graphics.DrawTexture(graphics.GetDefaultTexture(), &default_rect, &dest_frect, flip);
+	if (SDL_RectEmptyFloat(&destination))
+	{
+		destination.w = texture_width_;
+		destination.h = texture_height_;
 	}
-	return graphics.DrawTexture(texture_, &source_rect_, &dest_frect, flip);
+	if (texture_ == nullptr) {
+		SDL_FRect null_clip = { 0, 0, 16, 16 };
+		return graphics.DrawTexture(graphics.LoadDefaultTexture(), &null_clip, &destination, flip);
+	}
+	return graphics.DrawTexture(texture_, &default_clip_, &destination, flip);
 }
 
-int Sprite::Draw(Graphics& graphics, int pos_x, int pos_y, SDL_FRect alt_source_rect, const SDL_FlipMode flip) const {
-	SDL_FRect dest_frect = {
-		static_cast<int>(round(pos_x - origin_x_)),
-		static_cast<int>(round(pos_y - origin_y_)),
-		alt_source_rect.w,
-		alt_source_rect.h
-	};
+int Sprite::Draw(Graphics& graphics, SDL_Point position, SDL_FRect clip, const SDL_FlipMode flip = SDL_FLIP_NONE) const {
+	SDL_FRect destination = {
+		round(position.x - origin_.x),
+		round(position.y - origin_.y),
+		clip.w,
+		clip.h};
 	if (texture_ == nullptr) {
-		return graphics.DrawTexture(graphics.GetDefaultTexture(), &alt_source_rect, &dest_frect, flip);
+		SDL_FRect null_clip = { 0, 0, 16, 16 };
+		return graphics.DrawTexture(graphics.LoadDefaultTexture(), &null_clip, &destination, flip);
 	}
-	return graphics.DrawTexture(texture_, &alt_source_rect, &dest_frect, flip);
+	return graphics.DrawTexture(texture_, &clip, &destination, flip);
 }
 
