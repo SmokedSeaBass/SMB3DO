@@ -90,7 +90,7 @@ Visual Studio solution and project files have been removed for now as part of st
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Dependencies <img src="docs/images/bullet_point.png" width="32px"/>
 
-* [Simple Directmedia Layer 3.0](https://www.libsdl.org/) (v3.1.0)
+* [Simple Directmedia Layer 3.0](https://www.libsdl.org/) (v3.1.1 prerelease)
 * [TinyXML2](https://github.com/leethomason/tinyxml2) (v10.0.0)
 
 ## <img src="docs/images/bullet_point.png" width="32px"/> Credits <img src="docs/images/bullet_point.png" width="32px"/>
