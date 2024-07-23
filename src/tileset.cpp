@@ -47,12 +47,12 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
  	const tinyxml2::XMLAttribute* trans_param = image_node->FindAttribute("trans");
 	if (trans_param != nullptr) {
 		std::string color_key = trans_param->Value();
-		unsigned int alpha_red = std::stoul(color_key.substr(0, 2), nullptr, 16);
-		unsigned int alpha_green = std::stoul(color_key.substr(2, 2), nullptr, 16);
-		unsigned int alpha_blue = std::stoul(color_key.substr(4, 2), nullptr, 16);
-		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string(), { -1, -1, -1, -1 }, alpha_red, alpha_green, alpha_blue));
+		unsigned char alpha_red = std::stoul(color_key.substr(0, 2), nullptr, 16);
+		unsigned char alpha_green = std::stoul(color_key.substr(2, 2), nullptr, 16);
+		unsigned char alpha_blue = std::stoul(color_key.substr(4, 2), nullptr, 16);
+		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string(), {-1, -1, -1, -1}, SDL_Color{alpha_red, alpha_green, alpha_blue, 255}));
 	} else {
-		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string()));
+		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string(), {-1, -1, -1, -1}));
 	}
 
 	// Properties to extract from each node include collision type, hitbox, animation, etc.
@@ -60,7 +60,7 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
 	while (tile_node != nullptr) {
 		// Tile ID
 		unsigned int tile_id = tile_node->FindAttribute("id")->IntValue();
-		SDL_Rect tile_rect = TileIndexToRect(tile_id);
+		SDL_FRect tile_rect = TileIndexToRect(tile_id);
 
 		// Tile/collision type
 		Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
@@ -113,12 +113,12 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
 			int frame_count = animation_tiles.size();
 			tile_rect = TileIndexToRect(animation_tiles[0].first);
 			// g++ just HAD to be picky about getting addresses of rvalues
-			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h, frame_speed, frame_count, tile_spacing_);
+			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect, frame_speed, frame_count, tile_spacing_);
 			tile_sprite = &temp;
 		} else {
 			// TODO 7-19-21: Replace with Sprite polymorphism
 			// g++ just HAD to be picky about getting addresses of rvalues
-			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h);
+			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect);
 			tile_sprite = &temp;
 		}
 
@@ -135,12 +135,13 @@ Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int ti
 	tile_height_ = tile_height;
 	tile_margin_ = tile_margin;
 	tile_spacing_ = tile_spacing;
-	double sprite_width = tileset_sprite_->GetTextureWidth();
+	float sprite_width;
+	float sprite_height;
+	SDL_GetTextureSize(tileset_sprite_->GetTexture(), &sprite_width, &sprite_height);
 	tile_row_size_ = static_cast<int>((sprite_width - tile_margin_ + tile_spacing_) / (tile_width_ + tile_spacing_));
 	if (tile_row_size_ < 0) {
 		tile_row_size_ = 0;
 	}
-	double sprite_height = tileset_sprite_->GetTextureHeight();
 	int tile_col_size = (int)ceil((sprite_height - tile_margin_) / (tile_height_ + tile_spacing_)) - 1;
 	tile_count_ = tile_row_size_ * tile_col_size;
 }
@@ -176,18 +177,17 @@ int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id
 			return tile->Draw(graphics, pos_x, pos_y);
 		}
 	}
-	SDL_Rect tile_rect = TileIndexToRect(tile_id);
-	SDL_FRect tile_frect = { tile_rect.x, tile_rect.y, tile_rect.w, tile_rect.h };
-	return tileset_sprite_->Draw(graphics, pos_x, pos_y, tile_frect);
+	SDL_FRect tile_rect = TileIndexToRect(tile_id);
+	return tileset_sprite_->Draw(graphics, {pos_x, pos_y}, tile_rect);
 }
 
 
-SDL_Rect Tileset::TileIndexToRect(unsigned int tile_index) const {
+SDL_FRect Tileset::TileIndexToRect(unsigned int tile_index) const {
 	int row_index = tile_index % tile_row_size_;
 	int col_index = tile_index / tile_row_size_;
 	int rect_x = row_index * (tile_width_ + tile_spacing_) + tile_margin_;
 	int rect_y = col_index * (tile_height_ + tile_spacing_) + tile_margin_;
-	SDL_Rect tile_rect = {
+	SDL_FRect tile_rect = {
 		rect_x, rect_y, tile_width_, tile_height_
 	};
 	return tile_rect;

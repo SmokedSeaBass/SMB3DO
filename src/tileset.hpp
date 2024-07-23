@@ -44,5 +44,5 @@ private:
 	int tile_margin_, tile_spacing_;
 	int tile_row_size_, tile_count_;
 
-	SDL_Rect TileIndexToRect(unsigned int tile_id) const;
+	SDL_FRect TileIndexToRect(unsigned int tile_id) const;
 };

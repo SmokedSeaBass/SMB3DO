@@ -67,7 +67,7 @@ void Level::Update(Graphics& graphics, const Input& input, double delta_time) {
 int Level::Draw(Graphics& graphics) {
 	// Draw background color
 	if (background_color_.a > 0x00) {
-		graphics.DrawColoredRect(NULL, background_color_.r, background_color_.g, background_color_.b, background_color_.a);
+		graphics.DrawColoredRect(nullptr, background_color_);
 	}
 
 	// Draw tilemaps
@@ -85,18 +85,18 @@ int Level::Draw(Graphics& graphics) {
 	if (Game::debug_show_info) {
 		Player* player = dynamic_cast<Player*>(entity_list_[0].get());
 		graphics.SetTextFont("dialogue");
-		graphics.DrawText("X: " + std::to_string(player->GetPosition()[0]), 0, 16);
-		graphics.DrawText("Y: " + std::to_string(player->GetPosition()[1]), 0, 24);
-		graphics.DrawText("VX: " + std::to_string(player->GetVelocity()[0]), 0, 32);
-		graphics.DrawText("VY: " + std::to_string(player->GetVelocity()[1]), 0, 40);
-		graphics.DrawText("CX: " + std::to_string(camera_.GetPosition()[0]), 0, 48);
-		graphics.DrawText("CY: " + std::to_string(camera_.GetPosition()[1]), 0, 56);
+		graphics.DrawText("X: " + std::to_string(player->GetPosition()[0]), {0, 16});
+		graphics.DrawText("Y: " + std::to_string(player->GetPosition()[1]), {0, 24});
+		graphics.DrawText("VX: " + std::to_string(player->GetVelocity()[0]), {0, 32});
+		graphics.DrawText("VY: " + std::to_string(player->GetVelocity()[1]), {0, 40});
+		graphics.DrawText("CX: " + std::to_string(camera_.GetPosition()[0]), {0, 48});
+		graphics.DrawText("CY: " + std::to_string(camera_.GetPosition()[1]), {0, 56});
 		graphics.SetTextFont("hud");
-		graphics.DrawText("$" + std::to_string(player->coin_count_), 0, 64);
+		graphics.DrawText("$" + std::to_string(player->coin_count_), {0, 64});
 		graphics.SetTextFont("dialogue");
-		graphics.DrawText("\"DIALOGUE\" can be <UPPERCASE'd>\n and {lowercase'd}!?", 0, 80);
+		graphics.DrawText("\"DIALOGUE\" can be <UPPERCASE'd>\n and {lowercase'd}!?", {0, 80});
 		graphics.SetTextFont("hud");
-		graphics.DrawText("Hide me with [U]", 0, 104);
+		graphics.DrawText("Hide me with [U]", {0, 104});
 	}
 
 	return 0;

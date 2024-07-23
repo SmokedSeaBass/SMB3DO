@@ -52,8 +52,8 @@ int Tile::Draw(Graphics& graphics, int pos_x, int pos_y) const{
 	}
 	AnimatedSprite* anim_sprite = dynamic_cast<AnimatedSprite*>(sprite_.get());
 	if (anim_sprite != nullptr) {
-		return anim_sprite->Draw(graphics, pos_x, pos_y);
+		return anim_sprite->Draw(graphics, {pos_x, pos_y});
 	} else {
-		return sprite_->Draw(graphics, pos_x, pos_y);
+		return sprite_->Draw(graphics, {pos_x, pos_y});
 	}
 }

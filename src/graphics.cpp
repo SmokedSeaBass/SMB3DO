@@ -58,7 +58,7 @@ int Graphics::Initialize(Options& options)
 	}
 	SDL_SetWindowIcon(window_, nullptr);
 	
-	renderer_ = SDL_CreateRenderer(window_, nullptr);
+	renderer_ = SDL_CreateRenderer(window_, "opengl");
 	if (renderer_ == nullptr)
 	{
 		Logger::PrintError("Main renderer could not be created: "
@@ -73,19 +73,8 @@ int Graphics::Initialize(Options& options)
 	// Allow for colored rect alpha transparency
 	SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND);
 
-	// Create render canvas texture
-	render_canvas_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
-		SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
-	if (render_canvas_ == nullptr)
-	{
-		Logger::PrintError("Could not create canvas texture: "
-			+ std::string(SDL_GetError()));
-		return -1;
-	}
-	SDL_SetRenderTarget(renderer_, render_canvas_);
-
-	UpdateViewport(options);
 	UpdateCanvas(options);
+	UpdateViewport(options);
 
 	if (CreateDefaultTexture() < 0)
 	{
@@ -202,6 +191,7 @@ void Graphics::UpdateCanvas(Options& options)
 		render_canvas_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
 			SDL_TEXTUREACCESS_TARGET, NES_WINDOW_WIDTH, NES_WINDOW_HEIGHT);
 	}
+	SDL_SetTextureScaleMode(render_canvas_, SDL_SCALEMODE_NEAREST);
 	SDL_SetRenderTarget(renderer_, render_canvas_);
 }
 
@@ -217,47 +207,47 @@ SDL_Texture* Graphics::LoadDefaultTexture()
 	return textures_[""];
 }
 
-SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& path_to_image)
+SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& image_path)
 {
-	if (textures_.count(path_to_image.generic_string()) == 0)
+	if (textures_.count(image_path.generic_string()) == 0)
 	{
-		SDL_Surface* surface = CreateSurfaceFromImage(path_to_image);
+		SDL_Surface* surface = CreateSurfaceFromImage(image_path);
 		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
-		textures_[path_to_image.generic_string()] = texture;
+		textures_[image_path.generic_string()] = texture;
 	}
-	return textures_[path_to_image];
+	return textures_[image_path];
 }
 
-SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& path_to_image,
+SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& image_path,
 	SDL_Color mask_color)
 {
-	if (textures_.count(path_to_image.generic_string()) == 0)
+	if (textures_.count(image_path.generic_string()) == 0)
 	{
-		SDL_Surface* surface = CreateSurfaceFromImage(path_to_image);
+		SDL_Surface* surface = CreateSurfaceFromImage(image_path);
 		Uint32 color_key = SDL_MapRGB(SDL_GetPixelFormatDetails(surface->format), nullptr,
 			mask_color.r, mask_color.g, mask_color.b);
 		SDL_SetSurfaceColorKey(surface, SDL_TRUE, color_key);
 		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
-		textures_[path_to_image.generic_string()] = texture;
+		textures_[image_path.generic_string()] = texture;
 	}
-	return textures_[path_to_image.generic_string()];
+	return textures_[image_path.generic_string()];
 }
 
-SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& path_to_image,
+SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& image_path,
 	SDL_Point mask_pixel)
 {
-	if (textures_.count(path_to_image.generic_string()) == 0)
+	if (textures_.count(image_path.generic_string()) == 0)
 	{
-		SDL_Surface* surface = CreateSurfaceFromImage(path_to_image);
+		SDL_Surface* surface = CreateSurfaceFromImage(image_path);
 		Uint32 color_key = 0x00000000;
 		if (mask_pixel.x >= 0 && mask_pixel.y >= 0) {
 			Uint32 color_key = GetSurfacePixel(surface, mask_pixel);
 			SDL_SetSurfaceColorKey(surface, SDL_TRUE, color_key);
 		}
 		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
-		textures_[path_to_image.generic_string()] = texture;
+		textures_[image_path.generic_string()] = texture;
 	}
-	return textures_[path_to_image.generic_string()];
+	return textures_[image_path.generic_string()];
 }
 
 int Graphics::UnloadTexture(SDL_Texture* texture)
@@ -274,17 +264,17 @@ int Graphics::UnloadTexture(SDL_Texture* texture)
 	return -1;
 }
 
-int Graphics::UnloadTexture(const std::filesystem::path& path_to_image)
+int Graphics::UnloadTexture(const std::filesystem::path& image_path)
 {
 	try
 	{
-		SDL_Texture* texture = textures_.at(path_to_image);
+		SDL_Texture* texture = textures_.at(image_path);
 		return 0;
 	}
 	catch(const std::out_of_range& e)
 	{
 		Logger::PrintWarning("Could not unload texture for image '"
-			+ path_to_image.generic_string() + "': image not found in texture cache");
+			+ image_path.generic_string() + "': image not found in texture cache");
 	}
 	return -1;
 }
@@ -314,15 +304,15 @@ int Graphics::DrawTexture(SDL_Texture* texture, const SDL_FRect* source,
 	return SDL_RenderTextureRotated(renderer_, texture, source, destination, 0.0, nullptr, flip);
 }
 
-BitmapFont* Graphics::LoadBitmapFont(const std::filesystem::path& path_to_image,
+BitmapFont* Graphics::LoadBitmapFont(const std::filesystem::path& image_path,
 	SDL_Rect glyph_dimensions, const std::string& font_name)
 {
 	std::string font_index = font_name;
 	if (font_index == "") {
-		font_index = path_to_image;
+		font_index = image_path;
 	}
 	if (bitmap_fonts_.count(font_index) == 0) {
-		BitmapFont font = BitmapFont(*this, path_to_image, glyph_dimensions.w, glyph_dimensions.h);
+		BitmapFont font = BitmapFont(*this, image_path, glyph_dimensions.w, glyph_dimensions.h);
 		bitmap_fonts_[font_index] = std::make_unique<BitmapFont>(font);
 	}
 	return bitmap_fonts_[font_index].get();
@@ -345,7 +335,7 @@ int Graphics::DrawText(const std::string& text, SDL_Point position)
 		Logger::PrintError("Cannot draw text; active bitmap font is null");
 		return -1;
 	}
-	return active_bitmap_font_->DrawText(*this, text, position.x, position.y);
+	return active_bitmap_font_->DrawText(*this, text, position);
 	return 0;
 }
 
@@ -439,14 +429,14 @@ SDL_Texture* Graphics::ConvertSurfaceToTexture(SDL_Surface* surface)
 	return texture;
 }
 
-SDL_Surface* Graphics::CreateSurfaceFromImage(const std::filesystem::path& path_to_image)
+SDL_Surface* Graphics::CreateSurfaceFromImage(const std::filesystem::path& image_path)
 {
 		// TODO: load images other than just bitmaps
-		SDL_Surface* surface = SDL_LoadBMP(path_to_image.c_str());
+		SDL_Surface* surface = SDL_LoadBMP(image_path.c_str());
 		if (surface == nullptr)
 		{
 			Logger::PrintError("Could not create surface from bitmap '"
-				+ path_to_image.generic_string() + "'; " + SDL_GetError());
+				+ image_path.generic_string() + "'; " + SDL_GetError());
 			return nullptr;
 		}
 		return surface;

@@ -1,21 +1,13 @@
 #include "animated_sprite.hpp"
 
-AnimatedSprite::AnimatedSprite()
-	: Sprite(), frame_time_(0), frame_count_(0), frame_gap_(0),
-	  current_frame_(0), current_frame_time_(0)
-{
-}
 
 AnimatedSprite::AnimatedSprite(
 	Graphics& graphics,
-	const std::string& file_path,
-	int alpha_x, int alpha_y,
-	int source_x, int source_y,
-	int source_w, int source_h,
+	const std::filesystem::path& image_path,
+	SDL_Point mask_pixel,
+	SDL_FRect initial_clip,
 	double frame_speed, int frame_count, int frame_gap)
-	: Sprite(
-		graphics, file_path, alpha_x, alpha_y,
-	    source_x, source_y, source_w, source_h),
+	: Sprite(graphics, image_path, initial_clip, mask_pixel),
 	  frame_time_(1000.0 / frame_speed),
 	  frame_count_(frame_count),
 	  frame_gap_(frame_gap),
@@ -27,10 +19,9 @@ AnimatedSprite::AnimatedSprite(
 AnimatedSprite::AnimatedSprite(
 	Graphics& graphics,
 	SDL_Texture* texture,
-	int source_x, int source_y,
-	int source_w, int source_h,
+	SDL_FRect initial_clip,
 	double frame_speed, int frame_count, int frame_gap)
-	: Sprite(graphics, texture, source_x, source_y, source_w, source_h),
+	: Sprite(graphics, texture, initial_clip),
 	  frame_time_(1000.0 / frame_speed),
 	  frame_count_(frame_count),
 	  frame_gap_(frame_gap),
@@ -41,25 +32,32 @@ AnimatedSprite::AnimatedSprite(
 
 AnimatedSprite::~AnimatedSprite() { }
 
-void AnimatedSprite::ResetAnimation() {
-	source_rect_.x -= (source_rect_.w + frame_gap_) * current_frame_;
+void AnimatedSprite::ResetAnimation()
+{
+	default_clip_.x -= (default_clip_.w + frame_gap_) * current_frame_;
 	current_frame_ = 0;
 	current_frame_time_ = 0;
 }
 
-void AnimatedSprite::SetAnimationSpeed(double frame_time) {
+void AnimatedSprite::SetAnimationSpeed(double frame_time)
+{
 	frame_time_ = frame_time;
 }
 
-void AnimatedSprite::Update(double delta_time) {
+void AnimatedSprite::Update(double delta_time)
+{
 	current_frame_time_ += delta_time;
-	if (current_frame_time_ > frame_time_) {
+	if (current_frame_time_ > frame_time_)
+	{
 		current_frame_time_ -= frame_time_;
-		if (current_frame_ < frame_count_ - 1) {
-			source_rect_.x += source_rect_.w + frame_gap_;
+		if (current_frame_ < frame_count_ - 1)
+		{
+			default_clip_.x += default_clip_.w + frame_gap_;
 			current_frame_++;
-		} else {
-			source_rect_.x -= (source_rect_.w + frame_gap_) * (frame_count_ - 1);
+		}
+		else
+		{
+			default_clip_.x -= (default_clip_.w + frame_gap_) * (frame_count_ - 1);
 			current_frame_ = 0;
 		}
 	}

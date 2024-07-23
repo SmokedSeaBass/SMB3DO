@@ -42,16 +42,16 @@ public:
 	SDL_Texture* LoadDefaultTexture();
 
 	/// @brief Loads the texture of an image.
-	/// @param path_to_image the filesystem path to the image.
+	/// @param image_path the filesystem path to the image.
 	/// @return a pointer to an SDL_Texture of the image on success, or nullptr on error.
-	SDL_Texture* LoadTextureFromImage(const std::filesystem::path& path_to_image);
+	SDL_Texture* LoadTextureFromImage(const std::filesystem::path& image_path);
 
 	/// @brief Loads the texture of an image, using an RGB value for transparency.
 	/// @param file_path the filesystem path to the image.
 	/// @param mask_color the color to treat as transparent (alpha channel is ignored).
 	/// @return A pointer to an SDL_Texture on success, or nullptr on error.
 	SDL_Texture* LoadTextureFromImage(
-		const std::filesystem::path& path_to_image,
+		const std::filesystem::path& image_path,
 		SDL_Color mask_color);
 	
 	/// @brief Loads the texture of an image, using a given pixel's color for transparency.
@@ -60,7 +60,7 @@ public:
 	/// transparent.
 	/// @return a pointer to an SDL_Texture on success, or nullptr on error.
 	SDL_Texture* LoadTextureFromImage(
-		const std::filesystem::path& path_to_image,
+		const std::filesystem::path& image_path,
 		SDL_Point mask_pixel);
 
 	/// @brief Unloads an SDL_Texture from the texture cache.
@@ -69,9 +69,9 @@ public:
 	int UnloadTexture(SDL_Texture* texture);
 
 	/// @brief Unloads an image from the texture cache.
-	/// @param path_to_image the filesystem path to the image.
+	/// @param image_path the filesystem path to the image.
 	/// @return 0 on success, or -1 if the image texture does not exist in the cache.
-	int UnloadTexture(const std::filesystem::path& path_to_image);
+	int UnloadTexture(const std::filesystem::path& image_path);
 
 	int DrawColoredRect(const SDL_FRect* frect, SDL_Color color);
 	int DrawColoredRect(const Rectangle& rectangle, SDL_Color color);
@@ -82,7 +82,7 @@ public:
 		const SDL_FRect* destination,
 		const SDL_FlipMode flip = SDL_FLIP_NONE);
 
-	BitmapFont* LoadBitmapFont(const std::filesystem::path& path_to_image,
+	BitmapFont* LoadBitmapFont(const std::filesystem::path& image_path,
 		SDL_Rect glyph_dimensions, const std::string& font_name = "");
 	int SetTextFont(const std::string& font_name = "");
 	int DrawText(const std::string& text, SDL_Point position);
@@ -135,9 +135,9 @@ private:
 	int CreateDefaultTexture();
 
 	/// @brief Creates an SDL_Surface from an image
-	/// @param path_to_image the filesystem path to the image
+	/// @param image_path the filesystem path to the image
 	/// @return a pointer to an SDL_Surface on success, or nullptr on failure.
-	SDL_Surface* CreateSurfaceFromImage(const std::filesystem::path& path_to_image);
+	SDL_Surface* CreateSurfaceFromImage(const std::filesystem::path& image_path);
 	
 	/// @brief Creates an SDL_Texture from an SDL_Surface and then destroys the SDL_Surface.
 	/// @param surface a pointer to the SDL_Surface.

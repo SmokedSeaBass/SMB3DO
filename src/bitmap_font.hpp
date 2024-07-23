@@ -4,16 +4,20 @@
 
 class Graphics;
 
-class BitmapFont {
+class BitmapFont
+{
 public:
 	BitmapFont();
-	BitmapFont(Graphics& graphics, const std::string& path_to_bmp, float glyph_width,
+	BitmapFont(
+		Graphics& graphics,
+		std::filesystem::path image_path,
+		float glyph_width,
 		float glyph_height);
 
-	int LoadBitmap(Graphics& graphics, const std::string& path_to_bmp, float glyph_width,
-		float glyph_height);
+	int LoadBitmap(Graphics& graphics, std::filesystem::path image_path,
+		float glyph_width, float glyph_height);
 	int LoadBitmap(SDL_Texture* texture, float glyph_width, float glyph_height);
-	int DrawText(Graphics& graphics, const std::string& text, int pos_x, int pos_y) const;
+	int DrawText(Graphics& graphics, const std::string& text, SDL_Point position) const;
 
 private:
 	SDL_Texture* texture_;

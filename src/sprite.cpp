@@ -14,25 +14,27 @@ Sprite::Sprite(Graphics& graphics, SDL_Texture* texture, SDL_FRect default_clip)
 		Logger::PrintWarning("Sprite initialized with null texture");
 		return;
 	}
-	SDL_GetTextureSize(texture_, &texture_width_, &texture_height_);
 	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
 }
 
-Sprite::Sprite(Graphics& graphics, std::filesystem::path path_to_image, SDL_Point mask_pixel,
-	SDL_FRect default_clip)
-	: texture_(graphics.LoadTextureFromImage(path_to_image, mask_pixel)),
+Sprite::Sprite(Graphics& graphics, std::filesystem::path image_path, SDL_FRect default_clip)
+	: Sprite(graphics, graphics.LoadTextureFromImage(image_path), default_clip)
+{
+}
+
+Sprite::Sprite(Graphics& graphics, std::filesystem::path image_path, SDL_FRect default_clip,
+	SDL_Point mask_pixel)
+	: texture_(graphics.LoadTextureFromImage(image_path, mask_pixel)),
 	  default_clip_(default_clip)
 {
-	SDL_GetTextureSize(texture_, &texture_width_, &texture_height_);
 	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
 }
 
-Sprite::Sprite(Graphics& graphics, const std::string& path_to_image, SDL_Color mask_color,
-	SDL_FRect default_clip)
-	: texture_(graphics.LoadTextureFromImage(path_to_image, mask_color)),
+Sprite::Sprite(Graphics& graphics, std::filesystem::path image_path, SDL_FRect default_clip,
+	SDL_Color mask_color)
+	: texture_(graphics.LoadTextureFromImage(image_path, mask_color)),
 	  default_clip_(default_clip)
 {
-	SDL_GetTextureSize(texture_, &texture_width_, &texture_height_);
 	SDL_SetTextureScaleMode(texture_, SDL_SCALEMODE_NEAREST);
 }
 
@@ -123,31 +125,16 @@ SDL_Texture* Sprite::GetTexture() const
 	return texture_;
 }
 
-int Sprite::Draw(Graphics& graphics, SDL_Point position, const SDL_FlipMode flip) const {
-	SDL_FRect destination = {
-		round(position.x - origin_.x),
-		round(position.y - origin_.y),
-		default_clip_.w,
-		default_clip_.h
-	};
-	if (SDL_RectEmptyFloat(&destination))
-	{
-		destination.w = texture_width_;
-		destination.h = texture_height_;
-	}
-	if (texture_ == nullptr) {
-		SDL_FRect null_clip = { 0, 0, 16, 16 };
-		return graphics.DrawTexture(graphics.LoadDefaultTexture(), &null_clip, &destination, flip);
-	}
-	return graphics.DrawTexture(texture_, &default_clip_, &destination, flip);
-}
-
-int Sprite::Draw(Graphics& graphics, SDL_Point position, SDL_FRect clip, const SDL_FlipMode flip = SDL_FLIP_NONE) const {
+int Sprite::Draw(Graphics& graphics, SDL_Point position, SDL_FRect clip, const SDL_FlipMode flip) const {
 	SDL_FRect destination = {
 		round(position.x - origin_.x),
 		round(position.y - origin_.y),
 		clip.w,
 		clip.h};
+	if (SDL_RectEmptyFloat(&destination))
+	{
+		SDL_GetTextureSize(texture_, &(destination.h), &(destination.h));
+	}
 	if (texture_ == nullptr) {
 		SDL_FRect null_clip = { 0, 0, 16, 16 };
 		return graphics.DrawTexture(graphics.LoadDefaultTexture(), &null_clip, &destination, flip);
@@ -155,3 +142,6 @@ int Sprite::Draw(Graphics& graphics, SDL_Point position, SDL_FRect clip, const S
 	return graphics.DrawTexture(texture_, &clip, &destination, flip);
 }
 
+int Sprite::Draw(Graphics& graphics, SDL_Point position, const SDL_FlipMode flip) const {
+	return Draw(graphics, position, default_clip_, flip);
+}

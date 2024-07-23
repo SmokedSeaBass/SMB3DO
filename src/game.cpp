@@ -75,8 +75,8 @@ int Game::Run() {
 	test_level.Load(graphics_, "data/maps/test2a.tmx");
 
 	// Bitmap font
-	graphics_.LoadBitmapFont("data/sprite_sheets/hud_font_ascii.bmp", 8, 8, "hud");
-	graphics_.LoadBitmapFont("data/sprite_sheets/dialogue_font_ascii.bmp", 8, 8, "dialogue");
+	graphics_.LoadBitmapFont("data/sprite_sheets/hud_font_ascii.bmp", {0, 0, 8, 8}, "hud");
+	graphics_.LoadBitmapFont("data/sprite_sheets/dialogue_font_ascii.bmp", {0, 0, 8, 8}, "dialogue");
 	
 	// Main game loop
 	while (!quit_game) {
@@ -151,22 +151,22 @@ int Game::Run() {
 				snprintf(debug_info, sizeof(debug_info), "%.2f fps\n%.4f ms", 1000.0 / (tick_duration), tick_duration);
 			}
 			graphics_.SetTextFont("hud");
-			graphics_.DrawText(debug_info, 0, 0);
+			graphics_.DrawText(debug_info, {0, 0});
 		}
 		// Flip to screen
 		graphics_.PresentRender();
 
 		// Framerate limiter
-		// if (!options_.enable_vsync) {
-		// 	const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
-		// 	double frame_time = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_start_new - tick_end).count();
-		// 	double tick_wait = 0.0;
-		// 	if (Game::fps_limit > 0)
-		// 		tick_wait = (1000.0 / (Game::fps_limit)) - frame_time;
-		// 	if (tick_wait > 0) {
-		// 		SDL_Delay(static_cast<Uint32>(tick_wait));
-		// 	}
-		// }
+		if (!options_.enable_vsync) {
+			const std::chrono::high_resolution_clock::time_point tick_end = std::chrono::high_resolution_clock::now();
+			double frame_time = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(tick_start_new - tick_end).count();
+			double tick_wait = 0.0;
+			if (Game::fps_limit > 0)
+				tick_wait = (1000.0 / (Game::fps_limit)) - frame_time;
+			if (tick_wait > 0) {
+				SDL_Delay(static_cast<Uint32>(tick_wait));
+			}
+		}
 	}
 	return 0;
 }
