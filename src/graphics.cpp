@@ -27,6 +27,7 @@ Graphics::~Graphics()
 	}
 	SDL_DestroyRenderer(renderer_);
 	SDL_DestroyWindow(window_);
+	SDL_DestroySurface(window_icon_);
 }
 
 int Graphics::Initialize(Options& options)
@@ -56,7 +57,11 @@ int Graphics::Initialize(Options& options)
 			+ std::string(SDL_GetError()));
 		return -1;
 	}
-	SDL_SetWindowIcon(window_, nullptr);
+	window_icon_ = CreateSurfaceFromImage("data/icons/icon.ico");
+	if (SDL_SetWindowIcon(window_, window_icon_) < 0)
+	{
+		Logger::PrintWarning("Could not set window icon");
+	}
 	
 	renderer_ = SDL_CreateRenderer(window_, "opengl");
 	if (renderer_ == nullptr)
@@ -432,12 +437,11 @@ SDL_Texture* Graphics::ConvertSurfaceToTexture(SDL_Surface* surface)
 SDL_Surface* Graphics::CreateSurfaceFromImage(const std::filesystem::path& image_path)
 {
 		// TODO: load images other than just bitmaps
-		SDL_Surface* surface = SDL_LoadBMP(image_path.c_str());
+		SDL_Surface* surface = IMG_Load(image_path.c_str());
 		if (surface == nullptr)
 		{
-			Logger::PrintError("Could not create surface from bitmap '"
+			Logger::PrintError("Could not create surface from image '"
 				+ image_path.generic_string() + "'; " + SDL_GetError());
-			return nullptr;
 		}
 		return surface;
 }

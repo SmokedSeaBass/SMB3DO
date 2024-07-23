@@ -93,6 +93,7 @@ public:
 
 private:
 	SDL_Window* window_;
+	SDL_Surface* window_icon_;
 	SDL_Renderer* renderer_;
 	SDL_Texture* render_canvas_;
 	SDL_FRect viewport_;
