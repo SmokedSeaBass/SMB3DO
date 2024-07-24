@@ -216,11 +216,10 @@ SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& image_p
 {
 	if (textures_.count(image_path.generic_string()) == 0)
 	{
-		SDL_Surface* surface = CreateSurfaceFromImage(image_path);
-		SDL_Texture* texture = ConvertSurfaceToTexture(surface);
+		SDL_Texture* texture = IMG_LoadTexture(renderer_, image_path.generic_string().c_str());
 		textures_[image_path.generic_string()] = texture;
 	}
-	return textures_[image_path];
+	return textures_[image_path.generic_string()];
 }
 
 SDL_Texture* Graphics::LoadTextureFromImage(const std::filesystem::path& image_path,
@@ -313,8 +312,8 @@ BitmapFont* Graphics::LoadBitmapFont(const std::filesystem::path& image_path,
 	SDL_Rect glyph_dimensions, const std::string& font_name)
 {
 	std::string font_index = font_name;
-	if (font_index == "") {
-		font_index = image_path;
+	if (font_index.empty()) {
+		font_index = image_path.generic_string();
 	}
 	if (bitmap_fonts_.count(font_index) == 0) {
 		BitmapFont font = BitmapFont(*this, image_path, glyph_dimensions.w, glyph_dimensions.h);
@@ -437,7 +436,7 @@ SDL_Texture* Graphics::ConvertSurfaceToTexture(SDL_Surface* surface)
 SDL_Surface* Graphics::CreateSurfaceFromImage(const std::filesystem::path& image_path)
 {
 		// TODO: load images other than just bitmaps
-		SDL_Surface* surface = IMG_Load(image_path.c_str());
+		SDL_Surface* surface = IMG_Load(image_path.generic_string().c_str());
 		if (surface == nullptr)
 		{
 			Logger::PrintError("Could not create surface from image '"
