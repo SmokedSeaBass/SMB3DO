@@ -1,11 +1,22 @@
 === Graphics System ===
-* Graphics are stored in texture cache
-    * If an image does not exist in the texture cache, it is loaded from disk
-    * Graphics are indexed by their filesystem path
-* Graphics drawing hierarchy:
-    * Game
-        * Level
-            * Tilemaps
-            * Entities
-                * Make explicit graphics calls
-            * HUD
+- Graphics are stored in texture cache
+    - If an image does not exist in the texture cache, it is loaded from disk
+    - Graphics are indexed by their filesystem path
+- Graphics drawing hierarchy:
+    - Game
+        - Level
+            - Tilemaps
+                - Tilesets/Sprites
+                    - Make explicit graphics calls
+            - Entities
+                - Sprite
+                    - Make explicit graphics calls
+            - HUD
+
+=== Tiles, Tilemaps, and Tilesets ===
+- A Tilemap is a 2D grid of Tiles. These tiles come from the loaded Tilesets.
+    - Internally, it's a 2D array of Tile indices. The actual Tiles being
+      pointed to are stored in Tilesets.
+    - A level can theoretically have multiple tilemaps, each existing
+      independently with their own scrolling, FX, etc. But since the original
+      SMB3 just uses one background layer, that's what SMB3DO restricts itself to.
