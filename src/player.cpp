@@ -79,18 +79,18 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 	double dt_ratio = delta_time / (1000.0 / 60.0);
 
 	// Jumping
-	if ((status_ & (unsigned char)Status::GROUNDED) && (input.IsButtonPressed(Input::Button::P1_A)))
+	if ((status_ & (unsigned int)Status::grounded) && (input.IsButtonPressed(Input::Button::P1_A)))
 	{
 		if (abs(vel_x_) > (double)0x0300 / 0x100 * dt_ratio ) vel_y_ = -Physics::JUMP_VEL_SPRINT * dt_ratio;
 		else if (abs(vel_x_) > (double)0x0200 / 0x100 * dt_ratio) vel_y_ = -Physics::JUMP_VEL_RUN * dt_ratio;
 		else if (abs(vel_x_) > (double)0x0100 / 0x100 * dt_ratio) vel_y_ = -Physics::JUMP_VEL_WALK * dt_ratio;
 		else vel_y_ = -Physics::JUMP_VEL_STAND * dt_ratio;
-		status_ &= ~(unsigned char)Status::GROUNDED;
+		status_ &= ~(unsigned char)Status::grounded;
 	}
 
 	// Lateral movement
-	status_ &= ~(unsigned char)Status::SKIDDING;
-	if (status_ & (unsigned char)Status::GROUNDED)
+	status_ &= ~(unsigned int)Status::skidding;
+	if (status_ & (unsigned int)Status::grounded)
 	{
 		// Grounded physics
 		if (dpad_vector_[0] == 0)
@@ -109,7 +109,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 		{
 			// Opposing input, skid deceleration
 			vel_x_ += dpad_vector_[0] * Physics::SKID_GROUND_NORMAL * dt_ratio * dt_ratio;
-			status_ |= (unsigned char)Status::SKIDDING;
+			status_ |= (unsigned char)Status::skidding;
 		}
 		else
 		{
@@ -187,8 +187,8 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			{
 				switch (info.type)
 				{
-				case Tile::COLLISION_TYPE::HITTABLE:
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::hittable:
+				case Tile::TileCollision::solid:
 					solid_collision = true;
 					leftest_x = std::min(
 						std::max(
@@ -196,7 +196,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 							pos_x_ - 1 * dt_ratio),
 						leftest_x);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -221,15 +221,15 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			{
 				switch (info.type)
 				{
-				case Tile::COLLISION_TYPE::HITTABLE:
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::hittable:
+				case Tile::TileCollision::solid:
 					rightest_x = std::max(
 						std::min(
 							(info.col + 1) * (int)TILESIZE_NES - COLLIDER_LEFT.Left(),
 							pos_x_ + 1 * dt_ratio),
 						rightest_x);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -249,8 +249,8 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			{
 				switch (info.type)
 				{
-				case Tile::COLLISION_TYPE::HITTABLE:
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::hittable:
+				case Tile::TileCollision::solid:
 					solid_collision = true;
 					rightest_right = std::max(
 						std::min(
@@ -258,7 +258,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 							pos_x_ + 1 * dt_ratio),
 						rightest_right);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -282,15 +282,15 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			for (const CollisionInfo& info : collisions)
 			{
 				switch (info.type) {
-				case Tile::COLLISION_TYPE::HITTABLE:
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::hittable:
+				case Tile::TileCollision::solid:
 					leftest_left = std::min(
 						std::max(
 							info.col * (int)TILESIZE_NES - COLLIDER_RIGHT.Right(),
 							pos_x_ - 1 * dt_ratio),
 						leftest_left);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -311,18 +311,18 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			{
 				switch (info.type)
 				{
-				case Tile::COLLISION_TYPE::SEMISOLID:
+				case Tile::TileCollision::semisolid:
 					if (!(pos_y_ <= (double)info.row * TILESIZE_NES + 5.0))
 					{
 						break;
 					}
-				case Tile::COLLISION_TYPE::HITTABLE:
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::hittable:
+				case Tile::TileCollision::solid:
 					solid_collision = true;
 					highest_y = std::min(info.row * (int)TILESIZE_NES - COLLIDER_BOTTOM.Bottom(),
 						highest_y);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -332,13 +332,13 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			if (solid_collision)
 			{
 				vel_y_ = 0;
-				status_ |= (unsigned char)Status::GROUNDED;
+				status_ |= (unsigned char)Status::grounded;
 			}
 		}
 		else
 		{
 			pos_y_ += delta_y;
-			status_ &= ~(unsigned char)Status::GROUNDED;
+			status_ &= ~(unsigned char)Status::grounded;
 		}
 		// Check for collision in opposite direction
 		collisions = GetCollisionInfo(tilemap, TopCollision(0));
@@ -348,13 +348,13 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			for (const CollisionInfo& info : collisions) {
 				switch (info.type)
 				{
-				case Tile::COLLISION_TYPE::HITTABLE:
+				case Tile::TileCollision::hittable:
 					coin_count_++;
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::solid:
 					lowest_y = std::max((info.row + 1) * (int)TILESIZE_NES - COLLIDER_TOP.Top(),
 						lowest_y);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -376,15 +376,15 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 				double displacement = 0;
 				switch (info.type)
 				{
-				case Tile::COLLISION_TYPE::HITTABLE:
+				case Tile::TileCollision::hittable:
 					coin_count_++;
 					vel_y_ = Player::Physics::BONK_SPEED * dt_ratio;
 					tilemap.SetTileId(info.col, info.row, 36);
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::solid:
 					solid_collision = true;
 					lowest_y = std::max((info.row + 1) * (int)TILESIZE_NES - COLLIDER_TOP.Top(), lowest_y);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -408,13 +408,13 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			{
 				double displacement = 0;
 				switch (info.type) {
-				case Tile::COLLISION_TYPE::HITTABLE:
-				case Tile::COLLISION_TYPE::SOLID:
+				case Tile::TileCollision::hittable:
+				case Tile::TileCollision::solid:
 					solid_collision = true;
 					highest_y = std::min(info.row * (int)TILESIZE_NES - COLLIDER_BOTTOM.Bottom(),
 						highest_y);
 					break;
-				case Tile::COLLISION_TYPE::COIN:
+				case Tile::TileCollision::coin:
 					coin_count_++;
 					tilemap.SetTileId(info.col, info.row, 0);
 					break;
@@ -423,7 +423,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			pos_y_ = highest_y;
 			if (solid_collision)
 			{
-				status_ |= (unsigned char)Status::GROUNDED;
+				status_ |= (unsigned char)Status::grounded;
 			}
 		}
 	}
@@ -442,7 +442,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 	// Update Sprite
 	Sprite* new_sprite = nullptr;
 	double speed_x = abs(vel_x_);
-	if (status_ & (unsigned char)Status::GROUNDED)
+	if (status_ & (unsigned char)Status::grounded)
 	{
 		if (speed_x == 0) {
 			new_sprite = sprite_map_["stand"].get();
@@ -462,7 +462,7 @@ void Player::Update(const Input& input, double delta_time, Tilemap& tilemap)
 			new_sprite = sprite_map_["walk"].get();
 			new_sprite->SetAnimationSpeed(2 * (1000.0 / 60.0));
 		}
-		if (status_ & (unsigned char)Status::SKIDDING)
+		if (status_ & (unsigned char)Status::skidding)
 		{
 			new_sprite = sprite_map_["skid"].get();
 		}
@@ -570,10 +570,10 @@ std::vector<Player::CollisionInfo> Player::GetCollisionInfo(const Tilemap& tilem
 const Rectangle& rectangle)
 {
 	std::vector<CollisionInfo> collisions;
-	std::vector<Tilemap::CollisionTile> intersecting_tiles = tilemap.GetCollidingTiles(rectangle);
-	for (Tilemap::CollisionTile tile : intersecting_tiles)
+	std::vector<Tilemap::CollisionInfo> intersecting_tiles = tilemap.GetCollidingTiles(rectangle);
+	for (Tilemap::CollisionInfo tile : intersecting_tiles)
 	{
-		if (tile.tile.GetCollision() == Tile::COLLISION_TYPE::NONE)
+		if (tile.tile.GetCollision() == Tile::TileCollision::none)
 		{
 			continue;
 		}

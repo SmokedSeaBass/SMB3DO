@@ -9,7 +9,7 @@ class AnimatedSprite : public Sprite
 {
 public:
 	/// @brief Constructs an empty AnimatedSprite object.
-	AnimatedSprite() = default;
+	AnimatedSprite();
 
 	/// @brief Constructs an AnimatedSprite object from an image source.
 	/// @param graphics the graphics rendering context to use.
@@ -52,8 +52,8 @@ public:
 
 private:
 	double frame_time_;			// Time (in milliseconds) per animation frame
-	const int frame_count_;		// Number of total frames in the animation
-	const int frame_gap_;		// Pixel gap between each frame of animation
+	int frame_count_;			// Number of total frames in the animation
+	int frame_gap_;				// Pixel gap between each frame of animation
 	int current_frame_;			// Current frame number in the animation
 	double current_frame_time_;	// Time (in milliseconds) elapsed for this current animation frame
 };

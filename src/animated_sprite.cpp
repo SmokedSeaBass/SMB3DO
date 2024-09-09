@@ -1,5 +1,9 @@
 #include "animated_sprite.hpp"
 
+AnimatedSprite::AnimatedSprite() : Sprite()
+{
+}
+
 
 AnimatedSprite::AnimatedSprite(
 	Graphics& graphics,
@@ -30,7 +34,9 @@ AnimatedSprite::AnimatedSprite(
 {
 }
 
-AnimatedSprite::~AnimatedSprite() { }
+AnimatedSprite::~AnimatedSprite()
+{
+}
 
 void AnimatedSprite::ResetAnimation()
 {

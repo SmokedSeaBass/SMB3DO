@@ -43,6 +43,15 @@ public:
 		/* Misc physics */
 		static constexpr double BONK_SPEED = (double)0x0200 / 0x100;
 	};
+	enum class Status {
+		grounded = 1,
+		skidding = 2,
+		slipping = 4,
+		swimming = 8,
+		invincible = 16,
+		intangible = 32,
+		fixed = 64
+	};
 	unsigned int coin_count_;
 
 	Player();
@@ -62,15 +71,6 @@ public:
 	std::vector<CollisionInfo> GetCollisionInfo(const Tilemap& tilemap, const Rectangle& rectangle);
 
 private:
-	enum class Status {
-		GROUNDED = 1,
-		SKIDDING = 2,
-		SLIPPING = 4,
-		SWIMMING = 8,
-		INVULN = 16,
-		INTANG = 32,
-		FIXED = 64
-	};
 	/// @brief D-pad input vector, ranging from [-1, 1] for each component.
 	///        Format is {horizontal, vertical}, with -1 being left/up and 1 being right/down.
 	std::vector<int> dpad_vector_;
@@ -85,11 +85,16 @@ private:
 	/// 2 = skidding (horizontal input is in opposite direction of horizontal motion)
 	/// 4 = on ice (slippery physics)
 	/// 8 = swimming
-	/// 16 = invulnerable (e.g. from starman)
+	/// 16 = invincible (e.g. from starman)
 	/// 32 = intangible (e.g. inside pipe)
 	/// 64 = uncontrollable, fixed motion (e.g. cutscene, inside pipe)
-	/// 128 = UNUSED
 	unsigned int status_;
 	typedef std::map<std::string, std::unique_ptr<Sprite>> SpriteMap;
 	SpriteMap sprite_map_;
+
+	// Position relative to player's origin (bottom-center of sprite)
+	const std::vector<SDL_FPoint> top_collider_points_ = {{-4, -1}, {4, -1}};
+	std::vector<SDL_FPoint> left_collider_points_;
+	std::vector<SDL_FPoint> right_collider_points_;
+	std::vector<SDL_FPoint> bottom_collider_points_;
 };

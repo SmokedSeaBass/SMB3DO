@@ -8,17 +8,12 @@
 #include "tile.hpp"
 #include "tileset.hpp"
 
-///	<summary>
-/// Handles the tile grid routines.
-/// </summary>
-/// <remarks>
-///	A Tilemap is a data structure that organizes tiles into a 2-D grid.  Each entry in the tilemap's map is
+/// @brief A data structure that organizes tiles into a 2D grid.  Each entry in the tilemap's map is
 ///	an unsigned char corresponding to a unique tile, which has its own properties, interaction subroutines, and drawing routine.
 ///	These properties are defined in the Tile class.
-/// </remarks>
 class Tilemap {
 public:
-	struct CollisionTile {
+	struct CollisionInfo {
 		Tile tile;
 		int col, row;
 	};
@@ -37,7 +32,7 @@ public:
 	/// @return On success, a pointer to a Tileset. Otherwise, nullptr
 	const Tileset* GetTilesetFromTileID(unsigned int tile_id, unsigned int* tile_index = nullptr) const;
 	std::vector<Tileset*> GetTilesets() const;
-	std::vector<CollisionTile> GetCollidingTiles(const Rectangle& rect) const;
+	std::vector<CollisionInfo> GetCollidingTiles(const Rectangle& rect) const;
 
 	void SetTileId(int x, int y, unsigned int tile_id);
 	void AddTileset(Tileset* tileset);

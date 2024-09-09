@@ -21,13 +21,15 @@ int BitmapFont::LoadBitmap(Graphics& graphics, std::filesystem::path image_path,
 	if (texture_ != nullptr)
 	{
 		Logger::PrintError("Cannot load image '" + image_path.generic_string()
-			+ "' for bitmap font; bitmap font already has a texture set");
+			+ "' for bitmap font; bitmap font already has a texture set",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	SDL_Texture* texture = graphics.LoadTextureFromImage(image_path, SDL_Point{0, 0});
 	if (texture == nullptr)
 	{
-		Logger::PrintError("Cannot not load null texture for bitmap font");
+		Logger::PrintError("Cannot not load null texture for bitmap font",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	return LoadBitmap(texture, glyph_width, glyph_height);
@@ -38,12 +40,14 @@ int BitmapFont::LoadBitmap(SDL_Texture* texture, float glyph_width, float glyph_
 	if (texture_ != nullptr)
 	{
 		Logger::PrintError("Cannot load texture at '" + Logger::PointerToString(texture)
-			+ "' for bitmap font; bitmap font already has a texture set");
+			+ "' for bitmap font; bitmap font already has a texture set",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	if (texture == nullptr)
 	{
-		Logger::PrintError("Cannot not load null texture for bitmap font");
+		Logger::PrintError("Cannot not load null texture for bitmap font",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	texture_ = texture;

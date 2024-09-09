@@ -9,6 +9,8 @@
 ///        Uses a Sprite as a base image and can optionally constructed from a Tiled .tsx file.
 class Tileset {
 public:
+	typedef unsigned int TileId;
+
 	/// @brief Constructs an empty Tileset object
 	Tileset();
 	/// @brief Constructs a Tileset object using a Tiled .tsx file as a base
@@ -30,19 +32,25 @@ public:
 	unsigned int GetTileCount() const;
 
 	const Sprite* GetTilesetSprite() const;
-	const Tile GetTileFromTileIndex(unsigned int tile_index) const;
+	
+	/// @brief Gets the tile from the tileset associated with the give tile ID.
+	/// @param tile_id 
+	/// @return A pointer to the tile object
+	const Tile* GetTileFromTileId(TileId tile_id) const;
 
 	void Update(double delta_time);
 	int Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_index) const;
 
 private:
 	/// @brief Used for rendering tiles that do not have an associated Tile object
-	std::shared_ptr<Sprite> tileset_sprite_;
-	typedef std::map<unsigned int, std::shared_ptr<Tile>> TileList;
-	TileList tiles_;
-	int tile_width_, tile_height_;
-	int tile_margin_, tile_spacing_;
-	int tile_row_size_, tile_count_;
+	Sprite* tileset_sprite_;
+	std::map<TileId, Tile> tiles_;
+	Units::Pixels tile_width_, tile_height_;
+	Units::Pixels tile_margin_, tile_spacing_;
+	unsigned int tile_row_size_, tile_count_;
 
-	SDL_FRect TileIndexToRect(unsigned int tile_id) const;
+	/// @brief Gives the clip rectangle of the tileset sprite for the given tile.
+	/// @param tile_id The ID of the tile to get the clip for.
+	/// @return A rectangle defining the spritesheet region for the tile.
+	SDL_FRect GetClipFromTileId(TileId tile_id) const;
 };

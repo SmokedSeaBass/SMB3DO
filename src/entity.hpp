@@ -9,11 +9,6 @@
 /// </summary>
 class Entity {
 public:
-	struct CollisionInfo {
-		int row, col;
-		Tile::COLLISION_TYPE type;
-	};
-
 	Entity();
 	~Entity();
 

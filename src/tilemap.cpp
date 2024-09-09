@@ -13,19 +13,17 @@ Tilemap::Tilemap() :
 	width_(0),
 	height_(0),
 	pos_x_(0),
-	pos_y_(0) {
-	background_color_ = { 0, 0, 0, 0 };
+	pos_y_(0),
+	background_color_({ 0, 0, 0, 0 })
+{
 }
 
-Tilemap::Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset) : Tilemap::Tilemap() {
-	tilemap_ = tilemap;
-	if (tileset == nullptr) {
-		tilesets_.push_back(nullptr);
-	} else {
-		tilesets_.push_back(std::make_shared<Tileset>(*tileset));
-	}
-	width_ = tilemap[0].size();
-	height_ = tilemap.size();
+Tilemap::Tilemap(std::vector<std::vector<unsigned int>> tilemap, Tileset* tileset)
+	: tilemap_(tilemap),
+	  width_(tilemap_[0].size()),
+	  height_(tilemap_.size())
+{
+	tilesets_.push_back(std::make_shared<Tileset>(*tileset));
 }
 
 Tilemap::Tilemap(Graphics& graphics, std::filesystem::path path_to_tmx) : Tilemap::Tilemap() {
@@ -134,8 +132,8 @@ std::vector<Tileset*> Tilemap::GetTilesets() const {
 	return tilesets;
 }
 
-std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& rect) const {
-	std::vector<CollisionTile> colliding_tiles;
+std::vector<Tilemap::CollisionInfo> Tilemap::GetCollidingTiles(const Rectangle& rect) const {
+	std::vector<CollisionInfo> colliding_tiles;
 	// TODO 6-21-21: Account for offset tilemap/tilemap position
 	Rectangle collision_rect = rect + Rectangle(pos_x_, pos_y_, 0, 0);
 	int top_row = (int)(floor(rect.Top() / (int)TILESIZE_NES));
@@ -144,10 +142,9 @@ std::vector<Tilemap::CollisionTile> Tilemap::GetCollidingTiles(const Rectangle& 
 	int right_col = (int)(ceil(rect.Right() / (int)TILESIZE_NES) - 1);
 	for (int y = top_row; y <= bottom_row; y++) {
 		for (int x = left_col; x <= right_col; x++) {
-			CollisionTile col_tile;
-			col_tile.tile = GetTile(x, y);
-			col_tile.row = y;
-			col_tile.col = x;
+			CollisionInfo col_tile = {
+				GetTile(x, y), y, x
+			};
 			colliding_tiles.push_back(col_tile);
 		}
 	}

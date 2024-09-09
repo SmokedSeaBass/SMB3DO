@@ -50,9 +50,9 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
 		unsigned char alpha_red = std::stoul(color_key.substr(0, 2), nullptr, 16);
 		unsigned char alpha_green = std::stoul(color_key.substr(2, 2), nullptr, 16);
 		unsigned char alpha_blue = std::stoul(color_key.substr(4, 2), nullptr, 16);
-		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string(), {-1, -1, -1, -1}, SDL_Color{alpha_red, alpha_green, alpha_blue, 255}));
+		tileset_sprite_ = &Sprite(graphics, source_image_path.string(), {-1, -1, -1, -1}, SDL_Color{alpha_red, alpha_green, alpha_blue, 255});
 	} else {
-		tileset_sprite_ = std::make_shared<Sprite>(Sprite(graphics, source_image_path.string(), {-1, -1, -1, -1}));
+		tileset_sprite_ = &Sprite(graphics, source_image_path.string(), {-1, -1, -1, -1});
 	}
 
 	// Properties to extract from each node include collision type, hitbox, animation, etc.
@@ -60,44 +60,42 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
 	while (tile_node != nullptr) {
 		// Tile ID
 		unsigned int tile_id = tile_node->FindAttribute("id")->IntValue();
-		SDL_FRect tile_rect = TileIndexToRect(tile_id);
+		SDL_FRect tile_rect = GetClipFromTileId(tile_id);
 
-		// Tile/collision type
-		Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
+		// Tile collisions types
+		Tile::TileCollision tile_collision = Tile::TileCollision::none;
 		const tinyxml2::XMLAttribute* tile_type_attr = tile_node->FindAttribute("type");
 		if (tile_type_attr != nullptr) {
 			const std::string tile_type = tile_type_attr->Value();
 			if (tile_type == "Solid") {
-				tile_collision = Tile::COLLISION_TYPE::SOLID;
-			} else if (tile_type == "Semisolid") {
-				tile_collision = Tile::COLLISION_TYPE::SEMISOLID;
+				tile_collision = Tile::TileCollision::solid;
 			} else if (tile_type == "Coin") {
-				tile_collision = Tile::COLLISION_TYPE::COIN;
+				tile_collision = Tile::TileCollision::coin;
 			} else if (tile_type == "Hurt") {
-				tile_collision = Tile::COLLISION_TYPE::HURT;
+				tile_collision = Tile::TileCollision::hurt;
 			} else if (tile_type == "Kill") {
-				tile_collision = Tile::COLLISION_TYPE::KILL;
+				tile_collision = Tile::TileCollision::kill;
 			} else if (tile_type == "Hittable") {
-				tile_collision = Tile::COLLISION_TYPE::HITTABLE;
+				tile_collision = Tile::TileCollision::hittable;
 			}
 		}
 
 		///* Object/tile collisions */
-		//Tile::COLLISION_TYPE tile_collision = Tile::COLLISION_TYPE::NONE;
+		//Tile::TileCollision tile_collision = Tile::TileCollision::none;
 		//tinyxml2::XMLElement* objgrp_node = tile_node->FirstChildElement("objectgroup");
 		//if (objgrp_node != nullptr) {
 		//	tinyxml2::XMLElement* obj_node = objgrp_node->FirstChildElement("object");
 		//	while (obj_node != nullptr) {
 		//		std::string obj_type = obj_node->FindAttribute("type")->Value();
 		//		if (obj_type == "Solid") {
-		//			tile_collision = Tile::COLLISION_TYPE::SOLID;
+		//			tile_collision = Tile::TileCollision::solid;
 		//		}
 		//		obj_node = obj_node->NextSiblingElement("object");
 		//	}
 		//}
 
 		/* Animation */
-		AnimatedSprite* tile_sprite = nullptr;
+		AnimatedSprite tile_sprite;
 		tinyxml2::XMLElement* anim_node = tile_node->FirstChildElement("animation");
 		if (anim_node != nullptr) {
 			std::vector<std::pair<unsigned int, unsigned int>> animation_tiles;
@@ -111,26 +109,24 @@ Tileset::Tileset(Graphics& graphics, std::filesystem::path path_to_tsx_file) : T
 			}
 			double frame_speed = 1000.0 / animation_tiles[0].second;
 			int frame_count = animation_tiles.size();
-			tile_rect = TileIndexToRect(animation_tiles[0].first);
+			tile_rect = GetClipFromTileId(animation_tiles[0].first);
 			// g++ just HAD to be picky about getting addresses of rvalues
-			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect, frame_speed, frame_count, tile_spacing_);
-			tile_sprite = &temp;
+			tile_sprite = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect, frame_speed, frame_count, tile_spacing_);
 		} else {
 			// TODO 7-19-21: Replace with Sprite polymorphism
 			// g++ just HAD to be picky about getting addresses of rvalues
-			AnimatedSprite temp = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect);
-			tile_sprite = &temp;
+			tile_sprite = AnimatedSprite(graphics, tileset_sprite_->GetTexture(), tile_rect);
 		}
 
-		/* Store the tile in the TileList */
-		tiles_[tile_id] = std::make_shared<Tile>(Tile(tile_id, tile_sprite, tile_collision));
+		/* Store the tile in the tileset */
+		tiles_[tile_id] = Tile(tile_id, &tile_sprite, tile_collision);
 
 		tile_node = tile_node->NextSiblingElement("tile");
 	}
 }
 
 Tileset::Tileset(Sprite* tileset_sprite, int tile_width, int tile_height, int tile_margin, int tile_spacing) : Tileset::Tileset() {
-	tileset_sprite_ = std::make_shared<Sprite>(*tileset_sprite);
+	tileset_sprite_ = tileset_sprite;
 	tile_width_ = tile_width;
 	tile_height_ = tile_height;
 	tile_margin_ = tile_margin;
@@ -151,38 +147,37 @@ unsigned int Tileset::GetTileCount() const {
 }
 
 const Sprite* Tileset::GetTilesetSprite() const {
-	return tileset_sprite_.get();
+	return tileset_sprite_;
 }
 
-const Tile Tileset::GetTileFromTileIndex(unsigned int tile_index) const {
-	if (tiles_.count(tile_index) == 0) {
-		return Tile(tile_index);
+const Tile* Tileset::GetTileFromTileId(TileId tile_id) const {
+	if (tiles_.count(tile_id) == 0) {
+		return nullptr;
 	}
-	Tile tile = *(tiles_.find(tile_index)->second);
-	return tile;
+	return &(tiles_.find(tile_id)->second);
 }
 
 void Tileset::Update(double delta_time) {
-	TileList::iterator tile_iter = tiles_.begin();
+	std::map<TileId, Tile>::iterator tile_iter = tiles_.begin();
 	while (tile_iter != tiles_.end()) {
-		tile_iter->second.get()->Update(delta_time);
+		tile_iter->second.Update(delta_time);
 		tile_iter++;
 	}
 }
 
 int Tileset::Draw(Graphics& graphics, int pos_x, int pos_y, unsigned int tile_id) const {
 	if (tiles_.count(tile_id) != 0) {
-		const Tile* tile = tiles_.find(tile_id)->second.get();
-		if (tile->GetSprite() != nullptr) {
+		const Tile* tile = GetTileFromTileId(tile_id);
+		if (tile != nullptr) {
 			return tile->Draw(graphics, pos_x, pos_y);
 		}
 	}
-	SDL_FRect tile_rect = TileIndexToRect(tile_id);
+	SDL_FRect tile_rect = GetClipFromTileId(tile_id);
 	return tileset_sprite_->Draw(graphics, {pos_x, pos_y}, tile_rect);
 }
 
 
-SDL_FRect Tileset::TileIndexToRect(unsigned int tile_index) const {
+SDL_FRect Tileset::GetClipFromTileId(unsigned int tile_index) const {
 	int row_index = tile_index % tile_row_size_;
 	int col_index = tile_index / tile_row_size_;
 	int rect_x = row_index * (tile_width_ + tile_spacing_) + tile_margin_;

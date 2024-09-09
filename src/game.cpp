@@ -44,7 +44,8 @@ int Game::Render(Graphics& graphics) {
 
 int Game::Run() {
 	if (graphics_.Initialize(options_) < 0) {
-		Logger::PrintError("Could not initialize graphics");
+		Logger::PrintError("Could not initialize graphics",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	Input input;
@@ -72,7 +73,7 @@ int Game::Run() {
 	
 	// Test creation code
 	Level test_level;
-	test_level.Load(graphics_, "data/maps/test2a.tmx");
+	test_level.Load(graphics_, "data/maps/test2.tmx");
 
 	// Bitmap font
 	graphics_.LoadBitmapFont("data/sprite_sheets/hud_font_ascii.bmp", {0, 0, 8, 8}, "hud");
@@ -90,7 +91,7 @@ int Game::Run() {
 			while (SDL_PollEvent(&event) != 0) {
 				if (event.type == SDL_EVENT_QUIT) quit_game = true;
 				if (event.type == SDL_EVENT_KEY_DOWN) {
-					if (event.key.scancode == SDL_SCANCODE_END) return -1;		// Force crash
+					if (event.key.scancode == SDL_SCANCODE_END) return -1;		// Force quit
 					if (event.key.scancode == SDL_SCANCODE_ESCAPE) quit_game = true;
 					if (event.key.scancode == SDL_SCANCODE_F11 && !event.key.repeat) graphics_.WindowToggleFullscreen(options_);
 					if (event.key.scancode == SDL_SCANCODE_P && !event.key.repeat) {

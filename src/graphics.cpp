@@ -35,12 +35,14 @@ int Graphics::Initialize(Options& options)
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0)
 	{
 		Logger::PrintError(
-			"SDL video subsystem could not initialize: " + std::string(SDL_GetError()));
+			"SDL video subsystem could not initialize: " + std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 		return -1;
 	}
 	if (TTF_Init() < 0)
 	{
-		Logger::PrintError("SDL_TTF could not initialize: " + std::string(TTF_GetError()));
+		Logger::PrintError("SDL_TTF could not initialize: " + std::string(TTF_GetError()),
+			__FILE__, __LINE__);
 		return -1;
 	}
 
@@ -54,10 +56,11 @@ int Graphics::Initialize(Options& options)
 	if (window_ == nullptr)
 	{
 		Logger::PrintError("Main window could not be created: "
-			+ std::string(SDL_GetError()));
+			+ std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 		return -1;
 	}
-	window_icon_ = CreateSurfaceFromImage("data/icons/icon.ico");
+	window_icon_ = CreateSurfaceFromImage("data/icons/128x128/head.png");
 	if (SDL_SetWindowIcon(window_, window_icon_) < 0)
 	{
 		Logger::PrintWarning("Could not set window icon");
@@ -67,7 +70,8 @@ int Graphics::Initialize(Options& options)
 	if (renderer_ == nullptr)
 	{
 		Logger::PrintError("Main renderer could not be created: "
-			+ std::string(SDL_GetError()));
+			+ std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 		return -1;
 	}
 	if (options.enable_vsync)
@@ -83,7 +87,8 @@ int Graphics::Initialize(Options& options)
 
 	if (CreateDefaultTexture() < 0)
 	{
-		Logger::PrintError("Could not build default texture");
+		Logger::PrintError("Could not build default texture",
+			__FILE__, __LINE__);
 		return -1;
 	}
 
@@ -99,7 +104,8 @@ int Graphics::WindowToggleFullscreen(Options& options) {
 		if (SDL_SetWindowFullscreen(window_, SDL_TRUE) < 0)
 		{
 			Logger::PrintError("Could not switch to fullscreen mode: "
-				+ std::string(SDL_GetError()));
+				+ std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 			return -1;
 		}
 	}
@@ -108,7 +114,8 @@ int Graphics::WindowToggleFullscreen(Options& options) {
 		if (SDL_SetWindowFullscreen(window_, SDL_FALSE) < 0)
 		{
 			Logger::PrintError("Could not switch to windowed mode: "
-				+ std::string(SDL_GetError()));
+				+ std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 			return -1;
 		}
 		SDL_SyncWindow(window_);
@@ -326,7 +333,8 @@ int Graphics::SetTextFont(const std::string& font_name)
 {
 	if (bitmap_fonts_.count(font_name) == 0) {
 		Logger::PrintError("Cannot set font to '"
-			+ font_name + "'; bitmap font not loaded");
+			+ font_name + "'; bitmap font not loaded"),
+			__FILE__, __LINE__;
 		return -1;
 	}
 	active_bitmap_font_ = bitmap_fonts_[font_name].get();
@@ -336,7 +344,8 @@ int Graphics::SetTextFont(const std::string& font_name)
 int Graphics::DrawText(const std::string& text, SDL_Point position)
 {
 	if (active_bitmap_font_ == nullptr) {
-		Logger::PrintError("Cannot draw text; active bitmap font is null");
+		Logger::PrintError("Cannot draw text; active bitmap font is null",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	return active_bitmap_font_->DrawText(*this, text, position);
@@ -397,14 +406,16 @@ int Graphics::CreateDefaultTexture()
 	if (missingno_surface == nullptr)
 	{
 		Logger::PrintError("Could not load default surface from XPM; "
-			+ std::string(SDL_GetError()));
+			+ std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 		SDL_DestroySurface(missingno_surface);
 		return -1;
 	}
 	SDL_Texture* default_texture = ConvertSurfaceToTexture(missingno_surface);
 	if (default_texture == nullptr)
 	{
-		Logger::PrintError("Could not convert default surface to texture");
+		Logger::PrintError("Could not convert default surface to texture",
+			__FILE__, __LINE__);
 		return -1;
 	}
 	if (SDL_SetTextureScaleMode(default_texture, SDL_SCALEMODE_NEAREST) < 0)
@@ -420,14 +431,16 @@ SDL_Texture* Graphics::ConvertSurfaceToTexture(SDL_Surface* surface)
 {
 	if (surface == nullptr)
 	{
-		Logger::PrintError("Cannot convert null surface to texture");
+		Logger::PrintError("Cannot convert null surface to texture",
+			__FILE__, __LINE__);
 		return nullptr;
 	}
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer_, surface);
 	if (texture == nullptr)
 	{
 		Logger::PrintError("Could not create texture from surface at "
-			+ Logger::PointerToString(surface) + "; " + std::string(SDL_GetError()));
+			+ Logger::PointerToString(surface) + "; " + std::string(SDL_GetError()),
+			__FILE__, __LINE__);
 	}
 	SDL_DestroySurface(surface);
 	return texture;
@@ -440,7 +453,8 @@ SDL_Surface* Graphics::CreateSurfaceFromImage(const std::filesystem::path& image
 		if (surface == nullptr)
 		{
 			Logger::PrintError("Could not create surface from image '"
-				+ image_path.generic_string() + "'; " + SDL_GetError());
+				+ image_path.generic_string() + "'; " + SDL_GetError(),
+			__FILE__, __LINE__);
 		}
 		return surface;
 }
